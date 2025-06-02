@@ -1,0 +1,35 @@
+@media(max-width: 992px){
+    .x-box-p-style{
+        flex-direction: column;
+    }
+ .set-red-heading-setting{
+        width: 100% !important; 
+    }
+   
+}
+
+@media(max-width: 767px){
+  
+    .set-red-heading-setting .heading-gradient-style-box{
+        font-size: 2.5rem;
+    }
+
+    .slide-text-section .scroller_item_1 li h3{
+        font-size: 2.5rem;
+    }
+}
+
+@media(max-width: 500px){
+    .login-singup-page{
+        width: 100% !important;
+    }
+     .set-red-heading-setting .heading-gradient-style-box{
+        font-size: 1.5rem;
+    }
+   .slide-text-section-mini-header .scroller_item_1 li h3{
+    font-size: 0.6875rem;
+   }
+   .slide-text-section .scroller_item_1 li h3{
+        font-size: 1.5rem;
+    }
+}
