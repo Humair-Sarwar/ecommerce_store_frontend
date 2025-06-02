@@ -5,6 +5,10 @@
  .set-red-heading-setting{
         width: 100% !important; 
     }
+
+    .desktop-menu-style{
+        display: none !important;
+    }
    
 }
 

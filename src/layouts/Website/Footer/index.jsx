@@ -18,7 +18,7 @@ import { FaInstagram } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-export const WebsiteFooter = () => {
+export default function Footer() {
   return (
     <>
      <Box sx={{ backgroundColor: "white", borderTopRightRadius: '65px' }} pt={7} px={6} pb={5} className='footer-bottom'>

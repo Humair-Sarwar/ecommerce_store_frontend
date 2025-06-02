@@ -1,0 +1,459 @@
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Badge from "@mui/material/Badge";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import MailIcon from "@mui/icons-material/Mail";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import { CardMedia, Container, List, ListItem } from "@mui/material";
+
+import Login from "../../../pages/website/Login";
+import { Link, NavLink } from "react-router";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
+import categories from "../../../categories.json";
+
+export default function Header() {
+  const handleOpenLogin = () => {
+    return <Login />;
+  };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+
+  const handleMobileMenuOpen = (event) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
+  const [menuItemsList, setMenuItemList] = React.useState([]);
+  React.useEffect(() => {
+    setMenuItemList(categories?.menuItems);
+  }, []);
+  const menuId = "primary-search-account-menu";
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+    </Menu>
+  );
+
+  const mobileMenuId = "primary-search-account-menu-mobile";
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <Badge badgeContent={4} color="error">
+            <MailIcon />
+          </Badge>
+        </IconButton>
+        <p>Messages</p>
+      </MenuItem>
+      <MenuItem>
+        <IconButton
+          size="large"
+          aria-label="show 17 new notifications"
+          color="inherit"
+        >
+          <Badge badgeContent={17} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem>
+      <MenuItem onClick={handleProfileMenuOpen}>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+    </Menu>
+  );
+
+  return (
+    <>
+      <Box className="slide-text-section-mini-header">
+        <Box className="text_scroller_1 scroller_item_1 ul-li">
+          <List>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+          </List>
+          <List aria-hidden="true">
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+            <ListItem>
+              <h3>Free shipping on all orders above £35</h3>
+            </ListItem>
+            <ListItem>
+              <FiberManualRecordIcon sx={{ fontSize: "6px", color: "white" }} />
+            </ListItem>
+          </List>
+        </Box>
+      </Box>
+
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar
+          sx={{
+            backgroundColor: "white",
+            color: "black",
+            boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+            position: "relative",
+            width: "100%",
+          }}
+        >
+          <Container sx={{ maxWidth: "1450px !important", position: "unset" }}>
+            <Toolbar
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                position: "unset",
+                px: '0 !important'
+              }}
+            >
+  <IconButton
+  sx={{display: {md: 'block', lg: 'none'}}}
+                    size="large"
+                    aria-label="show 17 new notifications"
+                    color="black"
+                  >
+                   <svg role="presentation" stroke-width="1.5" focusable="false" width="22" height="22" class="icon icon-hamburger" viewBox="0 0 22 22">
+        <path d="M1 5h20M1 11h20M1 17h20" stroke="currentColor" stroke-linecap="round"></path>
+      </svg>
+                  </IconButton>
+
+              <Link to={"/"}>
+                <CardMedia
+                  component="img"
+                  style={{ height: "auto", width: "60px" }}
+                  image="/logo.png"
+                  alt="Footer Logo"
+                />
+              </Link>
+              <Box sx={{ display: "flex" }} className="desktop-menu-style">
+                <List className="menu-items-style-main" >
+                  {menuItemsList?.map((list, i) => (
+                    <>
+                      <ListItem className="list-item-style" key={i}>
+                        <Link to={list?.href}>
+                          {" "}
+                          <Typography sx={{ fontWeight: "600" }}>
+                            {list?.title}
+                          </Typography>
+                          <KeyboardArrowDownIcon
+                            sx={{ fontSize: "20px", marginLeft: "4px" }}
+                          />
+                        </Link>
+                        <Box className="on-hover-menuitems-box-style">
+                          <Container>
+                            <Box sx={{ display: "flex", py: 3 }}>
+                              <List
+                                sx={{
+                                  display: "flex",
+                                  flex: "auto",
+                                  alignItems: "start",
+                                  flexWrap: "wrap",
+                                  flexDirection: "row",
+                                }}
+                              >
+                                {list?.columns?.map((column, ind) => (
+                                  <ListItem
+                                    key={ind}
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "start",
+                                      mr: 8,
+                                      width: "210px",
+                                      mb: 4,
+                                    }}
+                                  >
+                                    <Link
+                                      to={column?.href}
+                                      className="meni-heading-link-style-set"
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontWeight: "600",
+                                          fontSize: "21px",
+                                        }}
+                                      >
+                                        {column?.title}
+                                      </Typography>
+                                    </Link>
+                                    <List className="inner-menu-list-style-set-s">
+                                      {column?.items?.map((item, indx) => (
+                                        <ListItem>
+                                          {" "}
+                                          <Link to={item?.href}>
+                                            <Typography variant="body1">
+                                              {item?.label}
+                                            </Typography>
+                                          </Link>
+                                        </ListItem>
+                                      ))}
+                                    </List>
+                                  </ListItem>
+                                ))}
+                              </List>
+                            </Box>
+                          </Container>
+                        </Box>
+                      </ListItem>
+                      <Box className="over-bg-set-style-menu"></Box>
+                    </>
+                  ))}
+                </List>
+              </Box>
+
+              <Box>
+                <Box>
+                  {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+              <Badge badgeContent={4} color="error">
+                <MailIcon />
+              </Badge>
+            </IconButton>
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton> */}
+
+                  <IconButton
+                    size="large"
+                    aria-label="show 17 new notifications"
+                    color="black"
+                  >
+                    <svg
+                      role="presentation"
+                      stroke-width="1.5"
+                      focusable="false"
+                      width="22"
+                      height="22"
+                      class="icon icon-search"
+                      viewBox="0 0 22 22"
+                    >
+                      <circle
+                        cx="11"
+                        cy="10"
+                        r="7"
+                        fill="none"
+                        stroke="currentColor"
+                      ></circle>
+                      <path
+                        d="m16 15 3 3"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                    </svg>
+                  </IconButton>
+                  {/* <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={handleProfileMenuOpen}
+              color="inherit"
+            >
+               <PersonIcon/>
+            </IconButton> */}
+                  <NavLink to={"/login"}>
+                    <IconButton
+                      size="large"
+                      aria-label="account of current user"
+                      aria-controls={menuId}
+                      aria-haspopup="true"
+                      color="black"
+                    >
+                      <svg
+                        role="presentation"
+                        stroke-width="1.5"
+                        focusable="false"
+                        width="22"
+                        height="22"
+                        class="icon icon-account"
+                        viewBox="0 0 22 22"
+                      >
+                        <circle
+                          cx="11"
+                          cy="7"
+                          r="4"
+                          fill="none"
+                          stroke="currentColor"
+                        ></circle>
+                        <path
+                          d="M3.5 19c1.421-2.974 4.247-5 7.5-5s6.079 2.026 7.5 5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                        ></path>
+                      </svg>
+                    </IconButton>
+                  </NavLink>
+                  <IconButton
+                    size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <Badge
+                      badgeContent={1}
+                      color="secondary"
+                      sx={{
+                        "& .MuiBadge-badge": {
+                          backgroundColor: "black",
+                          color: "white", // optional: make text readable
+                          fontSize: "0.60rem",
+                          minWidth: "16px",
+                          height: "17px",
+                          fontWeight: "700",
+                        },
+                      }}
+                    >
+                      <svg
+                        role="presentation"
+                        stroke-width="1.5"
+                        focusable="false"
+                        width="22"
+                        height="22"
+                        class="icon icon-cart"
+                        viewBox="0 0 22 22"
+                      >
+                        <path
+                          d="M9.182 18.454a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.818 0Zm7.272 0a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.819 0Z"
+                          fill="currentColor"
+                        ></path>
+                        <path
+                          d="M5.336 6.636H21l-3.636 8.182H6.909L4.636 3H1m8.182 15.454a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.818 0Zm7.272 0a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.819 0Z"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                    </Badge>
+                  </IconButton>
+                </Box>
+              
+              </Box>
+            </Toolbar>
+          </Container>
+        </AppBar>
+        {renderMobileMenu}
+        {renderMenu}
+      </Box>
+    </>
+  );
+}
