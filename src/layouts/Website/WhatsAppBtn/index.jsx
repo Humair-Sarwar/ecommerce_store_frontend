@@ -3,7 +3,7 @@ import React from 'react'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { Link } from 'react-router-dom';
 
-const FixedWhatsAppButton = () => {
+export default function WhatsAppButton() {
   return (
     <>
         <Box className='whatsAppFixedFloatButton'>
@@ -15,5 +15,3 @@ const FixedWhatsAppButton = () => {
     </>
   )
 }
-
-export default FixedWhatsAppButton

@@ -1,23 +1,14 @@
 
-
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Home } from './pages/website/Home'
-import Login from './pages/website/Login'
-import Signup from './pages/website/Signup'
+import { RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import router from './routes'
 
 function App() {
 
   return (
   <>
  <ToastContainer/>
- <BrowserRouter>
-  <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-     <Route path="/signup" element={<Signup />} />
-    </Routes>
-    </BrowserRouter>
+ <RouterProvider router={router}/>
   </>
   )
 }
