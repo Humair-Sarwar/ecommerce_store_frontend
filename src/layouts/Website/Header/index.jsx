@@ -5,12 +5,6 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import { CardMedia, Container, List, ListItem } from "@mui/material";
 
 import Login from "../../../pages/website/Login";
@@ -19,110 +13,52 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import categories from "../../../categories.json";
+import { useEffect } from "react";
+import ResponsiveViewMenu from "../../../components/ResponsiveViewMenu";
 
 export default function Header() {
-  const handleOpenLogin = () => {
-    return <Login />;
-  };
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
 
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
+const headerRef = React.useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        headerRef.current?.classList.add("slidedown");
+      } else {
+        headerRef.current?.classList.remove("slidedown");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Run once in case user reloads mid-scroll
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+
+
+
+
+
+
+
+
+
+  
   const [menuItemsList, setMenuItemList] = React.useState([]);
   React.useEffect(() => {
     setMenuItemList(categories?.menuItems);
   }, []);
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
 
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
+
 
   return (
     <>
@@ -202,8 +138,9 @@ export default function Header() {
             color: "black",
             boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
             position: "relative",
-            width: "100%",
+            width: "100%"
           }}
+           className="header-main-target" ref={headerRef}
         >
           <Container sx={{ maxWidth: "1450px !important", position: "unset" }}>
             <Toolbar
@@ -215,16 +152,41 @@ export default function Header() {
                 px: '0 !important'
               }}
             >
-  <IconButton
-  sx={{display: {md: 'block', lg: 'none'}}}
+   <Box className='left-menu-icon-setup'>
+
+    <ResponsiveViewMenu/>
+    
+
+
+                     <IconButton
                     size="large"
-                    aria-label="show 17 new notifications"
                     color="black"
                   >
-                   <svg role="presentation" stroke-width="1.5" focusable="false" width="22" height="22" class="icon icon-hamburger" viewBox="0 0 22 22">
-        <path d="M1 5h20M1 11h20M1 17h20" stroke="currentColor" stroke-linecap="round"></path>
-      </svg>
+                    <svg
+                      role="presentation"
+                      stroke-width="1.5"
+                      focusable="false"
+                      width="22"
+                      height="22"
+                      class="icon icon-search"
+                      viewBox="0 0 22 22"
+                    >
+                      <circle
+                        cx="11"
+                        cy="10"
+                        r="7"
+                        fill="none"
+                        stroke="currentColor"
+                      ></circle>
+                      <path
+                        d="m16 15 3 3"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                    </svg>
                   </IconButton>
+   </Box>
 
               <Link to={"/"}>
                 <CardMedia
@@ -329,8 +291,8 @@ export default function Header() {
 
                   <IconButton
                     size="large"
-                    aria-label="show 17 new notifications"
                     color="black"
+                    className="desktop-search-icon-menu-style"
                   >
                     <svg
                       role="presentation"
@@ -356,22 +318,11 @@ export default function Header() {
                       ></path>
                     </svg>
                   </IconButton>
-                  {/* <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-               <PersonIcon/>
-            </IconButton> */}
+                  
                   <NavLink to={"/login"}>
                     <IconButton
                       size="large"
                       aria-label="account of current user"
-                      aria-controls={menuId}
                       aria-haspopup="true"
                       color="black"
                     >
@@ -404,7 +355,6 @@ export default function Header() {
                     size="large"
                     edge="end"
                     aria-label="account of current user"
-                    aria-controls={menuId}
                     aria-haspopup="true"
                     color="inherit"
                   >
@@ -451,8 +401,6 @@ export default function Header() {
             </Toolbar>
           </Container>
         </AppBar>
-        {renderMobileMenu}
-        {renderMenu}
       </Box>
     </>
   );

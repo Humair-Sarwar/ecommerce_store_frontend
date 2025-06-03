@@ -4,6 +4,12 @@
   box-sizing: border-box;
   font-family: sans-serif;
 }
+html,
+body {
+  scroll-behavior: smooth !important;
+  overflow-x: hidden;
+}
+
 a {
   text-decoration: none;
 }
@@ -587,7 +593,7 @@ a {
   left: 0;
   top: 100%;
   width: 100%;
-  height: 90vh;
+  height: 95vh;
   background-color: rgba(0, 0, 0, 0.441);
   z-index: 1;
   opacity: 0;
@@ -645,4 +651,69 @@ a {
 }
 .inner-menu-list-style-set-s li a:hover {
   color: black !important;
+}
+
+.header-main-target {
+  padding: 4px 0;
+}
+.header-main-target.slidedown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  animation: slidedown 0.4s forwards;
+}
+@keyframes slidedown {
+  from {
+    top: -250px;
+  }
+  to {
+    top: 0;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+}
+
+.left-menu-icon-setup {
+  display: none;
+}
+
+.css-cyqh1t-MuiPaper-root-MuiDrawer-paper {
+  border-radius: 5px !important;
+  height: 96vh !important;
+  width: auto;
+  left: 10px !important;
+  top: 10px !important;
+  padding: 20px;
+}
+
+
+
+
+
+
+.responsive-menu-list-style .menu-item-list-l{
+ display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.responsive-menu-list-style .menu-item-list-l a{
+  color: black;
+  text-wrap: nowrap;
+ 
+}
+
+.move-next-btn-style{
+  background-color: #e8e8e8 !important;
+  border-radius: 50% !important;
+  color: black !important;
+  transition: 0.3s;
+  padding: 9px !important;
+}
+
+.move-next-btn-style:hover{
+  background-color: black !important;
+  color: white !important;
 }
