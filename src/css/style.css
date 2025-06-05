@@ -151,7 +151,9 @@ a {
   text-align: center;
 }
 .box-features-style img {
-  height: 250px;
+  height: auto;
+  width: 100%;
+  object-fit: cover;
   transition: 0.6s;
 }
 .arrow-btn-style {
@@ -186,7 +188,6 @@ a {
   background-color: white;
   border-radius: 7px;
   padding: 15px;
-  margin-right: 23px;
 }
 
 .product-box-style .upper-img-box {
@@ -199,6 +200,8 @@ a {
   height: 100%;
   width: 100%;
   object-fit: contain;
+  aspect-ratio: 4 / 3;
+      object-position: center;
 }
 
 .product-box-style .upper-img-box .add-btn {
@@ -329,7 +332,7 @@ a {
   border-radius: 25px;
 }
 
-.inner-heading {
+.videos-box-container .inner-heading {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -369,15 +372,16 @@ a {
 
 .brands-box-style {
   background-color: white;
-  padding: 10px;
-  height: 130px;
+  padding: 2.75rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .brands-box-style img {
-  height: 40px;
+  height: auto;
+  width: 100%;
+  object-fit: contain;
 }
 
 .footer-social-icons-style {
@@ -405,50 +409,62 @@ a {
   color: black;
 }
 
-.inputFieldCustom .css-1kimwvo-MuiInputBase-input-MuiFilledInput-input {
-  background-color: white !important;
-  border-radius: 10px !important;
+.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input {
+  background-color: white;
+  border-radius: 10px;
 
-  border: 1px solid rgb(26 26 26 / 12%) !important;
+  border: 1px solid rgb(26 26 26 / 12%);
 }
 
-.inputFieldCustom .css-1khkrp5-MuiInputBase-root-MuiFilledInput-root {
-  background-color: transparent !important;
+
+.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input::before {
+  display: none;
+
 }
 
-.inputFieldCustom .css-1khkrp5-MuiInputBase-root-MuiFilledInput-root::before {
-  display: none !important;
+.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input:focus {
+  outline: auto;
 }
 
-.inputFieldCustom .css-1kimwvo-MuiInputBase-input-MuiFilledInput-input:focus {
-  outline: auto !important;
-}
-
-.inputFieldCustom .css-hwvjlm-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+.inputFieldCustom .css-eok8s2-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
   color: black !important;
 }
 
-.inputFieldCustom .css-1khkrp5-MuiInputBase-root-MuiFilledInput-root::after {
-  border: 0 !important;
+.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root::after {
+  border: 0;
+ 
+}
+.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root:hover{
+  background-color: transparent;
+}
+.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root::before{
+    border: 0 !important;
 }
 
-.inputFieldCustom .css-1kimwvo-MuiInputBase-input-MuiFilledInput-input {
-  padding-top: 22px !important;
+.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root{
+  background-color: transparent;
+}
+.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input {
+  padding-top: 22px;
 }
 
 .footer-arrow-email-x-style {
-  position: absolute !important;
-  background-color: rgb(26 26 26 / 10%) !important;
+  position: absolute;
+  background-color: rgb(26 26 26 / 10%);
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
-  border-radius: 50% !important;
-  min-width: 25px !important;
-  height: 25px !important;
+  border-radius: 50%;
+  min-width: 25px;
+  height: 25px;
   padding: 1px;
-  color: black !important;
+  color: black;
   transition: 0.5s;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer-arrow-email-x-style:hover {
@@ -477,10 +493,17 @@ a {
   justify-content: center;
   align-items: center;
 }
-
+.p-listing-p-heading-main{
+  font-size: 30px !important;
+  font-weight: 600 !important;
+}
+.categories-list-row-target .react-multi-carousel-list{
+  justify-content: center !important;
+}
 .slide-carousol-service-box-set .react-multiple-carousel__arrow {
   border: 1px solid rgb(26 26 26 / 12%) !important;
   background: #f0f0f0 !important;
+
 }
 
 .slide-carousol-service-box-set .react-multiple-carousel__arrow::before {
@@ -716,4 +739,564 @@ a {
 .move-next-btn-style:hover{
   background-color: black !important;
   color: white !important;
+}
+
+.mobile-view-add-cart-btn{
+  border: 1px solid #ccc;
+  background-color: #f0f0f0 !important;
+  border-radius: 50% !important;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+
+
+  transition: 0.4s;
+  position: absolute !important;
+  bottom: -1px;
+  right: 0;
+}
+
+
+.back-move-menu-list-btn{
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.menu-inner-mobile-list-style{
+  color: black;
+}
+.menu-inner-mobile-list-style-2{
+  color: rgb(26 26 26 / 70%);
+}
+
+
+
+
+.search-modal-panel-style-set .css-y7ab46-MuiPaper-root-MuiDrawer-paper{
+  border-radius: 15px !important;
+  right: 10px !important;
+  top: 10px !important;
+  height: 97% !important;
+  margin-left: 10px;
+}
+
+.inner-modal-search-view-set .search-row{
+  position: relative;
+}
+.inner-modal-search-view-set .search-row input{
+  width: 100%;
+  font-size: 30px;
+  font-weight: 600;
+  border: 0;
+  border-bottom: 2px solid #dddddd;
+  padding: 10px 0;
+  outline: none;
+  transition: 0.2s;
+  padding-right: 90px;
+}
+.inner-modal-search-view-set .search-row input:focus-visible{
+  border-bottom: 2px solid black;
+}
+.inner-modal-search-view-set .search-row input::placeholder{
+  color: #8c8c8c;
+}
+
+.inner-modal-search-view-set .close-modal-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+
+.inner-modal-search-view-set .right-clear-close-btn-style{
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+
+
+.title-row-box-w-btn{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link-all-view-p{
+  display: flex;
+  align-items: center;
+  color: black;
+}
+
+.link-all-view-p .arrow-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #dbdbdb;
+  color: black;
+  margin-left: 10px;
+  transition: 0.4s;
+}
+
+.link-all-view-p .text-l{
+  position: relative;
+}
+.link-all-view-p .text-l::before{
+  content: '';
+  width: 0%;
+  height: 1px;
+  background-color: black;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transition: 0.4s;
+}
+
+.link-all-view-p:hover .text-l::before{
+  width: 100%;
+}
+
+.link-all-view-p:hover .arrow-btn{
+  background-color: black;
+  color: white;
+}
+
+
+
+
+.search-modal-panel-style-set .css-4nmryk-MuiBackdrop-root-MuiModal-backdrop, .mini-cart-drawer-panel-style .css-4nmryk-MuiBackdrop-root-MuiModal-backdrop, .mini-bottom-cart-panel-style-box-set .css-4nmryk-MuiBackdrop-root-MuiModal-backdrop{
+    cursor: url('/cursor-close.svg') 32 32,auto;
+}
+
+
+
+.mini-cart-drawer-panel-style .css-y7ab46-MuiPaper-root-MuiDrawer-paper{
+   border-radius: 15px !important;
+  right: 10px !important;
+  top: 10px !important;
+  height: 97% !important;
+  margin-left: 10px;
+}
+
+
+
+.mini-cart-product-list-style{
+  display: flex;
+  align-items: center;
+}
+
+.mini-cart-product-list-style .left-cart-image-side{
+  height: 130px;
+}
+.mini-cart-product-list-style .left-cart-image-side img{
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.mini-cart-product-list-style .right-cart-content-side{
+  display: flex;
+  align-items: center;
+}
+.mini-cart-product-list-style .right-cart-content-side .title-content{
+  margin: 0 12px;
+}
+.mini-cart-product-list-style .right-cart-content-side .title-content a{
+  color: black;
+}
+.mini-cart-product-list-style .right-cart-content-side .title-content h3 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 25px;
+  display: inline; /* Ensures background spans text width only */
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s ease-in-out;
+}
+
+.mini-cart-product-list-style .right-cart-content-side .title-content h3:hover {
+  background-size: 100% 1px;
+}
+
+.mini-cart-product-list-style .right-cart-content-side .title-content p{
+  color: rgb(26 26 26 / 70%);
+  font-size: 15px;
+}
+.mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row{
+  margin-bottom: 10px;
+}
+.mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row .dec{
+  background-color: #f0f0f0c0;
+  color: black;
+  border-radius: 8px;
+  border-top-left-radius: 35px;
+   border-bottom-left-radius: 35px;
+  min-width: 40px !important;
+  border: 1px solid #dfdede;
+}
+.mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row .inc{
+  background-color: #f0f0f0c0;
+  color: black;
+  border-radius: 8px;
+  border-top-right-radius: 35px;
+   border-bottom-right-radius: 35px;
+  min-width: 40px !important;
+  border: 1px solid #dfdede;
+}
+.mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row input {
+  width: 40px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #dfdede;
+  outline: none;
+  margin: 0 5px;
+  text-align: center;
+}
+
+.mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row input::-webkit-outer-spin-button,
+.mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mini-cart-product-list-style .right-cart-content-side .rmv-btn-style{
+  font-size: 12px;
+
+  display: inline; /* Ensures background spans text width only */
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.mini-cart-product-list-style .right-cart-content-side .rmv-btn-style:hover{
+   background-size: 100% 1px;
+}
+
+
+.mini-cart-top-section-style{
+  overscroll-behavior-y: contain;
+   
+    overflow-y: auto;
+
+    height: calc(100vh - 240px);
+}
+
+.mini-cart-footer-section-style{
+  
+  border-top: 1px solid #d9d9d9;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.shipping-link-page-style, .add-order-note-btn{
+  color: rgb(26 26 26 / 70%);
+  position: relative;
+    transition: 0.3s;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.shipping-link-page-style::after, .add-order-note-btn::after{
+  content: '';
+  height: 1px;
+  width: 100%;
+  transition: 0.3s;
+  background-color: rgb(26 26 26 / 70%);
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+}
+.shipping-link-page-style:hover::after, .add-order-note-btn:hover::after{
+  width: 0%;
+}
+.shipping-link-page-style:hover, .add-order-note-btn:hover{
+  color: black;
+}
+
+
+
+.add-note-box-style-target{
+   border-top: 1px solid #d9d9d9;
+   position: absolute;
+   bottom: 101%;
+   left: 0;
+   background-color: white;
+   width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.note-textarea-box-style .css-113d811-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
+  color: black !important;
+}
+.note-textarea-box-style .css-zsp0bh-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline{
+  border-color: black !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.mini-bottom-cart-panel-style-box-set .css-gq1um1-MuiPaper-root-MuiDrawer-paper{
+  width: 500px;
+  border-radius: 5px;
+  bottom: 15px;
+  right: 15px;
+  margin-left: auto;
+}
+
+
+
+
+
+
+
+
+
+.banner-image-style{
+    overflow-wrap: anywhere;
+    object-fit: cover;
+    object-position: center;
+    transform-origin: bottom;
+    border-radius: inherit;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    grid-area: 1 / 1 / span 3 / span 3;
+    width: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    position: relative;
+}
+
+
+
+
+.featured-product-box-target{
+  position: absolute;
+  right: 30px;
+  bottom: 50px;
+
+}
+
+.featured-product-box-target .f-product-box{
+  border-radius: 5px;
+  background: rgb(26 26 26 / .2);
+  padding: 15px;
+  display: inline-block;
+  backdrop-filter: blur(80px);
+}
+
+.featured-product-box-target .f-product-box img{
+  border-radius: 7px !important;
+  height: auto;
+  object-fit: contain;
+  width: 4rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.p-listing-page-left-menu-target{
+  width: 460px;
+  position: sticky !important;
+  top: 0 !important;
+ 
+
+
+  align-self: flex-start; /* Needed when inside flex container */
+  height: fit-content; /* Ensure proper sizing */
+}
+
+
+
+ 
+
+.css-tj8d99-MuiSwitch-track{
+  background-color: rgba(20, 20, 20, 0.15) !important;
+}
+.css-161ms7l-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track{
+  background-color: black !important;
+}
+
+.css-17jyosd-MuiSwitch-thumb{
+  background-color: white !important;
+}
+
+
+
+
+
+
+
+.accordion-expand-left-filter-target .css-yfrx4k-MuiAccordionSummary-content.Mui-expanded {
+    margin: 12px 0 !important;
+}
+.accordion-expand-left-filter-target .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
+  background-color: #dbdbdb;
+  color: black;
+  border-radius: 50%;
+  transition: 0.3s !important;
+}
+.accordion-expand-left-filter-target:hover .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
+  background-color: black;
+  color: white;
+}
+.accordion-expand-left-filter-target .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper.Mui-expanded{
+  background-color: black;
+  color: white;
+  border-radius: 50%;
+}
+
+
+
+
+.accordion-expand-left-filter-target .css-r64h58-MuiSlider-rail{
+  background-color: #b3b3b3 !important;
+}
+
+.accordion-expand-left-filter-target .css-xvk2i-MuiSlider-track{
+  background-color: black !important;
+  border: 1px solid black !important;
+}
+
+.accordion-expand-left-filter-target .css-1xcmt9q-MuiSlider-thumb{
+  background-color: black !important;
+  width: 15px !important;
+    height: 15px !important;
+}
+
+
+
+
+
+
+.range-input-target {
+  width: 120px;
+  padding: 12px 12px 12px 27px;
+  border-radius: 8px;
+  border: 1px solid #dfdede;
+  margin: 0 5px;
+  text-align: end;
+  font-size: 14px;
+  
+}
+
+.range-input-target::-webkit-outer-spin-button,
+.range-input-target::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.range-inputs-target-set .currency-target{
+  position: absolute;
+  top: 50%;
+  left: 17px;
+  transform: translateY(-50%);
+    font-size: 14px !important;
+}
+
+.left-slt-filters-target .css-hb102q-MuiPaper-root-MuiAccordion-root::before{
+  position: static !important;
+}
+
+.left-slt-filters-target .css-hb102q-MuiPaper-root-MuiAccordion-root.Mui-expanded{
+  margin: 0 !important;
+}
+
+
+
+.custom-check-box-style-set {
+  margin-bottom: 13px;
+}
+.custom-check-box-style-set .checkbox-container {
+    align-items: baseline;
+    display: flex;
+}
+
+.custom-check-box-style-set .checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    background: rgb(26 26 26 / .15) url('/checkmark.svg') no-repeat center;
+    background-size: 0; /* Hide checkmark by default */
+    border-radius: 2px;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease-in-out, background-size 0.2s ease-in-out;
+    position: relative;
+    top: .1875rem;
+    box-shadow: inset 1px 1px 2px #0000001a;
+    cursor: pointer;
+}
+
+.custom-check-box-style-set .checkbox:checked {
+    background-color: black; /* or your desired fill color */
+    background-size: 0.6rem; /* Show checkmark */
+}
+
+.custom-check-box-style-set .checkbox~label {
+    opacity: 0.7;
+    padding-inline-start: 0.75rem;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+.filter-sort-target-btn-res{
+  position: fixed !important;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* padding: 10px 10px !important; */
+  display: none !important;
 }

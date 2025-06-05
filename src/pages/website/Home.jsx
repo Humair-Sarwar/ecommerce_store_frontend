@@ -4,8 +4,12 @@ import { Box, Button, Grid, List, ListItem, Typography } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import AddIcon from "@mui/icons-material/Add";
 
+
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { Link } from "react-router";
+import MiniBottomCartModal from "../../components/MiniBottomCartModal";
+import OrderProcessingSection from "../../components/OrderProcessingSection";
 
 export const Home = () => {
   const responsive = {
@@ -109,7 +113,7 @@ export const Home = () => {
               alt=""
             />
             <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'relative' }}
+              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
               Smart Phones
             </Typography>
@@ -120,7 +124,7 @@ export const Home = () => {
           <Box className="box-features-style">
             <img src="/Laptop-collection-tile-Eclat-UK_1.png" alt="" />
             <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'relative' }}
+              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
               Smart Phones
             </Typography>
@@ -131,7 +135,7 @@ export const Home = () => {
           <Box className="box-features-style">
             <img src="/Tablets-Products-Eclat-UK.png" alt="" />
             <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'relative' }}
+              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
               Smart Phones
             </Typography>
@@ -142,7 +146,7 @@ export const Home = () => {
           <Box className="box-features-style">
             <img src="/Gaming-Consoles-Collection-Tile-Eclat-UK_1.png" alt="" />
             <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'relative' }}
+              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
               Smart Phones
             </Typography>
@@ -153,7 +157,7 @@ export const Home = () => {
           <Box className="box-features-style">
             <img src="/Audio-Solutions-Products-Eclat-UK.png" alt="" />
             <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'relative' }}
+              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
               Smart Phones
             </Typography>
@@ -164,7 +168,7 @@ export const Home = () => {
           <Box className="box-features-style">
             <img src="/Smart-Watches-Products-Eclat-UK.png" alt="" />
             <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'relative' }}
+              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
               Smart Phones
             </Typography>
@@ -176,9 +180,14 @@ export const Home = () => {
       </Box>
 
       <Box sx={{ backgroundColor: "#f0f0f0", py: 5, px: 4 }}>
-        <Typography component={"h2"} className="main-h-heading-style-set">
+        <Box className='title-row-box-w-btn'>
+          <Typography component={"h2"} className="main-h-heading-style-set">
           Latest in Tech
         </Typography>
+        <Link to={'/product-listing-page'} className="link-all-view-p"><span className="text-l">View all</span> <Box className='arrow-btn'><KeyboardArrowRightIcon sx={{fontSize: '15px'}}/></Box></Link>
+
+        
+        </Box>
 
         <Grid container spacing={3}>
           <Grid size={12} my={4}>
@@ -186,16 +195,20 @@ export const Home = () => {
               responsive={responsive2}
               className="slide-carousol-service-box-set"
             >
-              <Box className="product-box-style">
+              <Box className="product-box-style" sx={{mr: 3}}>
                 <Box className="upper-img-box">
                   <img
                     src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
                     alt=""
                   />
-                  <Button className="add-btn">
-                    <AddIcon sx={{ fontSize: "14px", fontWeight: "600" }} />{" "}
-                    Quick add
-                  </Button>
+                  <MiniBottomCartModal/>
+                  <Box className="mobile-view-add-cart-btn">
+                    <svg role="presentation" fill="none" stroke-width="1.5" focusable="false" width="16" height="15" class="icon icon-quick-buy-cart" viewBox="0 0 16 15">
+            <path d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="5.955" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+            <circle cx="11.5" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+          </svg>
+                  </Box>
                   <Box className="badge-style-discount">Save £199.00</Box>
                 </Box>
                 <Box sx={{ mx: 2, mb: 2 }}>
@@ -235,16 +248,20 @@ export const Home = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box className="product-box-style">
+              <Box className="product-box-style" sx={{mr: 3}}>
                 <Box className="upper-img-box">
                   <img
                     src="/apple-iphone-16-pro-unlocked-1tb-smartphone-with-apple-intelligence-1.png"
                     alt=""
                   />
-                  <Button className="add-btn">
-                    <AddIcon sx={{ fontSize: "14px", fontWeight: "600" }} />{" "}
-                    Quick add
-                  </Button>
+                   <MiniBottomCartModal/>
+                     <Box className="mobile-view-add-cart-btn">
+                    <svg role="presentation" fill="none" stroke-width="1.5" focusable="false" width="16" height="15" class="icon icon-quick-buy-cart" viewBox="0 0 16 15">
+            <path d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="5.955" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+            <circle cx="11.5" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+          </svg>
+                  </Box>
                   <Box className="badge-style-discount">Save £199.00</Box>
                 </Box>
                 <Box sx={{ mx: 2, mb: 2 }}>
@@ -284,16 +301,20 @@ export const Home = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box className="product-box-style">
+              <Box className="product-box-style" sx={{mr: 3}}>
                 <Box className="upper-img-box">
                   <img
                     src="/apple-watch-series-10-gps-42mm-rose-gold-aluminium-case-smartwatch-1.png"
                     alt=""
                   />
-                  <Button className="add-btn">
-                    <AddIcon sx={{ fontSize: "14px", fontWeight: "600" }} />{" "}
-                    Quick add
-                  </Button>
+                 <MiniBottomCartModal/>
+                     <Box className="mobile-view-add-cart-btn">
+                    <svg role="presentation" fill="none" stroke-width="1.5" focusable="false" width="16" height="15" class="icon icon-quick-buy-cart" viewBox="0 0 16 15">
+            <path d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="5.955" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+            <circle cx="11.5" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+          </svg>
+                  </Box>
                   <Box className="badge-style-discount">Save £199.00</Box>
                 </Box>
                 <Box sx={{ mx: 2, mb: 2 }}>
@@ -333,16 +354,20 @@ export const Home = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box className="product-box-style">
+              <Box className="product-box-style" sx={{mr: 3}}>
                 <Box className="upper-img-box">
                   <img
                     src="/apple-airpods-4-with-adaptive-audio-usb-c-active-noise-cancellation-wireless-earbuds-image-7.png"
                     alt=""
                   />
-                  <Button className="add-btn">
-                    <AddIcon sx={{ fontSize: "14px", fontWeight: "600" }} />{" "}
-                    Quick add
-                  </Button>
+                 <MiniBottomCartModal/>
+                     <Box className="mobile-view-add-cart-btn">
+                    <svg role="presentation" fill="none" stroke-width="1.5" focusable="false" width="16" height="15" class="icon icon-quick-buy-cart" viewBox="0 0 16 15">
+            <path d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="5.955" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+            <circle cx="11.5" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+          </svg>
+                  </Box>
                   <Box className="badge-style-discount">Save £199.00</Box>
                 </Box>
                 <Box sx={{ mx: 2, mb: 2 }}>
@@ -382,16 +407,20 @@ export const Home = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box className="product-box-style">
+              <Box className="product-box-style" sx={{mr: 3}}>
                 <Box className="upper-img-box">
                   <img
                     src="/apple-airpods-4-with-adaptive-audio-usb-c-active-noise-cancellation-wireless-earbuds-image-7.png"
                     alt=""
                   />
-                  <Button className="add-btn">
-                    <AddIcon sx={{ fontSize: "14px", fontWeight: "600" }} />{" "}
-                    Quick add
-                  </Button>
+                 <MiniBottomCartModal/>
+                     <Box className="mobile-view-add-cart-btn">
+                    <svg role="presentation" fill="none" stroke-width="1.5" focusable="false" width="16" height="15" class="icon icon-quick-buy-cart" viewBox="0 0 16 15">
+            <path d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="5.955" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+            <circle cx="11.5" cy="12.682" r=".5" fill="#252627" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+          </svg>
+                  </Box>
                   <Box className="badge-style-discount">Save £199.00</Box>
                 </Box>
                 <Box sx={{ mx: 2, mb: 2 }}>
@@ -436,7 +465,7 @@ export const Home = () => {
         </Grid>
       </Box>
 
-      <Box sx={{ pt: 2, pb: 2, backgroundColor: "#f0f0f0" }}>
+      <Box sx={{ pt: 2, pb: 2, backgroundColor: "#f0f0f0", px: 4 }}>
         <Grid container spacing={5}>
           <Grid item xs={12} md={12} size={12} sx={{ textAlign: "center" }}>
             <Box class="set-red-heading-setting">
@@ -492,6 +521,7 @@ export const Home = () => {
       >
         <Grid container spacing={3}>
           <Grid size={{ sm: 12, md: 6 }}>
+            <Link to={'/'}>
             <Box class="video-1">
               <Typography component={"h2"} className="inner-heading">
                 iPad Pro: Thinpossible
@@ -511,11 +541,12 @@ export const Home = () => {
                 />
                 <img src="//eclattech.co.uk/cdn/shop/files/preview_images/75984a3b4d7844e287fa69c89e64528c.thumbnail.0000000000_small.jpg?v=1716052531" />
               </video>
-            </Box>
+            </Box></Link>
           </Grid>
           <Grid size={{ sm: 12, md: 6 }}>
             <Grid container spacing={3}>
               <Grid size={6}>
+                <Link to={'/'}>
                 <Box class="img-box">
                   <Typography component={"h2"} className="inner-heading">
                     Airpods 4th Gen
@@ -531,10 +562,12 @@ export const Home = () => {
                     class="content-over-media__media zoom-image"
                   ></img>
                 </Box>
+                </Link>
               </Grid>
 
               <Grid size={6}>
-                <Box class="video-2">
+               <Link to={'/'}>
+                 <Box class="video-2">
                   <Typography component={"h2"} className="inner-heading">
                     PS5 Pro: Nex Gen Gaming
                   </Typography>
@@ -547,9 +580,11 @@ export const Home = () => {
                     title="PlayStation 5 Pro Console - Launch Trailer"
                   ></iframe>
                 </Box>
+               </Link>
               </Grid>
               <Grid size={12}>
-                <Box class="video-2">
+                <Link to={'/'}>
+                  <Box class="video-2">
                   <Typography component={"h2"} className="inner-heading">
                     Latest in Smartwatches
                   </Typography>
@@ -569,6 +604,7 @@ export const Home = () => {
                     <img src="//eclattech.co.uk/cdn/shop/files/preview_images/da2efb245789496a804b5fa00fc86a5e.thumbnail.0000000000_small.jpg?v=1729620199" />
                   </video>
                 </Box>
+                </Link>
               </Grid>
             </Grid>
           </Grid>
@@ -635,6 +671,8 @@ export const Home = () => {
           </Grid>
         </Grid>
       </Box>
+
+      <OrderProcessingSection/>
     </>
   );
 };

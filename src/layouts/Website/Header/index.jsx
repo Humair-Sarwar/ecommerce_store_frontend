@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
+
 import { CardMedia, Container, List, ListItem } from "@mui/material";
 
 import Login from "../../../pages/website/Login";
@@ -15,6 +15,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import categories from "../../../categories.json";
 import { useEffect } from "react";
 import ResponsiveViewMenu from "../../../components/ResponsiveViewMenu";
+import SearchModal from "../../../components/SearchModal";
+import MiniAddToCartModal from "../../../components/MiniAddToCartModal";
 
 export default function Header() {
 
@@ -158,34 +160,8 @@ const headerRef = React.useRef(null);
     
 
 
-                     <IconButton
-                    size="large"
-                    color="black"
-                  >
-                    <svg
-                      role="presentation"
-                      stroke-width="1.5"
-                      focusable="false"
-                      width="22"
-                      height="22"
-                      class="icon icon-search"
-                      viewBox="0 0 22 22"
-                    >
-                      <circle
-                        cx="11"
-                        cy="10"
-                        r="7"
-                        fill="none"
-                        stroke="currentColor"
-                      ></circle>
-                      <path
-                        d="m16 15 3 3"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                    </svg>
-                  </IconButton>
+                  <SearchModal/>
+                
    </Box>
 
               <Link to={"/"}>
@@ -273,7 +249,7 @@ const headerRef = React.useRef(null);
               </Box>
 
               <Box>
-                <Box>
+                <Box sx={{display: 'flex'}}>
                   {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
@@ -289,35 +265,9 @@ const headerRef = React.useRef(null);
               </Badge>
             </IconButton> */}
 
-                  <IconButton
-                    size="large"
-                    color="black"
-                    className="desktop-search-icon-menu-style"
-                  >
-                    <svg
-                      role="presentation"
-                      stroke-width="1.5"
-                      focusable="false"
-                      width="22"
-                      height="22"
-                      class="icon icon-search"
-                      viewBox="0 0 22 22"
-                    >
-                      <circle
-                        cx="11"
-                        cy="10"
-                        r="7"
-                        fill="none"
-                        stroke="currentColor"
-                      ></circle>
-                      <path
-                        d="m16 15 3 3"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                    </svg>
-                  </IconButton>
+                 <Box className='desktop-search-icon-menu-style'>
+                  <SearchModal/>
+                 </Box>
                   
                   <NavLink to={"/login"}>
                     <IconButton
@@ -351,50 +301,7 @@ const headerRef = React.useRef(null);
                       </svg>
                     </IconButton>
                   </NavLink>
-                  <IconButton
-                    size="large"
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <Badge
-                      badgeContent={1}
-                      color="secondary"
-                      sx={{
-                        "& .MuiBadge-badge": {
-                          backgroundColor: "black",
-                          color: "white", // optional: make text readable
-                          fontSize: "0.60rem",
-                          minWidth: "16px",
-                          height: "17px",
-                          fontWeight: "700",
-                        },
-                      }}
-                    >
-                      <svg
-                        role="presentation"
-                        stroke-width="1.5"
-                        focusable="false"
-                        width="22"
-                        height="22"
-                        class="icon icon-cart"
-                        viewBox="0 0 22 22"
-                      >
-                        <path
-                          d="M9.182 18.454a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.818 0Zm7.272 0a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.819 0Z"
-                          fill="currentColor"
-                        ></path>
-                        <path
-                          d="M5.336 6.636H21l-3.636 8.182H6.909L4.636 3H1m8.182 15.454a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.818 0Zm7.272 0a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.819 0Z"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        ></path>
-                      </svg>
-                    </Badge>
-                  </IconButton>
+                  <MiniAddToCartModal/>
                 </Box>
               
               </Box>

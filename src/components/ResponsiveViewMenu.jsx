@@ -3,6 +3,10 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import { Button, IconButton, List, ListItem, Typography } from "@mui/material";
 import { Link } from "react-router";
+import categories from "../categories.json";
+import { useEffect } from "react";
+import { useState } from "react";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
 export default function ResponsiveViewMenu() {
   const [open, setOpen] = React.useState(false);
@@ -11,17 +15,42 @@ export default function ResponsiveViewMenu() {
     setOpen(newOpen);
   };
 
+  const [menuLists1, setMenuLists1] = useState([]);
+  const [menuLists2, setMenuLists2] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  
+  useEffect(()=>{
+
+    setMenuLists1(categories?.menuItems);
+    
+  }, [])
+  const handleOpenNext = (data)=>{
+    setMenuLists2(data.columns);
+    setSelectedCategory(data?.title);
+    setMenuLists1([]);
+  }
+const handletoggleDrawerClose = () => {
+  setOpen(false);
+  setMenuLists1(categories?.menuItems);
+}
+
+const handleBackCategory = () => {
+  setMenuLists1(categories?.menuItems);
+}
+  
   const DrawerList = (
-    <Box sx={{ width: 270 }} role="presentation" onClick={toggleDrawer(false)}>
-      <Button
-        onClose={toggleDrawer(false)}
+    <Box sx={{ width: 270 }} role="presentation">
+     <Box sx={{ backgroundColor: 'white', height: '40px'}}>
+       <Button
+        onClick={handletoggleDrawerClose}
         sx={{
           border: "1px solid #ccc",
           borderRadius: "50%",
           height: "35px",
           minWidth: "25px",
           color: "black",
-          mb: 1
+          mb: 1,
+          
         }}
       >
         <svg
@@ -39,140 +68,73 @@ export default function ResponsiveViewMenu() {
           ></path>
         </svg>
       </Button>
-      <Box sx={{height: '82vh', overflowY: 'auto'}}>
+     </Box>
+      {menuLists1.length > 0 ? <Box sx={{height: '83vh', overflowY: 'auto'}}>
         <List className="responsive-menu-list-style">
-            <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
+            {menuLists1?.map((list1, i)=>(
+              <ListItem key={i} className="menu-item-list-l">
+                <Link to={list1?.href}>
+                <Typography sx={{fontWeight: '600'}}>{list1?.title}</Typography></Link><Button onClick={()=>handleOpenNext(list1)} sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
         <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
       </svg></Button>
             </ListItem>
+            ))}
 
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
-
-
-             <ListItem className="menu-item-list-l">
-                <Link to={'/'}>
-                <Typography sx={{fontWeight: '600'}}>Mobile & Computing</Typography></Link><Button sx={{height: '22px', minWidth: '5px'}} className="move-next-btn-style"><svg role="presentation" focusable="false" width="5" height="8" class="icon icon-chevron-right-small reverse-icon" viewBox="0 0 5 8">
-        <path d="m.75 7 3-3-3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path>
-      </svg></Button>
-            </ListItem>
+          
         </List>
-      </Box>
+      </Box> : <Box sx={{height: '83vh', overflowY: 'auto'}}>
+        <List className="responsive-menu-list-style">
+          <Box className='back-move-menu-list-btn' onClick={handleBackCategory}><KeyboardArrowLeftIcon sx={{fontSize: '20px', mr: 1}}/> {selectedCategory}</Box>
+            {menuLists2?.map((list2, ind)=>(
+              <>
+                                  <ListItem
+                                    key={ind}
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "start",
+                                      
+                                      mb: 1,
+                                      pl: 0
+                                    }}
+                                  >
+                                    <Link
+                                      to={list2?.href}
+                                      className="menu-inner-mobile-list-style"
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontWeight: "600",
+                                          fontSize: "21px",
+                                        }}
+                                      >
+                                     {list2?.title}
+                                      </Typography>
+                                    </Link>
+                                    <List>
+                                        {list2?.items?.map((listLabel, index)=>(
+                                        <ListItem key={index}>
+                                          {" "}
+                                          <Link to={listLabel?.href} className="menu-inner-mobile-list-style-2">
+                                            <Typography variant="body1">
+                                             {listLabel?.label}
+                                            </Typography>
+                                          </Link>
+                                        </ListItem>
+                                        ))}
+                                       
+                                    
+                                    </List>
+                                  </ListItem>     
+              </>
+            ))}
+
+          
+        </List>
+      </Box>}
+      
+
+       
     </Box>
   );
 
