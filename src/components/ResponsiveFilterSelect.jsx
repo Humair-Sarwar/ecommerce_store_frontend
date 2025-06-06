@@ -86,7 +86,7 @@ export default function ResponsiveFilterSelect() {
 
   <Box className=''>
         
-      <Box sx={{py: 2, borderTop: '1px solid rgb(26 26 26 / 12%)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}><Typography sx={{fontWeight: '600'}}>In stock only</Typography><CustomizedSwitches/></Box>
+      <Box className='switch-filter-r-style-set-l' sx={{py: 2, borderTop: '1px solid rgb(26 26 26 / 12%)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}><Typography sx={{fontWeight: '600'}}>In stock only</Typography><CustomizedSwitches/></Box>
 
 
 
@@ -380,7 +380,7 @@ export default function ResponsiveFilterSelect() {
       <Drawer
         open={open}
         onClose={toggleDrawer(false)}
-        sx={{ borderRadius: "15px" }}
+        className='responsive-filter-menu-list-style'
       >
         {DrawerList}
       </Drawer>
