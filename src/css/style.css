@@ -409,7 +409,7 @@ a {
   color: black;
 }
 
-.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input {
+.inputFieldCustom .MuiInputBase-input {
   background-color: white;
   border-radius: 10px;
 
@@ -417,34 +417,34 @@ a {
 }
 
 
-.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input::before {
+.inputFieldCustom .MuiInputBase-input::before {
   display: none;
 
 }
 
-.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input:focus {
+.inputFieldCustom .MuiInputBase-input:focus {
   outline: auto;
 }
 
-.inputFieldCustom .css-eok8s2-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+.inputFieldCustom .MuiFormLabel-root.Mui-focused {
   color: black !important;
 }
 
-.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root::after {
+.inputFieldCustom .MuiInputBase-root::after {
   border: 0;
  
 }
-.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root:hover{
+.inputFieldCustom .MuiInputBase-root:hover{
   background-color: transparent;
 }
-.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root::before{
+.inputFieldCustom .MuiInputBase-root::before{
     border: 0 !important;
 }
 
-.inputFieldCustom .css-1mb1do-MuiInputBase-root-MuiFilledInput-root{
+.inputFieldCustom .MuiInputBase-root{
   background-color: transparent;
 }
-.inputFieldCustom .css-voecp4-MuiInputBase-input-MuiFilledInput-input {
+.inputFieldCustom .MuiInputBase-input {
   padding-top: 22px;
 }
 
