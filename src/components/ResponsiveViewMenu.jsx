@@ -160,7 +160,7 @@ const handleBackCategory = () => {
       <Drawer
         open={open}
         onClose={toggleDrawer(false)}
-        sx={{ borderRadius: "15px" }}
+         className='responsive-menu-list-style'
       >
         {DrawerList}
       </Drawer>

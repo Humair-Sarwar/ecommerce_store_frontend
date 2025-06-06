@@ -139,9 +139,9 @@
    .slide-text-section .scroller_item_1 li h3{
         font-size: 1.5rem;
     }
-    .mini-bottom-cart-panel-style-box-set .css-gq1um1-MuiPaper-root-MuiDrawer-paper{
+    .mini-bottom-cart-panel-style-box-set .MuiPaper-root{
         width: 100% !important;
-      right: 0px;
+      right: 0px ;
       bottom: 0;
     }
 
