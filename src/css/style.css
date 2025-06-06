@@ -701,7 +701,7 @@ a {
   display: none;
 }
 
-.css-cyqh1t-MuiPaper-root-MuiDrawer-paper {
+.responsive-menu-list-style .MuiPaper-root {
   border-radius: 5px !important;
   height: 96vh !important;
   width: auto;
@@ -777,7 +777,7 @@ a {
 
 
 
-.search-modal-panel-style-set .css-y7ab46-MuiPaper-root-MuiDrawer-paper{
+.search-modal-panel-style-set .MuiPaper-root{
   border-radius: 15px !important;
   right: 10px !important;
   top: 10px !important;
@@ -877,13 +877,13 @@ a {
 
 
 
-.search-modal-panel-style-set .css-4nmryk-MuiBackdrop-root-MuiModal-backdrop, .mini-cart-drawer-panel-style .css-4nmryk-MuiBackdrop-root-MuiModal-backdrop, .mini-bottom-cart-panel-style-box-set .css-4nmryk-MuiBackdrop-root-MuiModal-backdrop{
+.search-modal-panel-style-set .MuiBackdrop-root, .mini-cart-drawer-panel-style .MuiBackdrop-root, .mini-bottom-cart-panel-style-box-set .MuiModal-backdrop{
     cursor: url('/cursor-close.svg') 32 32,auto;
 }
 
 
 
-.mini-cart-drawer-panel-style .css-y7ab46-MuiPaper-root-MuiDrawer-paper{
+.mini-cart-drawer-panel-style .MuiPaper-root{
    border-radius: 15px !important;
   right: 10px !important;
   top: 10px !important;
@@ -1053,10 +1053,10 @@ a {
 
 
 
-.note-textarea-box-style .css-113d811-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
+.note-textarea-box-style .MuiFormLabel-root.Mui-focused{
   color: black !important;
 }
-.note-textarea-box-style .css-zsp0bh-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline{
+.note-textarea-box-style .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline{
   border-color: black !important;
 }
 
@@ -1071,7 +1071,7 @@ a {
 
 
 
-.mini-bottom-cart-panel-style-box-set .css-gq1um1-MuiPaper-root-MuiDrawer-paper{
+.mini-bottom-cart-panel-style-box-set .MuiPaper-root{
   width: 500px;
   border-radius: 5px;
   bottom: 15px;
@@ -1155,14 +1155,14 @@ a {
 
  
 
-.css-tj8d99-MuiSwitch-track{
+.p-listing-page-left-menu-target .MuiSwitch-track{
   background-color: rgba(20, 20, 20, 0.15) !important;
 }
-.css-161ms7l-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track{
+.p-listing-page-left-menu-target .MuiButtonBase-root.Mui-checked+.MuiSwitch-track{
   background-color: black !important;
 }
 
-.css-17jyosd-MuiSwitch-thumb{
+.p-listing-page-left-menu-target .MuiSwitch-thumb{
   background-color: white !important;
 }
 
@@ -1172,20 +1172,20 @@ a {
 
 
 
-.accordion-expand-left-filter-target .css-yfrx4k-MuiAccordionSummary-content.Mui-expanded {
+.accordion-expand-left-filter-target .MuiAccordionSummary-content.Mui-expanded {
     margin: 12px 0 !important;
 }
-.accordion-expand-left-filter-target .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
+.accordion-expand-left-filter-target .MuiAccordionSummary-expandIconWrapper{
   background-color: #dbdbdb;
   color: black;
   border-radius: 50%;
   transition: 0.3s !important;
 }
-.accordion-expand-left-filter-target:hover .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
+.accordion-expand-left-filter-target:hover .MuiAccordionSummary-expandIconWrapper{
   background-color: black;
   color: white;
 }
-.accordion-expand-left-filter-target .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper.Mui-expanded{
+.accordion-expand-left-filter-target .MuiAccordionSummary-expandIconWrapper.Mui-expanded{
   background-color: black;
   color: white;
   border-radius: 50%;
@@ -1194,16 +1194,16 @@ a {
 
 
 
-.accordion-expand-left-filter-target .css-r64h58-MuiSlider-rail{
+.accordion-expand-left-filter-target .MuiSlider-rail{
   background-color: #b3b3b3 !important;
 }
 
-.accordion-expand-left-filter-target .css-xvk2i-MuiSlider-track{
+.accordion-expand-left-filter-target .MuiSlider-track{
   background-color: black !important;
   border: 1px solid black !important;
 }
 
-.accordion-expand-left-filter-target .css-1xcmt9q-MuiSlider-thumb{
+.accordion-expand-left-filter-target .MuiSlider-thumb{
   background-color: black !important;
   width: 15px !important;
     height: 15px !important;
@@ -1239,11 +1239,11 @@ a {
     font-size: 14px !important;
 }
 
-.left-slt-filters-target .css-hb102q-MuiPaper-root-MuiAccordion-root::before{
+.left-slt-filters-target .MuiPaper-root::before{
   position: static !important;
 }
 
-.left-slt-filters-target .css-hb102q-MuiPaper-root-MuiAccordion-root.Mui-expanded{
+.left-slt-filters-target .MuiPaper-root.Mui-expanded{
   margin: 0 !important;
 }
 
