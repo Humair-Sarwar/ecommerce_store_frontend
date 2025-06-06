@@ -2,7 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import { Button, IconButton, Typography} from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

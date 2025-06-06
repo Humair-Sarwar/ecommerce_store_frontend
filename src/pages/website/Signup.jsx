@@ -1,8 +1,8 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, CardMedia, TextField, Typography } from "@mui/material";
 import React from "react";
 import TextFieldCommon from "../../components/TextFieldCommon";
 import PassHideShow from "../../components/PassHideShow";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -48,29 +48,19 @@ const Signup = () => {
     })
   return (
     <>
-      <Box sx={{ backgroundColor: "#f5f5f5", height: "100vh", width: "100%"}}>
+      <Box sx={{ backgroundColor: "#f5f5f5", height: "120vh", width: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Box
           className="login-singup-page"
-          sx={{ padding: "25px", borderRadius: "10px", width: "450px" }}
+          sx={{ padding: "25px", borderRadius: "10px", width: "450px", my: 10 }}
         >
-          <Typography
-            variant="h4"
-            noWrap
-            component="a"
-            href="https://example.com"
-            sx={{
-              display: { display: "block", marginBottom: "10px" },
-              "&::first-letter": {
-                color: "#f76209", // Or any custom color like '#f00'
-              },
-              fontWeight: "bold",
-              color: "black",
-              textDecoration: "none",
-              textAlign: "center",
-            }}
-          >
-            STORE
-          </Typography>
+          <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><Link to={"/"}>
+                <CardMedia
+                  component="img"
+                  style={{ height: "auto", width: "70px" }}
+                  image="/logo.png"
+                  alt="Footer Logo"
+                />
+              </Link></Box>
           <Typography
             variant="h6"
             sx={{ fontWeight: "600", marginBottom: '0' }}
@@ -138,20 +128,8 @@ const Signup = () => {
                 Terms & Condtion
               </NavLink>
             </Typography>
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{
-                marginBottom: "15px",
-                padding: "10px",
-                backgroundColor: "#f76209",
-                textTransform: "capitalize",
-                fontWeight: "600",
-              }}
-              type="submit"
-            >
-              <SaveAsIcon sx={{marginRight: '10px'}}/> Create Account
-            </Button>
+            
+                <Button className="custom-primary-btn" fullWidth sx={{marginBottom: "15px"}}><SaveAsIcon sx={{marginRight: '10px'}}/> Create Account</Button>
 
           
             <Box

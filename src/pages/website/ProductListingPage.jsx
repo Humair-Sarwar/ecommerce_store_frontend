@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Checkbox, Container, Grid, Pagination, Slider, Switch, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Checkbox, Container, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Slider, Switch, Typography } from '@mui/material'
 import React from 'react'
 import Carousel from 'react-multi-carousel'
 import { Link } from 'react-router'
@@ -8,6 +8,7 @@ import CustomizedSwitches from '../../components/switchButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OrderProcessingSection from '../../components/OrderProcessingSection';
 import ResponsiveFilterSelect from '../../components/ResponsiveFilterSelect';
+import SortFilterMenu from '../../components/SortFilterMenu';
 
 
 function valuetext(value) {
@@ -17,6 +18,7 @@ function valuetext(value) {
 const minDistance = 0;
 
 const ProductListingPage = () => {
+  
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
  const [value1, setValue1] = React.useState([0, 100]);
 
@@ -418,7 +420,11 @@ const responsive = {
 
 
         <Box sx={{width: '100%'}}>
+<Box className='sort-filter-box-set' sx={{mb: 1}}>
 
+<SortFilterMenu/>
+
+</Box>
           <Grid container spacing={{sm: 3, xs: 1}}>
                   <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
 
@@ -450,13 +456,14 @@ const responsive = {
                                       >
                                         Apple
                                       </Typography>
+                                     <Link to={'/product-detail-page'}>
                                       <Typography
                                         className="product-heading"
-                                        sx={{ fontWeight: "600" }}
+                                        sx={{ fontWeight: "600", color:'black' }}
                                       >
                                         PlayStation 5 Pro Console - Advanced Graphics & Ultra-High
                                         Definition Gaming Console
-                                      </Typography>
+                                      </Typography></Link>
                                       <Box sx={{ display: "flex" }}>
                                         <Typography
                                           className="price"
