@@ -728,6 +728,24 @@ a {
  
 }
 
+
+
+.responsive-filter-menu-list-style .MuiDrawer-paper {
+  border-radius: 5px !important;
+  height: 96vh !important;
+  width: auto;
+  left: 10px !important;
+  top: 10px !important;
+  padding: 20px;
+}
+
+
+
+
+
+
+
+
 .move-next-btn-style{
   background-color: #e8e8e8 !important;
   border-radius: 50% !important;
@@ -1167,6 +1185,17 @@ a {
 }
 
 
+
+.switch-filter-r-style-set-l .MuiSwitch-track{
+  background-color: rgba(20, 20, 20, 0.15) !important;
+}
+.switch-filter-r-style-set-l .MuiButtonBase-root.Mui-checked+.MuiSwitch-track{
+  background-color: black !important;
+}
+
+.switch-filter-r-style-set-l .MuiSwitch-thumb{
+  background-color: white !important;
+}
 
 
 
