@@ -7,16 +7,15 @@ import Typography from "@mui/material/Typography";
 
 import { CardMedia, Container, List, ListItem } from "@mui/material";
 
-import Login from "../../../pages/website/Login";
 import { Link, NavLink } from "react-router";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import categories from "../../../categories.json";
 import { useEffect } from "react";
 import ResponsiveViewMenu from "../../../components/ResponsiveViewMenu";
 import SearchModal from "../../../components/SearchModal";
 import MiniAddToCartModal from "../../../components/MiniAddToCartModal";
+import { getSiteMenuApi } from "../../../utils/apis/APIs";
 
 export default function Header() {
 
@@ -46,18 +45,30 @@ const headerRef = React.useRef(null);
   }, []);
 
 
+const [menuItemsList, setMenuItemList] = React.useState([]);
 
 
 
+const getMenuJsonList = async () => {
+  const res = await getSiteMenuApi({ key: 'general-menu' });
+
+  if (res.status === 200) {
+   
+       setMenuItemList(res.data.result);
+     
+    }
 
 
+  
+};
 
 
 
   
-  const [menuItemsList, setMenuItemList] = React.useState([]);
+  
   React.useEffect(() => {
-    setMenuItemList(categories?.menuItems);
+    getMenuJsonList()
+    
   }, []);
 
 
@@ -173,8 +184,8 @@ const headerRef = React.useRef(null);
                 />
               </Link>
               <Box sx={{ display: "flex" }} className="desktop-menu-style">
-                <List className="menu-items-style-main" >
-                  {menuItemsList?.map((list, i) => (
+                {menuItemsList.is_active == true && <List className="menu-items-style-main" >
+                  {menuItemsList.menuData.menuItems?.map((list, i) => (
                     <>
                       <ListItem className="list-item-style" key={i}>
                         <Link to={list?.href}>
@@ -245,7 +256,7 @@ const headerRef = React.useRef(null);
                       <Box className="over-bg-set-style-menu"></Box>
                     </>
                   ))}
-                </List>
+                </List>}
               </Box>
 
               <Box>
