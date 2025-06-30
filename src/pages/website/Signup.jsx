@@ -2,7 +2,7 @@ import { Box, Button, CardMedia, TextField, Typography } from "@mui/material";
 import React from "react";
 import TextFieldCommon from "../../components/TextFieldCommon";
 import PassHideShow from "../../components/PassHideShow";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -10,6 +10,7 @@ import { signupApi } from "../../utils/apis/apis";
 import { handleError, handleSuccess } from "../../toast";
 
 const Signup = () => {
+  const navigation = useNavigate()
     const {values,  errors, handleBlur, handleChange, handleSubmit, touched} = useFormik({
         initialValues: {
             first_name: '',
@@ -19,8 +20,8 @@ const Signup = () => {
             confirm_password: ''
         },
         validationSchema: yup.object({
-             first_name: yup.string().min(5).max(100).required(),
-            last_name: yup.string().min(5).max(100).required(),
+             first_name: yup.string().min(2).max(100).required(),
+            last_name: yup.string().min(2).max(100).required(),
             email: yup.string().email().required(),
             password: yup.string().required(),
               confirm_password: yup
@@ -38,7 +39,8 @@ const Signup = () => {
             const response = await signupApi(data);
             if(response.status == 201){
                 action.resetForm();
-                handleSuccess('Successfully User Created!')
+                handleSuccess('Successfully User Created!');
+                navigation('/login')
             }else if(response.status == 409){
               handleError('Email Already exist');
             }else{
@@ -51,7 +53,7 @@ const Signup = () => {
       <Box sx={{ backgroundColor: "#f5f5f5", height: "120vh", width: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Box
           className="login-singup-page"
-          sx={{ padding: "25px", borderRadius: "10px", width: "450px", my: 10 }}
+          sx={{ padding: "25px", borderRadius: "10px", width: "450px", my: 10, mx: 1 }}
         >
           <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><Link to={"/"}>
                 <CardMedia
@@ -129,7 +131,7 @@ const Signup = () => {
               </NavLink>
             </Typography>
             
-                <Button className="custom-primary-btn" fullWidth sx={{marginBottom: "15px"}}><SaveAsIcon sx={{marginRight: '10px'}}/> Create Account</Button>
+                <Button className="custom-primary-btn" onClick={handleSubmit} fullWidth sx={{marginBottom: "15px"}}><SaveAsIcon sx={{marginRight: '10px'}}/> Create Account</Button>
 
           
             <Box

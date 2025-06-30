@@ -6,9 +6,10 @@ import { Button, IconButton, Typography} from "@mui/material";
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function MiniBottomCartModal() {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [inputData, setInputData] = useState('');
 
@@ -36,7 +37,7 @@ export default function MiniBottomCartModal() {
         </Box>
 
 
-               <Box sx={{display: 'flex', gap: '8px', mt: 1}}><Button className="custom-secondary-btn" fullWidth>View cart</Button> <Button className="custom-primary-btn" fullWidth>checkout</Button></Box>
+               <Box sx={{display: 'flex', gap: '8px', mt: 1}}><Button className="custom-secondary-btn" onClick={()=>navigate('/cart')} fullWidth>View cart</Button> <Button className="custom-primary-btn" fullWidth>checkout</Button></Box>
 
     </Box>
   );

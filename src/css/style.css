@@ -283,6 +283,11 @@ a {
   opacity: 0.85;
 }
 
+
+
+
+
+
 .video-box-container {
   height: 100%;
 }
@@ -929,6 +934,7 @@ a {
   display: flex;
   align-items: center;
 }
+
 .mini-cart-product-list-style .right-cart-content-side .title-content{
   margin: 0 12px;
 }
@@ -955,6 +961,81 @@ a {
 .mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row{
   margin-bottom: 10px;
 }
+
+
+.mini-cart-product-list-style .right-cart-content-side-cart-page .inc-dec-btn-row{
+  display: flex;
+  align-items: center;
+}
+
+.mini-cart-product-list-style .right-cart-content-side-cart-page .inc-dec-btn-row .dec{
+  background-color: white;
+  color: black;
+  border-radius: 8px;
+  border-top-left-radius: 35px;
+   border-bottom-left-radius: 35px;
+  min-width: 40px !important;
+  border: 1px solid #dfdede;
+}
+.mini-cart-product-list-style .right-cart-content-side-cart-page .inc-dec-btn-row .inc{
+  background-color: white;
+  color: black;
+  border-radius: 8px;
+  border-top-right-radius: 35px;
+   border-bottom-right-radius: 35px;
+  min-width: 40px !important;
+  border: 1px solid #dfdede;
+}
+
+
+
+
+
+.mini-cart-product-list-style .right-cart-content-side-cart-page .inc-dec-btn-row input {
+  width: 40px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #dfdede;
+  outline: none;
+  margin: 0 5px;
+  text-align: center;
+}
+
+.mini-cart-product-list-style .right-cart-content-side-cart-page .inc-dec-btn-row input::-webkit-outer-spin-button,
+.mini-cart-product-list-style .right-cart-content-side-cart-page .inc-dec-btn-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mini-cart-product-list-style .right-cart-content-side-cart-page .rmv-btn-style{
+  font-size: 12px;
+  display: inline; /* Ensures background spans text width only */
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.mini-cart-product-list-style .right-cart-content-side-cart-page .rmv-btn-style:hover{
+   background-size: 100% 1px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .mini-cart-product-list-style .right-cart-content-side .inc-dec-btn-row .dec{
   background-color: #f0f0f0c0;
   color: black;
@@ -1584,4 +1665,39 @@ font-size: 2.75rem;
 .login-singup-page{
   box-shadow: 0px 18px 50px rgb(26 26 26 / 0.1);
   background-color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+.custom-secondary-btn-admin-side {
+    background-color: rgb(240 196 23) !important;
+  color: black !important;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+  border-radius: 35px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  transition: 0.4s !important;
+}
+.custom-secondary-btn-admin-side:hover {
+  opacity: 0.85;
+}
+
+
+.json-editor-menu-box-target .monaco-editor {
+  padding: 5px 0 !important;
+  border-radius: 10px !important;
+
+}
+.json-editor-menu-box-target .overflow-guard{
+   border-radius: 10px !important;
+   overflow: hidden !important;
 }
