@@ -744,7 +744,14 @@ a {
   padding: 20px;
 }
 
-
+.categories-load-modal-target .MuiDrawer-paper{
+  border-radius: 10px !important;
+  height: 96vh !important;
+  width: auto;
+  right: 10px !important;
+  top: 10px !important;
+  padding: 20px;
+}
 
 
 
@@ -900,7 +907,7 @@ a {
 
 
 
-.search-modal-panel-style-set .MuiBackdrop-root, .mini-cart-drawer-panel-style .MuiBackdrop-root, .mini-bottom-cart-panel-style-box-set .MuiModal-backdrop{
+.search-modal-panel-style-set .MuiBackdrop-root, .mini-cart-drawer-panel-style .MuiBackdrop-root, .mini-bottom-cart-panel-style-box-set .MuiModal-backdrop, .responsive-filter-menu-list-style .MuiModal-backdrop, .categories-load-modal-target .MuiModal-backdrop{
     cursor: url('/cursor-close.svg') 32 32,auto;
 }
 
@@ -1690,6 +1697,51 @@ font-size: 2.75rem;
 .custom-secondary-btn-admin-side:hover {
   opacity: 0.85;
 }
+
+
+.custom-primary-btn-admin-side {
+    background-color: rgb(26 26 26) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+  border-radius: 35px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  transition: 0.4s !important;
+}
+.custom-primary-btn-admin-side:hover {
+  opacity: 0.85;
+}
+
+
+.custom-disable-btn-target{
+  background-color: #e0e0e0 !important;
+  color: #a6a6a6;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+  border-radius: 35px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  transition: 0.4s;
+}
+.custom-disable-btn-target:hover{
+  background-color: #e0e0e0 !important;
+  color: #a6a6a6;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+  border-radius: 35px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+
+}
+
+
+
+
+
+
+
+
 
 
 .json-editor-menu-box-target .monaco-editor {
