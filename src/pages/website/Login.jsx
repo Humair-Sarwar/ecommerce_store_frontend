@@ -30,7 +30,7 @@ const Login = () => {
           handleError("Email or password is wrong!");
         } else if (res.status == 200) {
           console.log(res.data)
-          handleSuccess("User Successfully Login!");
+          handleSuccess("You're Successfully Login!");
           localStorage.setItem("token", res.data?.token);
           localStorage.setItem("user_id", res.data.user?.id);
           localStorage.setItem("user_type", res.data.user?.user_type);

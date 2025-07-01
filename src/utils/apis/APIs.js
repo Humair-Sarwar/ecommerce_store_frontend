@@ -77,3 +77,32 @@ export const getSiteMenuApi = async ({key})=>{
     }
     return response;
 }
+
+
+
+
+
+export const createCategoryApi = async (data)=>{
+    let response;
+    try {
+        response = await api.post('/api/vendor/categories', data);
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+
+export const getCategoriesApi = async ({business_id})=>{
+    let response;
+    try {
+         response = await api.get('/api/vendor/categories', {
+      params: {
+        business_id
+      }
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}

@@ -1,12 +1,31 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode"; // ✅ Correct for Vite
 
 const PrivateRoute = ({ children }) => {
-    
-  const token = localStorage.getItem("token"); // ✅ Auth check
+  const token = localStorage.getItem("token");
   const user = localStorage.getItem("user_type");
 
-  return token && user == 2 ? children : <Navigate to="/login" replace />;
+  if (!token || user !== "2") return <Navigate to="/login" replace />;
+
+  try {
+    const decoded = jwtDecode(token); // ✅ use jwtDecode (not .default)
+    const currentTime = Date.now() / 1000;
+
+    if (decoded.exp < currentTime) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_type");
+      return <Navigate to="/login" replace />;
+    } else {
+      return children;
+    }
+
+  } catch (error) {
+    console.error("Invalid token", error);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_type");
+    return <Navigate to="/login" replace />;
+  }
 };
 
 export default PrivateRoute;

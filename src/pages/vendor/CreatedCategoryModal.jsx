@@ -1,0 +1,418 @@
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import * as yup from "yup";
+
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControl from "@mui/material/FormControl";
+
+import { useFormik } from "formik";
+import { generateSlug } from "../../utils/apis/slugGenerate";
+import { createCategoryApi } from "../../utils/apis/APIs";
+import { handleError, handleSuccess } from "../../toast";
+import CategoriesLoadModal from "../../components/CategoriesLoadModal";
+
+
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 1 }}>{children}</Box>}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+export default function CategoryModal() {
+  const [open, setOpen] = React.useState(false);
+
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
+
+  const [value, setValue] = React.useState(0);
+const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState();
+  
+
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: {
+        is_active_for_buy: true,
+        name: "",
+        sort_order: 1,
+        description: "",
+        design_switch: false,
+        design_view: 1,
+        buy_meta_title: "",
+        buy_meta_description: "",
+        buy_page_description: "",
+      },
+      validationSchema: yup.object({
+        name: yup.string().min(3).max(200).required('Name is required!'),
+        sort_order: yup.number().required('Sort order is required!'),
+      }),
+      onSubmit: async (values, action) => {
+        let slug = generateSlug(values.name)
+        console.log("created category testing...", values, slug);
+
+        const res = await createCategoryApi({...values, level: 0, business_id: "123", slug, parent_category_id: parentCategoryIdSelect})
+        if(res.status == 201){
+          handleSuccess('New Category Added Successfully!');
+          action.resetForm();
+          setOpen(false);
+          setParentCategoryIdSelect()
+        }else{
+          handleError('Internal Server Error!');
+        }
+      },
+    });
+
+    const handleTargetParentCategoryId = (parent_category_id) => {
+      setParentCategoryIdSelect(parent_category_id)
+    }
+    const nameInputRef = React.useRef(null);
+React.useEffect(() => {
+  if (open) {
+    setTimeout(() => {
+      nameInputRef.current?.focus();
+    }, 100); // Small delay to ensure DOM is ready
+  }
+}, [open]);
+  const DrawerList = (
+    <Box
+      sx={{ width: 630, p: 2 }}
+      role="presentation"
+      className="inner-modal-search-view-set"
+    >
+      <Box sx={{ textAlign: "start" }} onClick={toggleDrawer(false)}>
+        <CloseIcon sx={{ cursor: "pointer" }} />
+      </Box>
+      <form onSubmit={handleSubmit}>
+      <Grid container spacing={1}>
+        <Grid size={{ xs: 6, sm: 6, md: 6 }}>
+          <Box>left</Box>
+        </Grid>
+        <Grid size={{ xs: 6, sm: 6, md: 6 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid rgb(197, 196, 196)",
+              borderRadius: "10px",
+              padding: "2px 15px",
+            }}
+          >
+            <Typography sx={{ fontWeight: "600", fontSize: "13px" }}>
+              Purpose:
+            </Typography>
+
+            <FormControlLabel
+  sx={{
+    ml: 1,
+    "& .MuiFormControlLabel-label": {
+      fontSize: "14px",
+    },
+  }}
+  control={
+    <Checkbox
+      size="small"
+      color="secondary"
+      name="is_active_for_buy"
+      checked={values.is_active_for_buy}   
+      onChange={handleChange}  
+    />
+  }
+  label="Sale"
+/>
+          </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              border: "1px solid rgb(197, 196, 196)",
+              borderRadius: "10px",
+              padding: "8px",
+            }}
+          >
+            <Grid container spacing={1} sx={{ width: "100%" }}>
+              <Grid size={{ xs: 8 }}>
+                <TextField
+  fullWidth
+  size="small"
+  color="secondary"
+  label="Name"
+  variant="outlined"
+  type="text"
+  name="name"
+  value={values.name}
+  onChange={handleChange}
+  onBlur={handleBlur}
+  error={Boolean(errors.name && touched.name)}
+   inputRef={nameInputRef} // 👈 this enables auto-focus
+/>
+
+{touched.name && errors.name && (
+  <Typography sx={{ fontSize: '12px', color: 'red', mt: 0.5 }}>
+    {errors.name}
+  </Typography>
+)}
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  color="secondary"
+                  label="Sort Order"
+                  variant="outlined"
+                  type="number"
+  name="sort_order"
+  value={values.sort_order}
+  onChange={handleChange}
+  onBlur={handleBlur}
+  error={Boolean(errors.sort_order && touched.sort_order)}
+                />
+                {touched.sort_order && errors.sort_order && (
+  <Typography sx={{ fontSize: '12px', color: 'red', mt: 0.5 }}>
+    {errors.sort_order}
+  </Typography>
+)}
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  color="secondary"
+                  label="Description"
+                  variant="outlined"
+
+                   name="description"
+  value={values.description}
+  onChange={handleChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                
+                <CategoriesLoadModal handleTargetParentCategoryId={handleTargetParentCategoryId}/>
+              </Grid>
+
+              <Grid size={{ xs: 5 }}>
+                <Box
+                  sx={{
+                    border: "1px solid rgb(197, 196, 196)",
+                    borderRadius: "10px",
+                    padding: "2px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Switch  name="design_switch"
+  color="secondary"
+  checked={values.design_switch}
+  onChange={handleChange} />
+                  <Typography sx={{ fontSize: "14px" }}>
+                    Show listing switch in buy
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid size={{ xs: 7 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px solid rgb(197, 196, 196)",
+                    borderRadius: "10px",
+                    padding: "2px 15px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontWeight: "600",
+                      fontSize: "13px",
+                      textWrap: "nowrap",
+                      mr: 1,
+                    }}
+                  >
+                    Listing Design :
+                  </Typography>
+
+                  <FormControl>
+  <RadioGroup
+    row
+    name="design_view"
+    value={values.design_view}
+    onChange={handleChange}
+  >
+    <FormControlLabel
+      value="1"
+      control={<Radio size="small" color="secondary" />}
+      label="Grid View"
+      sx={{
+        "& .MuiFormControlLabel-label": { fontSize: "12px" },
+      }}
+    />
+    <FormControlLabel
+      value="2"
+      control={<Radio size="small" color="secondary" />}
+      label="List View"
+      sx={{
+        "& .MuiFormControlLabel-label": { fontSize: "12px" },
+      }}
+    />
+  </RadioGroup>
+
+  {/* Optional error display */}
+  {touched.design_view && errors.design_view && (
+    <Typography sx={{ fontSize: '12px', color: 'red' }}>
+      {errors.design_view}
+    </Typography>
+  )}
+</FormControl>
+
+                </Box>
+              </Grid>
+              {values.is_active_for_buy && <Grid size={{ xs: 12 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px solid rgb(197, 196, 196)",
+                    borderRadius: "10px",
+                    padding: "2px",
+                  }}
+                >
+                  <Box sx={{ width: "100%" }}>
+                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                      <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        aria-label="basic tabs example"
+                        textColor="secondary"
+                        indicatorColor="secondary"
+                      >
+                        <Tab label="Sale" {...a11yProps(0)} />
+                        {/* <Tab label="Item Two" {...a11yProps(1)} />
+          <Tab label="Item Three" {...a11yProps(2)} /> */}
+                      </Tabs>
+                    </Box>
+                    <CustomTabPanel value={value} index={0}>
+                      <Box sx={{ textAlign: "center", mb: 1 }}>
+                        <Typography>SEO</Typography>
+                      </Box>
+                      <Grid container spacing={1} sx={{ width: "100%" }}>
+                        <Grid size={{ xs: 12 }}>
+                          <TextField
+                            fullWidth
+                            color="secondary"
+                            size="small"
+                            label="Sale Meta Title"
+                            variant="outlined"
+                            name="buy_meta_title"
+                            value={values.buy_meta_title}
+  onChange={handleChange}
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                          <TextField
+                            fullWidth
+                            label="Sale Meta Description"
+                            multiline
+                            color="secondary"
+                            rows={1}
+
+                            name="buy_meta_description"
+                            value={values.buy_meta_description}
+  onChange={handleChange}
+                          />
+                        </Grid>
+                      </Grid>
+                    </CustomTabPanel>
+                    {/* <CustomTabPanel value={value} index={1}>
+        Item Two
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        Item Three
+      </CustomTabPanel> */}
+                  </Box>
+                </Box>
+              </Grid>}
+              
+
+              <Box sx={{ textAlign: "end", width: "100%" }}>
+                <Button
+  type="submit"
+  disabled={values.is_active_for_buy == false}
+  className={`${values.is_active_for_buy ? "custom-secondary-btn-admin-side" : "custom-disable-btn-target"}`}
+>
+  Create Category
+</Button>
+              </Box>
+            </Grid>
+          </Box>
+        </Grid>
+      </Grid>
+      </form>
+    </Box>
+  );
+
+  return (
+    <>
+      <Button
+        onClick={toggleDrawer(true)}
+        className="custom-secondary-btn-admin-side"
+      >
+        <AddIcon sx={{ mr: 1 }} /> Create Category
+      </Button>
+      <Drawer
+        anchor="right"
+        open={open}
+        onClose={toggleDrawer(false)}
+        className="search-modal-panel-style-set"
+        sx={{ zIndex: "6000" }}
+      >
+        {DrawerList}
+      </Drawer>
+    </>
+  );
+}
