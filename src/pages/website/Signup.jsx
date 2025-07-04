@@ -6,8 +6,8 @@ import { Link, NavLink, useNavigate } from "react-router";
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { signupApi } from "../../utils/apis/apis";
 import { handleError, handleSuccess } from "../../toast";
+import { signupApi } from "../../utils/apis/APIs";
 
 const Signup = () => {
   const navigation = useNavigate()

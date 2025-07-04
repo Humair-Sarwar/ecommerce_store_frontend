@@ -15,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import * as yup from "yup";
-
+import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -26,10 +26,11 @@ import FormControl from "@mui/material/FormControl";
 
 import { useFormik } from "formik";
 import { generateSlug } from "../../utils/apis/slugGenerate";
-import { createCategoryApi } from "../../utils/apis/APIs";
+import { addImageApi, createCategoryApi } from "../../utils/apis/APIs";
 import { handleError, handleSuccess } from "../../toast";
 import CategoriesLoadModal from "../../components/CategoriesLoadModal";
-
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,6 +61,19 @@ function a11yProps(index) {
   };
 }
 
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
 export default function CategoryModal() {
   const [open, setOpen] = React.useState(false);
 
@@ -69,8 +83,8 @@ export default function CategoryModal() {
 
   const [value, setValue] = React.useState(0);
 const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState();
-  
-
+  const imageInputRef = React.useRef(null);
+  const [imageCategory, setImageCategory] = useState(null);
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
@@ -108,6 +122,34 @@ const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState();
       setParentCategoryIdSelect(parent_category_id)
     }
     const nameInputRef = React.useRef(null);
+
+    const getPhoto = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Show preview
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+    setImageCategory(reader.result); // this is just for preview
+  };
+
+  // Upload the actual file to backend
+  const formData = new FormData();
+  formData.append('userfile', file); // `userfile` must match your backend
+
+  try {
+    const res = await addImageApi(formData);
+    console.log(res.data.result); // { fieldname, filename, path, etc. }
+  } catch (err) {
+    console.error('Image upload error:', err);
+  }
+};
+
+
+
+
+
 React.useEffect(() => {
   if (open) {
     setTimeout(() => {
@@ -115,6 +157,8 @@ React.useEffect(() => {
     }, 100); // Small delay to ensure DOM is ready
   }
 }, [open]);
+
+console.log(imageCategory, '------------------------>>>>>>>>>>>')
   const DrawerList = (
     <Box
       sx={{ width: 630, p: 2 }}
@@ -127,7 +171,39 @@ React.useEffect(() => {
       <form onSubmit={handleSubmit}>
       <Grid container spacing={1}>
         <Grid size={{ xs: 6, sm: 6, md: 6 }}>
-          <Box>left</Box>
+          <Box  sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid rgb(197, 196, 196)",
+              borderRadius: "10px",
+              padding: "8px 8px",
+              height: '100%'
+            }}>
+              <Box component="label" sx={{border: '1px dotted black', cursor: 'pointer', borderRadius: '5px', position: 'relative'}} className='image-upload-box-target'><img src={imageCategory == null ? "/empty-image.jpg" : imageCategory}/>
+                            <VisuallyHiddenInput type="file" name='photo' accept="image/jpg, image/jpeg, image/png" onChange={getPhoto}/>
+
+                <AddCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#9c27b0', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
+                {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
+              </Box>
+              <Box component="label" sx={{border: '1px dotted black', cursor: 'pointer', borderRadius: '5px', position: 'relative', ml: 1}} className='image-upload-box-target-cover-img'><img src="/empty-image.jpg"/>
+              <VisuallyHiddenInput type="file" name='photo' accept="image/jpg, image/jpeg, image/png" ref={imageInputRef}/>
+                <AddCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#9c27b0', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
+                {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
+              </Box>
+            </Box>
+
+
+
+
+
+
+
+
+
+
+
+
+
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 6 }}>
           <Box
@@ -137,6 +213,7 @@ React.useEffect(() => {
               border: "1px solid rgb(197, 196, 196)",
               borderRadius: "10px",
               padding: "2px 15px",
+              height: '100%'
             }}
           >
             <Typography sx={{ fontWeight: "600", fontSize: "13px" }}>
