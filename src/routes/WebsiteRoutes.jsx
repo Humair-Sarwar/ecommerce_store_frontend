@@ -11,7 +11,7 @@ const WebsiteRoutes = [
         element: <WebsiteLayout/>,
         children: [
             {index: true, element: <Home/>},
-            {path: 'product-listing-page', element: <ProductListingPage/>},
+            {path: '/buy/products/:slug/1', element: <ProductListingPage/>},
             {path: '/product-detail-page', element: <ProductDetailPage/>},
             {path: '/cart', element: <CartPage/>}
         ]

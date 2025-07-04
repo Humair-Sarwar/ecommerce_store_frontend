@@ -187,15 +187,17 @@ const getMenuJsonList = async () => {
                 {menuItemsList.is_active == true && <List className="menu-items-style-main" >
                   {menuItemsList.menuData.menuItems?.map((list, i) => (
                     <>
-                      <ListItem className="list-item-style" key={i}>
+                   
+                      <ListItem className={list?.columns?.length > 0 ? 'list-item-style' : 'list-item-style-without-expand'} key={i}>
                         <Link to={list?.href}>
                           {" "}
                           <Typography sx={{ fontWeight: "600" }}>
                             {list?.title}
                           </Typography>
-                          <KeyboardArrowDownIcon
+                          {list?.columns?.length > 0 && <KeyboardArrowDownIcon
                             sx={{ fontSize: "20px", marginLeft: "4px" }}
-                          />
+                          />}
+                          
                         </Link>
                         <Box className="on-hover-menuitems-box-style">
                           <Container>
@@ -253,6 +255,7 @@ const getMenuJsonList = async () => {
                           </Container>
                         </Box>
                       </ListItem>
+
                       <Box className="over-bg-set-style-menu"></Box>
                     </>
                   ))}

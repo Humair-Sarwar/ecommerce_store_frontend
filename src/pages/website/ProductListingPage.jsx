@@ -15,9 +15,9 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
-import { Link } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import MiniBottomCartModal from "../../components/MiniBottomCartModal";
 import CustomizedSwitches from "../../components/switchButton";
@@ -25,6 +25,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OrderProcessingSection from "../../components/OrderProcessingSection";
 import ResponsiveFilterSelect from "../../components/ResponsiveFilterSelect";
 import SortFilterMenu from "../../components/SortFilterMenu";
+import { getCategoriesFilterBaseApi } from "../../utils/apis/APIs";
+import { handleError } from "../../toast";
 
 function valuetext(value) {
   return `${value}`;
@@ -33,6 +35,7 @@ function valuetext(value) {
 const minDistance = 0;
 
 const ProductListingPage = () => {
+   
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [value1, setValue1] = React.useState([0, 100]);
 
@@ -63,6 +66,38 @@ const ProductListingPage = () => {
       items: 1,
     },
   };
+
+const navigate = useNavigate()
+    const params = useParams();
+    const category = params.slug;
+    const [filterCategoryData, setFilterCategoryData] = useState({});
+
+
+const getFilterListingPage = async () => {
+  let res = await getCategoriesFilterBaseApi({category});
+
+  if(res.status == 200){
+    if(category == 'All'){
+      console.log(res.data.parent_category, 'dddddddddddddddddddddd');
+      setFilterCategoryData(res.data);
+    }else{
+      setFilterCategoryData(res.data);
+    }
+    
+  }else{
+    handleError('Internal Server Error!');
+  }
+}
+  const [stateReload, setStateReload] = useState(false)
+const nextCategoryOpen = (slug)=>{
+  navigate(`/buy/products/${slug}/1`)
+  setStateReload(!stateReload)
+}
+
+  useEffect(() => {
+  getFilterListingPage();
+}, [category]);
+
 
   return (
     <>
@@ -121,108 +156,67 @@ const ProductListingPage = () => {
           backgroundColor: "#f0f0f0",
           pt: 6,
           px: 4,
-          textAlign: "center",
+          textAlign: "start",
           pb: 2,
         }}
       >
-        <Typography variant="h2" className="p-listing-p-heading-main">
-          Mobile & Computing
+        {filterCategoryData?.parent_category?.cover_image || filterCategoryData?.parent_category?.description == "" ? <Typography variant="h2" sx={{textAlign: 'center'}} className="p-listing-p-heading-main">
+          {filterCategoryData?.parent_category?.name}
+        </Typography> :  <Box>
+          <Typography variant="h2" sx={{fontSize: '42px', fontWeight: '500'}} className="">
+          {filterCategoryData?.parent_category?.name}
         </Typography>
+          <Typography variant="body1" sx={{mt: 2}}>{filterCategoryData?.parent_category?.description}</Typography>
+        </Box>
+        }
+        
+        
       </Box>
-      <Box
-        sx={{ backgroundColor: "#f0f0f0", py: 5 }}
-        className={`${4 > 4 ? "" : "categories-list-row-target"}`}
+      {filterCategoryData?.child_category?.length > 0 && <Box
+  sx={{ backgroundColor: "#f0f0f0", py: 5 }}
+  className={`${
+    filterCategoryData?.child_category?.length > 4
+      ? ""
+      : "categories-list-row-target"
+  }`}
+>
+  <Container sx={{ maxWidth: "1470px !important" }}>
+    {Array.isArray(filterCategoryData?.child_category) && filterCategoryData?.child_category?.length > 0 ? (
+      <Carousel
+        responsive={responsive}
+        className="slide-carousol-service-box-set"
       >
-        <Container sx={{ maxWidth: "1470px !important" }}>
-          <Carousel
-            responsive={responsive}
-            className="slide-carousol-service-box-set"
-          >
-            <Box className="box-features-style">
-              <img
-                src="/Smart-Phones-Products-Eclat-UK_c1a1eb66-211c-4cb7-987b-dc08a6e1ab40.png"
-                alt=""
-              />
-              <Typography
-                sx={{
-                  mb: 2,
-                  ml: 2,
-                  fontWeight: "600",
-                  textAlign: "start",
-                  zIndex: 2,
-                  position: "absolute",
-                  bottom: "5px",
-                }}
-              >
-                Smart Phones
-              </Typography>
-              <Box className="arrow-btn-style">
-                <KeyboardArrowRightIcon />
-              </Box>
+        {filterCategoryData?.child_category?.map((list) => (
+          <Box onClick={()=>nextCategoryOpen(list.slug)} className="box-features-style" key={list.id}>
+           <img
+              src={list?.image ? "/Smart-Phones-Products-Eclat-UK_c1a1eb66-211c-4cb7-987b-dc08a6e1ab40.png" : "/empty-image.jpg"}
+              alt=""
+            />
+            <Typography
+              sx={{
+                mb: 2,
+                ml: 2,
+                fontWeight: "600",
+                textAlign: "start",
+                zIndex: 2,
+                position: "absolute",
+                bottom: "5px",
+              }}
+            >
+              {list?.name}
+            </Typography>
+            <Box className="arrow-btn-style">
+              <KeyboardArrowRightIcon />
             </Box>
-            <Box className="box-features-style">
-              <img src="/Laptop-collection-tile-Eclat-UK_1.png" alt="" />
-              <Typography
-                sx={{
-                  mb: 2,
-                  ml: 2,
-                  fontWeight: "600",
-                  textAlign: "start",
-                  zIndex: 2,
-                  position: "absolute",
-                  bottom: "5px",
-                }}
-              >
-                Smart Phones
-              </Typography>
-              <Box className="arrow-btn-style">
-                <KeyboardArrowRightIcon />
-              </Box>
-            </Box>
-            <Box className="box-features-style">
-              <img src="/Tablets-Products-Eclat-UK.png" alt="" />
-              <Typography
-                sx={{
-                  mb: 2,
-                  ml: 2,
-                  fontWeight: "600",
-                  textAlign: "start",
-                  zIndex: 2,
-                  position: "absolute",
-                  bottom: "5px",
-                }}
-              >
-                Smart Phones
-              </Typography>
-              <Box className="arrow-btn-style">
-                <KeyboardArrowRightIcon />
-              </Box>
-            </Box>
-            <Box className="box-features-style">
-              <img
-                src="/Gaming-Consoles-Collection-Tile-Eclat-UK_1.png"
-                alt=""
-              />
-              <Typography
-                sx={{
-                  mb: 2,
-                  ml: 2,
-                  fontWeight: "600",
-                  textAlign: "start",
-                  zIndex: 2,
-                  position: "absolute",
-                  bottom: "5px",
-                }}
-              >
-                Smart Phones
-              </Typography>
-              <Box className="arrow-btn-style">
-                <KeyboardArrowRightIcon />
-              </Box>
-            </Box>
-          </Carousel>
-        </Container>
-      </Box>
+          </Box>
+        ))}
+      </Carousel>
+    ) : (
+      ''
+    )}
+  </Container>
+</Box>}
+
 
       <Box sx={{ backgroundColor: "#f0f0f0", py: 5 }}>
         <Container sx={{ maxWidth: "1470px !important" }}>

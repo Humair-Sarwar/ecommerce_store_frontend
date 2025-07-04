@@ -106,3 +106,41 @@ export const getCategoriesApi = async ({business_id})=>{
     }
     return response;
 }
+
+
+
+export const getWebsiteCategoriesApi = async ()=>{
+    let response;
+    try {
+         response = await api.get('/api/website/categories');
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+
+export const getCategoriesFilterBaseApi = async ({category})=>{
+    let response;
+    try {
+         response = await api.get('/api/website/products/filter', {
+      params: {
+        category
+      }
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+
+export const addImageApi = async (data)=>{
+    let response;
+    try {
+        response = await api.post('/api/add/image', data);
+    } catch (error) {
+        return error;
+    }
+    return response;
+}

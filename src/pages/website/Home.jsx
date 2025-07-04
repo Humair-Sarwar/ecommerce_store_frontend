@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HeroBannerSlider from "../../components/HeroBannerSlider";
 import { Box, Button, Grid, List, ListItem, Typography } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import AddIcon from "@mui/icons-material/Add";
 
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import MiniBottomCartModal from "../../components/MiniBottomCartModal";
 import OrderProcessingSection from "../../components/OrderProcessingSection";
+import { getWebsiteCategoriesApi } from "../../utils/apis/APIs";
+import { handleError } from "../../toast";
 
 export const Home = () => {
   const responsive = {
@@ -51,6 +52,23 @@ export const Home = () => {
       items: 1,
     },
   };
+
+  const [categoriesListResult, setCategoriesListResult] = useState([]);
+  const navigate = useNavigate();
+
+  const getCategoriesList = async () => {
+    let res = await getWebsiteCategoriesApi();
+    if(res.status == 200){
+     
+      setCategoriesListResult(res.data.result);
+    }else{
+      handleError('Internal Server Error!')
+    }
+  }
+
+  useEffect(()=>{
+    getCategoriesList();
+  }, [])
 
   return (
     <>
@@ -102,82 +120,39 @@ export const Home = () => {
         </Box>
       </Box>
 
-      <Box sx={{ backgroundColor: "#f0f0f0", py: 5, px: 4 }}>
+{categoriesListResult.length > 0 && <Box sx={{ backgroundColor: "#f0f0f0", py: 5, px: 4 }}>
         <Carousel
           responsive={responsive}
           className="slide-carousol-service-box-set"
         >
-          <Box className="box-features-style">
+{categoriesListResult.map((list)=>{
+  return(
+    <Box className="box-features-style" onClick={()=>navigate(`/buy/products/${list?.category?.slug}/1`)}>
             <img
-              src="/Smart-Phones-Products-Eclat-UK_c1a1eb66-211c-4cb7-987b-dc08a6e1ab40.png"
+              src={list.category?.image ? "/Smart-Phones-Products-Eclat-UK_c1a1eb66-211c-4cb7-987b-dc08a6e1ab40.png" : "/empty-image.jpg"}
               alt=""
             />
             <Typography
               sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
             >
-              Smart Phones
+              {list?.category?.name}
             </Typography>
             <Box className="arrow-btn-style">
               <KeyboardArrowRightIcon />
             </Box>
           </Box>
-          <Box className="box-features-style">
-            <img src="/Laptop-collection-tile-Eclat-UK_1.png" alt="" />
-            <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
-            >
-              Smart Phones
-            </Typography>
-            <Box className="arrow-btn-style">
-              <KeyboardArrowRightIcon />
-            </Box>
-          </Box>
-          <Box className="box-features-style">
-            <img src="/Tablets-Products-Eclat-UK.png" alt="" />
-            <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
-            >
-              Smart Phones
-            </Typography>
-            <Box className="arrow-btn-style">
-              <KeyboardArrowRightIcon />
-            </Box>
-          </Box>
-          <Box className="box-features-style">
-            <img src="/Gaming-Consoles-Collection-Tile-Eclat-UK_1.png" alt="" />
-            <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
-            >
-              Smart Phones
-            </Typography>
-            <Box className="arrow-btn-style">
-              <KeyboardArrowRightIcon />
-            </Box>
-          </Box>
-          <Box className="box-features-style">
-            <img src="/Audio-Solutions-Products-Eclat-UK.png" alt="" />
-            <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
-            >
-              Smart Phones
-            </Typography>
-            <Box className="arrow-btn-style">
-              <KeyboardArrowRightIcon />
-            </Box>
-          </Box>
-          <Box className="box-features-style">
-            <img src="/Smart-Watches-Products-Eclat-UK.png" alt="" />
-            <Typography
-              sx={{ mb: 2, ml: 2, fontWeight: "600", textAlign: "start", zIndex: 2, position: 'absolute', bottom: '5px' }}
-            >
-              Smart Phones
-            </Typography>
-            <Box className="arrow-btn-style">
-              <KeyboardArrowRightIcon />
-            </Box>
-          </Box>
+  )
+})}
+      
+          
+          
         </Carousel>
-      </Box>
+      </Box>}
+
+
+
+
+
 
       <Box sx={{ backgroundColor: "#f0f0f0", py: 5, px: 4 }}>
         <Box className='title-row-box-w-btn'>
