@@ -144,3 +144,32 @@ export const addImageApi = async (data)=>{
     }
     return response;
 }
+
+
+
+// ------------------- Brands --------------------
+
+
+export const createBrandApi = async (data)=>{
+    let response;
+    try {
+        response = await api.post('/api/vendor/brands', data);
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+export const getBrandsApi = async ({business_id})=>{
+    let response;
+    try {
+         response = await api.get('/api/vendor/brands', {
+      params: {
+        business_id
+      }
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
