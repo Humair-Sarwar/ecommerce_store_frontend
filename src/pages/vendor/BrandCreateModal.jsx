@@ -22,21 +22,7 @@ import { addImageApi, createBrandApi, createCategoryApi } from "../../utils/apis
 import { handleError, handleSuccess } from "../../toast";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 1 }}>{children}</Box>}
-    </div>
-  );
-}
 
 
 
@@ -55,7 +41,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function BrandModal() {
+export default function BrandModal({handleSetReloadFunc}) {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen) => () => {
@@ -63,7 +49,7 @@ export default function BrandModal() {
   };
 
   const [imageCategory, setImageCategory] = useState(null);
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } =
     useFormik({
       initialValues: {
         is_active: true,
@@ -75,15 +61,29 @@ export default function BrandModal() {
         sort_order: yup.number().required('Sort order is required!'),
       }),
       onSubmit: async (values, action) => {
-        let slug = generateSlug(values.brand_name)
-        console.log("created category testing...", values, slug);
+         handleSetReloadFunc()
+        const formData = new FormData();
 
-        const res = await createBrandApi({...values, business_id: "123", slug})
+          if (values.brandImage instanceof File) {
+      formData.append("brandImage", values.brandImage, values.brandImage.name);
+    }
+        let slug = generateSlug(values.brand_name)
+
+        formData.append("is_active", values.is_active);
+        formData.append("business_id", "123");
+        formData.append("slug", slug);
+        formData.append("brand_name", values.brand_name);
+        formData.append("sort_order", values.sort_order);
+
+        const res = await createBrandApi(formData)
+        
         if(res.status == 201){
+          setImageCategory(null)
           handleSuccess('New Brand Added Successfully!');
           action.resetForm();
           setOpen(false);
           setParentCategoryIdSelect()
+         
         }else{
           handleError('Internal Server Error!');
         }
@@ -92,7 +92,7 @@ export default function BrandModal() {
 
     
 
-    const getPhoto = async (e) => {
+    const handleBrandImage = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
@@ -103,16 +103,10 @@ export default function BrandModal() {
     setImageCategory(reader.result); // this is just for preview
   };
 
-  // Upload the actual file to backend
-  const formData = new FormData();
-  formData.append('userfile', file); // `userfile` must match your backend
 
-  try {
-    const res = await addImageApi(formData);
-    console.log(res.data.result); // { fieldname, filename, path, etc. }
-  } catch (err) {
-    console.error('Image upload error:', err);
-  }
+  setFieldValue("brandImage", file);
+
+  
 };
 
 
@@ -127,7 +121,6 @@ React.useEffect(() => {
   }
 }, [open]);
 
-console.log(imageCategory, '------------------------>>>>>>>>>>>')
   const DrawerList = (
     <Box
       sx={{ width: 630, p: 2 }}
@@ -150,7 +143,7 @@ console.log(imageCategory, '------------------------>>>>>>>>>>>')
               height: '100%'
             }}>
               <Box component="label" sx={{border: '1px dotted black', cursor: 'pointer', borderRadius: '5px', position: 'relative'}} className='image-upload-box-target'><img src={imageCategory == null ? "/empty-image.jpg" : imageCategory}/>
-                            <VisuallyHiddenInput type="file" name='photo' accept="image/jpg, image/jpeg, image/png" onChange={getPhoto}/>
+                            <VisuallyHiddenInput type="file" name='brandImage' accept="image/jpg, image/jpeg, image/png" onChange={handleBrandImage}/>
 
                 <AddCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#9c27b0', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
                 {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}

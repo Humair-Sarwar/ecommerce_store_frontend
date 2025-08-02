@@ -85,69 +85,112 @@ export default function CategoryModal() {
 const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState();
   const imageInputRef = React.useRef(null);
   const [imageCategory, setImageCategory] = useState(null);
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        is_active_for_buy: true,
-        name: "",
-        sort_order: 1,
-        description: "",
-        design_switch: false,
-        design_view: 1,
-        buy_meta_title: "",
-        buy_meta_description: "",
-        buy_page_description: "",
-      },
-      validationSchema: yup.object({
-        name: yup.string().min(3).max(200).required('Name is required!'),
-        sort_order: yup.number().required('Sort order is required!'),
-      }),
-      onSubmit: async (values, action) => {
-        let slug = generateSlug(values.name)
-        console.log("created category testing...", values, slug);
+ const [imageCover, setImageCover] = useState(null);
 
-        const res = await createCategoryApi({...values, level: 0, business_id: "123", slug, parent_category_id: parentCategoryIdSelect})
-        if(res.status == 201){
-          handleSuccess('New Category Added Successfully!');
-          action.resetForm();
-          setOpen(false);
-          setParentCategoryIdSelect()
-        }else{
-          handleError('Internal Server Error!');
-        }
-      },
-    });
+
+
+
+
+
+
+
+
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } =
+    useFormik({
+  initialValues: {
+    is_active_for_buy: true,
+    name: "",
+    sort_order: 1,
+    description: "",
+    design_switch: false,
+    design_view: 1,
+    buy_meta_title: "",
+    buy_meta_description: "",
+    buy_page_description: "",
+    categoryImage: null, // <-- file goes here
+  },
+  validationSchema: yup.object({
+    name: yup.string().min(3).max(200).required("Name is required!"),
+    sort_order: yup.number().required("Sort order is required!"),
+  }),
+  onSubmit: async (values, action) => {
+    const slug = generateSlug(values.name);
+    const formData = new FormData();
+
+    formData.append("business_id", "123");
+    formData.append("level", "0");
+    formData.append("slug", slug);
+    if (parentCategoryIdSelect) {
+      formData.append("parent_category_id", parentCategoryIdSelect);
+    }
+    formData.append("is_active_for_buy", values.is_active_for_buy.toString());
+    formData.append("name", values.name);
+    formData.append("sort_order", values.sort_order.toString());
+    formData.append("description", values.description);
+    formData.append("design_switch", values.design_switch.toString());
+    formData.append("design_view", values.design_view.toString());
+    formData.append("buy_meta_title", values.buy_meta_title);
+    formData.append("buy_meta_description", values.buy_meta_description);
+    formData.append("buy_page_description", values.buy_page_description);
+
+    if (values.categoryImage instanceof File) {
+      formData.append("categoryImage", values.categoryImage, values.categoryImage.name);
+    }
+    if (values.coverImage instanceof File) {
+      formData.append("coverImage", values.coverImage, values.coverImage.name);
+    }
+    try {
+      const res = await createCategoryApi(formData); // must accept multipart/form-data
+      if (res.status === 201) {
+        handleSuccess("New Category Added Successfully!");
+        action.resetForm();
+        setOpen(false);
+        setParentCategoryIdSelect();
+        setImageCategory(null)
+        setImageCover(null)
+      } else {
+        handleError("Internal Server Error!");
+      }
+    } catch (err) {
+      handleError("Upload failed!");
+      console.error(err);
+    }
+  },
+});
 
     const handleTargetParentCategoryId = (parent_category_id) => {
       setParentCategoryIdSelect(parent_category_id)
     }
     const nameInputRef = React.useRef(null);
 
-    const getPhoto = async (e) => {
-  const file = e.target.files[0];
+   
+
+ const getCategoryImage = async (e) => {
+ const file = e.target.files?.[0];
   if (!file) return;
 
-  // Show preview
+  // preview
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onloadend = () => {
-    setImageCategory(reader.result); // this is just for preview
+    setImageCategory(reader.result);
   };
 
-  // Upload the actual file to backend
-  const formData = new FormData();
-  formData.append('userfile', file); // `userfile` must match your backend
-
-  try {
-    const res = await addImageApi(formData);
-    console.log(res.data.result); // { fieldname, filename, path, etc. }
-  } catch (err) {
-    console.error('Image upload error:', err);
-  }
+  setFieldValue("categoryImage", file);
 };
+const getCoverImage = async (e) => {
+ const file = e.target.files?.[0];
+  if (!file) return;
 
+  // preview
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+    setImageCover(reader.result);
+  };
 
-
+  setFieldValue("coverImage", file);
+};
 
 
 React.useEffect(() => {
@@ -157,8 +200,6 @@ React.useEffect(() => {
     }, 100); // Small delay to ensure DOM is ready
   }
 }, [open]);
-
-console.log(imageCategory, '------------------------>>>>>>>>>>>')
   const DrawerList = (
     <Box
       sx={{ width: 630, p: 2 }}
@@ -180,13 +221,13 @@ console.log(imageCategory, '------------------------>>>>>>>>>>>')
               height: '100%'
             }}>
               <Box component="label" sx={{border: '1px dotted black', cursor: 'pointer', borderRadius: '5px', position: 'relative'}} className='image-upload-box-target'><img src={imageCategory == null ? "/empty-image.jpg" : imageCategory}/>
-                            <VisuallyHiddenInput type="file" name='photo' accept="image/jpg, image/jpeg, image/png" onChange={getPhoto}/>
+                            <VisuallyHiddenInput type="file" name='categoryImage' accept="image/jpg, image/jpeg, image/png" onChange={getCategoryImage}/>
 
                 <AddCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#9c27b0', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
                 {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
               </Box>
-              <Box component="label" sx={{border: '1px dotted black', cursor: 'pointer', borderRadius: '5px', position: 'relative', ml: 1}} className='image-upload-box-target-cover-img'><img src="/empty-image.jpg"/>
-              <VisuallyHiddenInput type="file" name='photo' accept="image/jpg, image/jpeg, image/png" ref={imageInputRef}/>
+              <Box component="label" sx={{border: '1px dotted black', cursor: 'pointer', borderRadius: '5px', position: 'relative', ml: 1}} className='image-upload-box-target-cover-img'><img src={imageCover == null ?  "/empty-image.jpg" : imageCover}/>
+              <VisuallyHiddenInput type="file" name='coverImage' accept="image/jpg, image/jpeg, image/png" onChange={getCoverImage}/>
                 <AddCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#9c27b0', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
                 {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
               </Box>

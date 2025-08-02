@@ -32,7 +32,7 @@ a {
   display: flex;
   align-items: center;
   margin-bottom: 0;
-  animation: scroll1 80s linear infinite;
+  animation: scroll1 55s linear infinite;
   padding: 0;
 }
 
@@ -102,7 +102,7 @@ a {
   display: flex;
   align-items: center;
   margin-bottom: 0;
-  animation: scroll2 35s linear infinite;
+  animation: scroll2 25s linear infinite;
   padding: 0;
 }
 

@@ -6,7 +6,6 @@ const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
     withCredentials: false,
     headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
     }
 });
@@ -136,6 +135,7 @@ export const getCategoriesFilterBaseApi = async ({category})=>{
 
 
 export const addImageApi = async (data)=>{
+   
     let response;
     try {
         response = await api.post('/api/add/image', data);

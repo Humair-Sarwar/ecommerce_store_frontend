@@ -98,16 +98,16 @@ const nextCategoryOpen = (slug)=>{
   getFilterListingPage();
 }, [category]);
 
-
+console.log(filterCategoryData)
   return (
     <>
-      <Box sx={{ position: "relative", pt: 6, backgroundColor: "#f0f0f0" }}>
+      {filterCategoryData?.parent_category?.cover_image ? <Box sx={{ position: "relative", pt: 6, backgroundColor: "#f0f0f0" }}>
         <img
-          src="/High-Tech-Devices-Eclat-UK_1.png"
+          src={import.meta.env.VITE_BASE_URL+'/uploads/'+filterCategoryData?.parent_category?.cover_image}
           className="banner-image-style"
           alt=""
         />
-        <Box className="featured-product-box-target">
+         <Box className="featured-product-box-target">
           <Typography
             variant="h5"
             sx={{
@@ -148,9 +148,10 @@ const nextCategoryOpen = (slug)=>{
                 </Typography>
               </Box>
             </Box>
-          </Link>
+          </Link> 
+          
         </Box>
-      </Box>
+      </Box>: ''}
       <Box
         sx={{
           backgroundColor: "#f0f0f0",
@@ -189,7 +190,7 @@ const nextCategoryOpen = (slug)=>{
         {filterCategoryData?.child_category?.map((list) => (
           <Box onClick={()=>nextCategoryOpen(list.slug)} className="box-features-style" key={list.id}>
            <img
-              src={list?.image ? "/Smart-Phones-Products-Eclat-UK_c1a1eb66-211c-4cb7-987b-dc08a6e1ab40.png" : "/empty-image.jpg"}
+              src={list?.image ? import.meta.env.VITE_BASE_URL+'/uploads/'+list?.image : "/empty-image.jpg"}
               alt=""
             />
             <Typography
