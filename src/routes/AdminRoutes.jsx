@@ -1,4 +1,5 @@
 import AdminLayout from "../layouts/Website/AdminLayout";
+import Brands from "../pages/vendor/Brands";
 import Categories from "../pages/vendor/Categories";
 import Dashboard from "../pages/vendor/Dashboard";
 import Products from "../pages/vendor/Products";
@@ -20,6 +21,7 @@ const AdminRoutes = [
       { path: "orders/sales", element: <PrivateRoute><SaleOrders /></PrivateRoute> },
       { path: "categories", element: <PrivateRoute><Categories /></PrivateRoute> },
       { path: "settings/site-settings", element: <PrivateRoute><SiteSettings /></PrivateRoute> },
+       { path: "brands", element: <PrivateRoute><Brands /></PrivateRoute> },
     ],
   },
 ];

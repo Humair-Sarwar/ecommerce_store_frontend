@@ -13,6 +13,11 @@ import { getWebsiteCategoriesApi } from "../../utils/apis/APIs";
 import { handleError } from "../../toast";
 
 export const Home = () => {
+  
+  useEffect(()=>{
+    getCategoriesList();
+  }, [])
+  
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -56,6 +61,11 @@ export const Home = () => {
   const [categoriesListResult, setCategoriesListResult] = useState([]);
   const navigate = useNavigate();
 
+  
+
+  
+
+
   const getCategoriesList = async () => {
     let res = await getWebsiteCategoriesApi();
     if(res.status == 200){
@@ -65,10 +75,6 @@ export const Home = () => {
       handleError('Internal Server Error!')
     }
   }
-
-  useEffect(()=>{
-    getCategoriesList();
-  }, [])
 
   return (
     <>

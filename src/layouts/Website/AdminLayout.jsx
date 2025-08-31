@@ -3,11 +3,10 @@ import { Outlet } from "react-router";
 import { AppProvider } from '@toolpad/core/AppProvider';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import LayersIcon from '@mui/icons-material/Layers';
 import CircleIcon from '@mui/icons-material/Circle';
 import CategoryIcon from '@mui/icons-material/Category';
 import SettingsIcon from '@mui/icons-material/Settings';
-
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 
 
@@ -45,6 +44,12 @@ const NAVIGATION = [
     segment: 'vendor/categories',
     title: 'Categories',
     icon: <CategoryIcon />,
+  },
+
+  {
+    segment: 'vendor/brands',
+    title: 'Brands',
+    icon: <LocalOfferIcon />,
   },
 
   {
