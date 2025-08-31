@@ -102,7 +102,7 @@ const {
       const slug = await generateSlug(values.name);
 
       console.log(values, "form values ", slug);
-      //  setStep2(true);
+       setStep2(true);
 }
 
   });
