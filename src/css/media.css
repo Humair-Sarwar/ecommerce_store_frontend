@@ -85,6 +85,27 @@
 .left-detail-bottom-content-sec-style h2{
 font-size: 2rem;
 }
+
+.admin-side-style{
+    left: -280px;
+    top: 60px;
+}
+.admin-side-style-show{
+    left: 0px;
+    z-index: 3;
+    top: 60px;
+}
+.admin-layout-full{
+  margin-left: 0; 
+    width: 100%;
+}
+.menu-mobile-btn{
+  display: inline-block !important;
+}
+.dashboard-img-target img{
+  height: auto;
+  width: 100%;
+}
 }
 
 @media(max-width: 767px){

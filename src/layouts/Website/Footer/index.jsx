@@ -29,7 +29,9 @@ export default function Footer() {
               <Box>
                 <Typography variant="h6" sx={{fontWeight: '600', fontSize: '15px'}}>About the Shop</Typography>
               <Typography variant="body1" sx={{fontSize: '15px', textWrap: 'wrap', mr: 7}} my={2} color="rgb(26 26 26 / 70%)">
-                We deliver your packages swiftly and securely across the city — same day, every day. Trusted by individuals and businesses alike.
+                Welcome to Éclat Tech, your ultimate destination for cutting-edge tech solutions! Experience the perfect blend of quality, affordability, and convenience with us.
+<br /><br />
+As your trusted tech partner, We bring you an extensive range of products, including "Like new" and "Refurbished" tech, ensuring there's something for every budget and preference!
               </Typography>
               </Box>
             </Grid>

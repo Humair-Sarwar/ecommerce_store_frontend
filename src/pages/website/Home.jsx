@@ -135,7 +135,7 @@ export const Home = () => {
   return(
     <Box className="box-features-style" onClick={()=>navigate(`/buy/products/${list?.category?.slug}/1`)}>
             <img
-              src={list.category?.image ? "/Smart-Phones-Products-Eclat-UK_c1a1eb66-211c-4cb7-987b-dc08a6e1ab40.png" : "/empty-image.jpg"}
+              src={list.category?.image ? import.meta.env.VITE_BASE_URL+'/uploads/'+list.category.image : "/empty-image.jpg"}
               alt=""
             />
             <Typography

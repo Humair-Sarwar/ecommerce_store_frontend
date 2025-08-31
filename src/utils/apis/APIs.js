@@ -6,7 +6,6 @@ const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
     withCredentials: false,
     headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
     }
 });
@@ -136,6 +135,7 @@ export const getCategoriesFilterBaseApi = async ({category})=>{
 
 
 export const addImageApi = async (data)=>{
+   
     let response;
     try {
         response = await api.post('/api/add/image', data);
@@ -160,12 +160,77 @@ export const createBrandApi = async (data)=>{
     return response;
 }
 
-export const getBrandsApi = async ({business_id})=>{
+export const getBrandsApi = async ({business_id, search, page,
+          pageSize})=>{
     let response;
     try {
          response = await api.get('/api/vendor/brands', {
       params: {
-        business_id
+        business_id,
+        search, 
+        page,
+          pageSize
+      }
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+export const deleteSelectedBrandsApi = async (body)=>{
+    let response;
+    try {
+         response = await api.delete('/api/vendor/brands', {
+      data: body,
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+export const deleteBrandApi = async (body)=>{
+    let response;
+    try {
+         response = await api.delete('/api/vendor/brand', {
+      data: body,
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+export const updateBrandActiveApi = async (data) => {
+
+    let response;
+    try {
+         response = await api.put('/api/vendor/brands/is-active', data);
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+export const updateBrandApi = async (data) => {
+
+    let response;
+    try {
+         response = await api.put('/api/vendor/brand', data);
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+
+export const getBrandsForProductsApi = async ({business_id, is_active})=>{
+    let response;
+    try {
+         response = await api.get('/api/vendor/brands/others', {
+      params: {
+        business_id, is_active
       }
     });
     } catch (error) {

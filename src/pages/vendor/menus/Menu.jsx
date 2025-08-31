@@ -78,6 +78,7 @@ let handleChangeMenuTitle = (e)=> {
         label="Menu Title"
         variant="outlined"
         fullWidth
+        color="secondary"
         size="small"
         sx={{ mb: 1, mt: 1 }}
         onChange={handleChangeMenuTitle}
