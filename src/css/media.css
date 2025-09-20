@@ -34,6 +34,14 @@
  
     width: 65px;
 }
+.customer-dashb-target{
+  flex-direction: column !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+.c-sidebar-target{
+  width: 100% !important;
+}
 }
 
 
@@ -106,6 +114,7 @@ font-size: 2rem;
   height: auto;
   width: 100%;
 }
+
 }
 
 @media(max-width: 767px){
@@ -222,6 +231,39 @@ font-size: 1.75rem;
   width: 100%;
 }
 
+.cart-p-heading-target{
+  display: none !important;
+}
+.right-cart-content-side-cart-page{
+  display: flex !important;
+  padding-bottom: 0 !important;
+}
+.total-p-target-cart{
+  display: flex !important;
+  margin-left: 25px;
+}
+.customer-order-steps-acitve-color, .customer-order-steps-inacitve-color{
+  font-size: 9px !important;
+}
+.customer-order-steps-acitve, .customer-order-steps-inacitve{
+  width: 35px !important;
+  height: 35px !important;
+
+}
+.customer-order-steps-acitve svg, .customer-order-steps-inacitve svg{
+  font-size:18px !important;
+}
+.customer-order-steps-line{
+  width: 100% !important;
+  height: 3px !important;
+}
+.correct-tick-icon-box-target-set{
+  width: 14px !important;
+  height: 14px !important;
+}
+.correct-tick-icon-box-target-set svg{
+  font-size: 10px !important;
+}
 }
 
 @media(max-width: 500px){

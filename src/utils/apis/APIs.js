@@ -238,3 +238,18 @@ export const getBrandsForProductsApi = async ({business_id, is_active})=>{
     }
     return response;
 }
+
+
+export const getMediaApi = async ({business_id})=>{
+    let response;
+    try {
+         response = await api.get('/api/vendor/media', {
+      params: {
+        business_id
+      }
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}

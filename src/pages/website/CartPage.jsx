@@ -3,12 +3,16 @@ import React from 'react'
 import { Link } from 'react-router'
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router';
+import CustomerOrderSteps from '../../components/CustomerOrderSteps';
 
 const CartPage = () => {
+  const navigate = useNavigate()
   return (
     <>
         <Box sx={{ backgroundColor: "#f0f0f0", py: 5}}>
         <Container sx={{maxWidth: '1470px !important'}}>
+          <CustomerOrderSteps/>
             <Box>
                   <Typography
           component={"h2"}
@@ -22,7 +26,7 @@ const CartPage = () => {
                   <Grid size={{ xs: 12, sm: 12, md: 12, lg: 8 }}>
                     <Box sx={{mr: {lg: 4}}}>
       <Table sx={{ minWidth: '100%' }}>
-        <TableHead>
+        <TableHead className='cart-p-heading-target'>
           <TableRow>
             <TableCell sx={{fontWeight: '600', fontSize: '15px', py: 3}}>Product</TableCell>
             <TableCell align="center"  sx={{fontWeight: '600', fontSize: '15px', py: 3}}>Quantity</TableCell>
@@ -34,11 +38,11 @@ const CartPage = () => {
 
 
              <TableRow
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              sx={{ borderBottom: '1px solid rgb(224 224 224)'}}
                className='mini-cart-product-list-style'
                
             >
-              <TableCell component="td" sx={{display: 'flex', width: '100%', p: 0, px: 2}}>
+              <TableCell component="td" sx={{display: 'flex', width: '100%', p: 0, px: 2, border: '0 !important'}}>
                  <Box className='left-cart-image-side'>
                 <img src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png" alt="" />
             </Box>
@@ -52,7 +56,7 @@ const CartPage = () => {
                 
             </Box>
               </TableCell>
-              <TableCell align="center" component="td" className='right-cart-content-side-cart-page'>
+              <TableCell align="center" component="td" className='right-cart-content-side-cart-page' sx={{border: '0 !important'}}>
                 <Box  sx={{textAlign: 'center'}} className='inner-right-rmv-row'>
                     <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}} className='inc-dec-btn-row'>
                         <Button className="dec"><RemoveIcon sx={{fontSize: '20px'}}/></Button>
@@ -63,7 +67,7 @@ const CartPage = () => {
                 </Box>
               </TableCell>
 
-                <TableCell align="right" component="td" sx={{width: '20%'}}><Typography>£2,255.00
+                <TableCell align="right" component="td" sx={{width: '20%', border: '0 !important'}} className='total-p-target-cart'><Typography>£2,255.00
 
 </Typography></TableCell>
 
@@ -76,7 +80,47 @@ const CartPage = () => {
             </TableRow>
 
 
+ <TableRow
+              sx={{ borderBottom: '1px solid rgb(224 224 224)'  }}
+               className='mini-cart-product-list-style'
+               
+            >
+              <TableCell component="td" sx={{display: 'flex', width: '100%', p: 0, px: 2, border: '0 !important'}}>
+                 <Box className='left-cart-image-side'>
+                <img src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png" alt="" />
+            </Box>
 
+              <Box className='right-cart-content-side'>
+                <Box className='title-content'>
+                    <Link to={'/'}><Typography variant="h3">PlayStation 5 Pro Console - Advanced Graphics & Ultra-High Definition Gaming Console</Typography></Link>
+                    <Typography variant="body1" sx={{marginTop: '4px'}}>£600.00</Typography>
+                    <Typography variant="body1">Like New</Typography>
+                </Box>
+                
+            </Box>
+              </TableCell>
+              <TableCell align="center" component="td" className='right-cart-content-side-cart-page' sx={{border: '0 !important'}}>
+                <Box  sx={{textAlign: 'center'}} className='inner-right-rmv-row'>
+                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}} className='inc-dec-btn-row'>
+                        <Button className="dec"><RemoveIcon sx={{fontSize: '20px'}}/></Button>
+                        <input type="number" />
+                          <Button className="inc"><AddIcon sx={{fontSize: '20px'}}/></Button>
+                    </Box>
+                    <Typography className="rmv-btn-style">Remove</Typography>
+                </Box>
+              </TableCell>
+
+                <TableCell align="right" component="td" sx={{width: '20%', border: '0 !important'}} className='total-p-target-cart'><Typography>£2,255.00
+
+</Typography></TableCell>
+
+
+
+
+
+
+
+            </TableRow>
 
 
 
@@ -104,7 +148,7 @@ const CartPage = () => {
           className="note-textarea-box-style"
           sx={{mb: 3}}
         />
-        <Button className="custom-primary-btn" fullWidth><Box component='span' sx={{mr: 1, display: 'flex', alignItems: 'center'}}><svg role="presentation" fill="none" focusable="false" stroke-width="1.5" width="18" height="18" class="icon icon-picto-lock" viewBox="0 0 24 24">
+        <Button className="custom-primary-btn" fullWidth onClick={()=>navigate('/cart/checkouts/5a0bc791-941d-43dd-b991-d60677ef390d/information')}><Box component='span' sx={{mr: 1, display: 'flex', alignItems: 'center'}}><svg role="presentation" fill="none" focusable="false" stroke-width="1.5" width="18" height="18" class="icon icon-picto-lock" viewBox="0 0 24 24">
         <path d="M3.236 18.182a5.071 5.071 0 0 0 4.831 4.465 114.098 114.098 0 0 0 7.865-.001 5.07 5.07 0 0 0 4.831-4.464 23.03 23.03 0 0 0 .165-2.611c0-.881-.067-1.752-.165-2.61a5.07 5.07 0 0 0-4.83-4.465c-1.311-.046-2.622-.07-3.933-.069a109.9 109.9 0 0 0-3.933.069 5.07 5.07 0 0 0-4.83 4.466 23.158 23.158 0 0 0-.165 2.609c0 .883.067 1.754.164 2.61Z" fill="currentColor" fill-opacity="0" stroke="currentColor"></path>
         <path d="M17 8.43V6.285A5 5 0 0 0 7 6.286V8.43" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
         <path d="M12 17.714a2.143 2.143 0 1 0 0-4.286 2.143 2.143 0 0 0 0 4.286Z" stroke="currentColor"></path>
