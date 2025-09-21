@@ -2044,3 +2044,27 @@ a {
 .change-btn-style-g:hover{
   color: #8a17c4;
 }
+
+.payment-input-target-set{
+  border: 1px solid #cccccc !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  background-color: white !important;
+}
+
+.payment-input-target-set .MuiInputBase-root::after, .payment-input-target-set .MuiInputBase-root::before{
+  border: 0 !important;
+}
+.payment-input-target-set .MuiInputBase-root {
+  background-color: white !important;
+  padding: 7px !important;
+}
+.payment-input-target-set .MuiFormLabel-root{
+  font-size: 19px !important;
+  color: black !important;
+  margin-left: 7px !important;
+  margin-top: 7px !important;
+}
+.payment-input-target-set .MuiInputBase-input{
+  padding-top: 30px !important;
+}

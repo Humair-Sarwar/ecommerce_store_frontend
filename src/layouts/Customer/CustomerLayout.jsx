@@ -13,7 +13,7 @@ const CustomerLayout = () => {
         
         <Header/>
         <Box sx={{ backgroundColor: "#f0f0f0" }} px={5}>
-        <Container sx={{maxWidth: '1470px !important', py: 5, display: 'flex', gap: 4}} className='customer-dashb-target'>
+        <Container sx={{maxWidth: '1470px !important', py: 5, display: 'flex', gap: 4, alignItems: 'start'}} className='customer-dashb-target'>
             <CustomerSideBar/>
             <Outlet/>
         </Container>

@@ -150,6 +150,26 @@ const CustomerOrderSteps = ({ level }) => {
             position: "relative",
           }}
         >
+            {(level == 4 || level == 5) && (
+            <Box
+              className="correct-tick-icon-box-target-set"
+              sx={{
+                borderRadius: "50%",
+                width: "20px",
+                height: "20px",
+                backgroundColor: "#00a341",
+                color: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                right: "-5px",
+                top: "-2px",
+              }}
+            >
+              <DoneIcon sx={{ fontSize: "16px" }} />
+            </Box>
+          )}
           <Typography
             sx={{
               fontSize: "13px",
@@ -194,7 +214,26 @@ const CustomerOrderSteps = ({ level }) => {
             alignItems: "center",
             position: "relative",
           }}
-        >
+        >{(level == 5) && (
+            <Box
+              className="correct-tick-icon-box-target-set"
+              sx={{
+                borderRadius: "50%",
+                width: "20px",
+                height: "20px",
+                backgroundColor: "#00a341",
+                color: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                right: "-5px",
+                top: "-2px",
+              }}
+            >
+              <DoneIcon sx={{ fontSize: "16px" }} />
+            </Box>
+          )}
           <Typography
             sx={{
               fontSize: "13px",
@@ -239,7 +278,26 @@ const CustomerOrderSteps = ({ level }) => {
             alignItems: "center",
             position: "relative",
           }}
-        >
+        >{(level == 5) && (
+            <Box
+              className="correct-tick-icon-box-target-set"
+              sx={{
+                borderRadius: "50%",
+                width: "20px",
+                height: "20px",
+                backgroundColor: "#00a341",
+                color: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                right: "-5px",
+                top: "-2px",
+              }}
+            >
+              <DoneIcon sx={{ fontSize: "16px" }} />
+            </Box>
+          )}
           <Typography
             sx={{
               fontSize: "13px",

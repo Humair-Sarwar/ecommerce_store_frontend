@@ -5,6 +5,12 @@ import { NavLink } from "react-router";
 
 import OrderRightSummary from "./OrderRightSummary";
 import PaymentMethods from "./PaymentMethods";
+import { Elements } from "@stripe/react-stripe-js";
+
+
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("pk_test_YOUR_PUBLISHABLE_KEY");
 
 const Payments = () => {
   return (
@@ -63,8 +69,9 @@ California, H 8, United Kingdom, Cal, 43242</Typography>
                   Payment
                 </Typography>
                 <Typography sx={{fontSize: '15px', color: '#929292ff', mb: 2}}>All transactions are secure and encrypted....</Typography>
-                
+                 <Elements stripe={stripePromise}>
                 <PaymentMethods/>
+                </Elements>
                 </Box>
                 
                   
