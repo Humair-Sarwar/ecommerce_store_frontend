@@ -1,7 +1,9 @@
+import ScrollToTop from "../components/ScrollToTop";
 import AdminLayout from "../layouts/Website/AdminLayout";
 import Brands from "../pages/vendor/Brands";
 import Categories from "../pages/vendor/Categories";
 import Dashboard from "../pages/vendor/Dashboard";
+import Media from "../pages/vendor/Media";
 import Pages from "../pages/vendor/Pages";
 import ReturnPolicy from "../pages/vendor/Policies/ReturnPolicy";
 import WarrantyPolicy from "../pages/vendor/Policies/WarrantyPolicy";
@@ -16,9 +18,12 @@ const AdminRoutes = [
   {
     path: "/vendor",
     element: (
+      <>
+       <ScrollToTop/>
       <PrivateRoute>
         <AdminLayout />
       </PrivateRoute>
+      </>
     ),
     children: [
       { path: "dashboard", element:  <PrivateRoute><Dashboard /></PrivateRoute> },
@@ -32,6 +37,7 @@ const AdminRoutes = [
        { path: "warranty-policy", element: <PrivateRoute><WarrantyPolicy/></PrivateRoute> },
        { path: "return-policy", element: <PrivateRoute><ReturnPolicy/></PrivateRoute> },
        { path: "pages", element: <PrivateRoute><Pages/></PrivateRoute> },
+       { path: "media", element: <PrivateRoute><Media/></PrivateRoute> },
     ],
   },
 ];

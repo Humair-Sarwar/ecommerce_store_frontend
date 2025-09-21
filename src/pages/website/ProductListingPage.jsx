@@ -35,8 +35,6 @@ function valuetext(value) {
 const minDistance = 0;
 
 const ProductListingPage = () => {
-   
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [value1, setValue1] = React.useState([0, 100]);
 
   const handleChange1 = (event, newValue, activeThumb) => {
@@ -67,91 +65,96 @@ const ProductListingPage = () => {
     },
   };
 
-const navigate = useNavigate()
-    const params = useParams();
-    const category = params.slug;
-    const [filterCategoryData, setFilterCategoryData] = useState({});
+  const navigate = useNavigate();
+  const params = useParams();
+  const category = params.slug;
+  const [filterCategoryData, setFilterCategoryData] = useState({});
 
+  const getFilterListingPage = async () => {
+    let res = await getCategoriesFilterBaseApi({ category });
 
-const getFilterListingPage = async () => {
-  let res = await getCategoriesFilterBaseApi({category});
-
-  if(res.status == 200){
-    if(category == 'All'){
-      console.log(res.data.parent_category, 'dddddddddddddddddddddd');
-      setFilterCategoryData(res.data);
-    }else{
-      setFilterCategoryData(res.data);
+    if (res.status == 200) {
+      if (category == "All") {
+        console.log(res.data.parent_category);
+        setFilterCategoryData(res.data);
+      } else {
+        setFilterCategoryData(res.data);
+      }
+    } else {
+      handleError("Internal Server Error!");
     }
-    
-  }else{
-    handleError('Internal Server Error!');
-  }
-}
-  const [stateReload, setStateReload] = useState(false)
-const nextCategoryOpen = (slug)=>{
-  navigate(`/buy/products/${slug}/1`)
-  setStateReload(!stateReload)
-}
+  };
+  const [stateReload, setStateReload] = useState(false);
+  const nextCategoryOpen = (slug) => {
+    navigate(`/buy/products/${slug}/1`);
+    setStateReload(!stateReload);
+  };
 
   useEffect(() => {
-  getFilterListingPage();
-}, [category]);
+    getFilterListingPage();
+  }, [category]);
 
-console.log(filterCategoryData)
+  console.log(filterCategoryData);
   return (
     <>
-      {filterCategoryData?.parent_category?.cover_image ? <Box sx={{ position: "relative", pt: 6, backgroundColor: "#f0f0f0" }}>
-        <img
-          src={import.meta.env.VITE_BASE_URL+'/uploads/'+filterCategoryData?.parent_category?.cover_image}
-          className="banner-image-style"
-          alt=""
-        />
-         <Box className="featured-product-box-target">
-          <Typography
-            variant="h5"
-            sx={{
-              fontSize: "12px",
-              color: "white",
-              fontWeight: "600",
-              textAlign: "end",
-              mb: 1,
-              mr: 2,
-            }}
-          >
-            Featured product
-          </Typography>
-          <Link to={"/"} className="f-product-box">
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img
-                src="/apple-iphone-16-pro-unlocked-1tb-smartphone-with-apple-intelligence-1.png"
-                alt=""
-              />
-              <Box sx={{ mx: 2 }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "white",
-                    width: "180px",
-                    lineHeight: "25px",
-                  }}
-                >
-                  Apple iPhone 15 Pro Max Unlocked - 1 TB Storage
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "rgb(255 255 255 / 70%)", marginTop: "5px" }}
-                >
-                  £1,150.00
-                </Typography>
+      {filterCategoryData?.parent_category?.cover_image ? (
+        <Box sx={{ position: "relative", pt: 6, backgroundColor: "#f0f0f0" }}>
+          <img
+            src={
+              import.meta.env.VITE_BASE_URL +
+              "/uploads/" +
+              filterCategoryData?.parent_category?.cover_image
+            }
+            className="banner-image-style"
+            alt=""
+          />
+          <Box className="featured-product-box-target">
+            <Typography
+              variant="h5"
+              sx={{
+                fontSize: "12px",
+                color: "white",
+                fontWeight: "600",
+                textAlign: "end",
+                mb: 1,
+                mr: 2,
+              }}
+            >
+              Featured product
+            </Typography>
+            <Link to={"/"} className="f-product-box">
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src="/apple-iphone-16-pro-unlocked-1tb-smartphone-with-apple-intelligence-1.png"
+                  alt=""
+                />
+                <Box sx={{ mx: 2 }}>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      color: "white",
+                      width: "180px",
+                      lineHeight: "25px",
+                    }}
+                  >
+                    Apple iPhone 15 Pro Max Unlocked - 1 TB Storage
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "rgb(255 255 255 / 70%)", marginTop: "5px" }}
+                  >
+                    £1,150.00
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          </Link> 
-          
+            </Link>
+          </Box>
         </Box>
-      </Box>: ''}
+      ) : (
+        ""
+      )}
       <Box
         sx={{
           backgroundColor: "#f0f0f0",
@@ -161,63 +164,87 @@ console.log(filterCategoryData)
           pb: 2,
         }}
       >
-        {filterCategoryData?.parent_category?.cover_image || filterCategoryData?.parent_category?.description == "" ? <Typography variant="h2" sx={{textAlign: 'center'}} className="p-listing-p-heading-main">
-          {filterCategoryData?.parent_category?.name}
-        </Typography> :  <Box>
-          <Typography variant="h2" sx={{fontSize: '42px', fontWeight: '500'}} className="">
-          {filterCategoryData?.parent_category?.name}
-        </Typography>
-          <Typography variant="body1" sx={{mt: 2}}>{filterCategoryData?.parent_category?.description}</Typography>
-        </Box>
-        }
-        
-        
-      </Box>
-      {filterCategoryData?.child_category?.length > 0 && <Box
-  sx={{ backgroundColor: "#f0f0f0", py: 5 }}
-  className={`${
-    filterCategoryData?.child_category?.length > 4
-      ? ""
-      : "categories-list-row-target"
-  }`}
->
-  <Container sx={{ maxWidth: "1470px !important" }}>
-    {Array.isArray(filterCategoryData?.child_category) && filterCategoryData?.child_category?.length > 0 ? (
-      <Carousel
-        responsive={responsive}
-        className="slide-carousol-service-box-set"
-      >
-        {filterCategoryData?.child_category?.map((list) => (
-          <Box onClick={()=>nextCategoryOpen(list.slug)} className="box-features-style" key={list.id}>
-           <img
-              src={list?.image ? import.meta.env.VITE_BASE_URL+'/uploads/'+list?.image : "/empty-image.jpg"}
-              alt=""
-            />
+        {filterCategoryData?.parent_category?.cover_image ||
+        filterCategoryData?.parent_category?.description == "" ? (
+          <Typography
+            variant="h2"
+            sx={{ textAlign: "center" }}
+            className="p-listing-p-heading-main"
+          >
+            {filterCategoryData?.parent_category?.name}
+          </Typography>
+        ) : (
+          <Box>
             <Typography
-              sx={{
-                mb: 2,
-                ml: 2,
-                fontWeight: "600",
-                textAlign: "start",
-                zIndex: 2,
-                position: "absolute",
-                bottom: "5px",
-              }}
+              variant="h2"
+              sx={{ fontSize: "42px", fontWeight: "500" }}
+              className=""
             >
-              {list?.name}
+              {filterCategoryData?.parent_category?.name}
             </Typography>
-            <Box className="arrow-btn-style">
-              <KeyboardArrowRightIcon />
-            </Box>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              {filterCategoryData?.parent_category?.description}
+            </Typography>
           </Box>
-        ))}
-      </Carousel>
-    ) : (
-      ''
-    )}
-  </Container>
-</Box>}
-
+        )}
+      </Box>
+      {filterCategoryData?.child_category?.length > 0 && (
+        <Box
+          sx={{ backgroundColor: "#f0f0f0", py: 5 }}
+          className={`${
+            filterCategoryData?.child_category?.length > 4
+              ? ""
+              : "categories-list-row-target"
+          }`}
+        >
+          <Container sx={{ maxWidth: "1470px !important" }}>
+            {Array.isArray(filterCategoryData?.child_category) &&
+            filterCategoryData?.child_category?.length > 0 ? (
+              <Carousel
+                responsive={responsive}
+                className="slide-carousol-service-box-set"
+              >
+                {filterCategoryData?.child_category?.map((list) => (
+                  <Box
+                    onClick={() => nextCategoryOpen(list.slug)}
+                    className="box-features-style"
+                    key={list.id}
+                  >
+                    <img
+                      src={
+                        list?.image
+                          ? import.meta.env.VITE_BASE_URL +
+                            "/uploads/" +
+                            list?.image
+                          : "/empty-image.jpg"
+                      }
+                      alt=""
+                    />
+                    <Typography
+                      sx={{
+                        mb: 2,
+                        ml: 2,
+                        fontWeight: "600",
+                        textAlign: "start",
+                        zIndex: 2,
+                        position: "absolute",
+                        bottom: "5px",
+                      }}
+                    >
+                      {list?.name}
+                    </Typography>
+                    <Box className="arrow-btn-style">
+                      <KeyboardArrowRightIcon />
+                    </Box>
+                  </Box>
+                ))}
+              </Carousel>
+            ) : (
+              ""
+            )}
+          </Container>
+        </Box>
+      )}
 
       <Box sx={{ backgroundColor: "#f0f0f0", py: 5 }}>
         <Container sx={{ maxWidth: "1470px !important" }}>

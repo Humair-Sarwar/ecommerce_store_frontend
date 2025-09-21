@@ -13,15 +13,9 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import React from "react";
 import Paper from "@mui/material/Paper";
-import LocalMallIcon from '@mui/icons-material/LocalMall';
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import QrCode2Icon from '@mui/icons-material/QrCode2';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
