@@ -2,8 +2,9 @@ import { Box, Button, Divider, Grid, Typography } from "@mui/material";
 import React from "react";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import AfterOrderCompletionSteps from "./AfterOrderCompletionSteps";
-import ChatIcon from '@mui/icons-material/Chat';
+
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ChatModal from "../../../components/ChatModal";
 
 const CustomerOrderDetails = () => {
   return (
@@ -133,26 +134,24 @@ Pending on:
                       </Box>
         </Box>
          <Divider/>
-        <Box sx={{p: 2}}>
-                              <Box sx={{display: 'flex', justifyContent: 'end', alignItems: 'center', mb: 1}}>
+         <Box sx={{display: 'flex', justifyContent: 'end'}}>
+ <Box sx={{p: 2, minWidth: '300px'}}>
+                              <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, width: '100%'}}>
                                 <Typography sx={{fontSize: '15px', color: '#7b7b7bff'}}>Sub Total: </Typography><Typography sx={{fontSize: '15px', fontWeight: '600'}}>£22.00</Typography>
                               </Box>
-                              <Box sx={{display: 'flex', justifyContent: 'end', alignItems: 'center', mb: 1}}>
+                              <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, width: '100%'}}>
                                 <Typography sx={{fontSize: '15px', color: '#7b7b7bff'}}>Express: </Typography><Typography sx={{fontSize: '15px', fontWeight: '600'}}>£5.00</Typography>
                               </Box>
-                              <Box sx={{display: 'flex', justifyContent: 'end', alignItems: 'center', mb: 1}}>
+                              <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, width: '100%'}}>
                                 <Typography sx={{fontSize: '19px', color: '#7b7b7bff'}}>Total: </Typography><Typography sx={{fontSize: '19px', fontWeight: '600'}}>£27.00</Typography>
                               </Box>
         </Box>
+         </Box>
+       
 
          <Box sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', px: 2, pb: 2, flexDirection: {lg: 'row', md: 'row', sm: 'column', xs: 'column'}}}>
-                                    <Button
-          className="custom-primary-btn-admin-side"
-          onClick={()=>handleNextStep()}
-          sx={{whiteSpace: 'nowrap', ml: 1, mb: 1}}
-        >
-          <ChatIcon sx={{mr: 1}}/> Contact
-        </Button>
+                                    
+        <ChatModal/>
           <Button
           className="custom-secondary-btn-admin-side"
           onClick={()=>handleNextStep()}
