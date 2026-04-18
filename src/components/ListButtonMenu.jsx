@@ -16,6 +16,7 @@ import { useNavigate } from "react-router";
 import SpeedIcon from '@mui/icons-material/Speed';
 import CategoryIcon from '@mui/icons-material/Category';
 import { handleSuccess } from "../toast";
+import { useLogout } from "../hook/auth/useLogout";
 
 const settings = [
   {
@@ -62,6 +63,7 @@ const settings = [
 
 function ListButtonMenu({userType}) {
   const navigate = useNavigate()
+  const logoutMutation = useLogout();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleOpenUserMenu = (event) => {
@@ -73,15 +75,21 @@ function ListButtonMenu({userType}) {
     navigate(url)
   };
 
-  const handleLogout = ()=>{
-  localStorage.removeItem('token');
-  localStorage.removeItem('user_id');
-  localStorage.removeItem('user_type');
-  setAnchorElUser(null);
-  window.dispatchEvent(new Event("storage"));
-  handleSuccess('You are logout!')
-  navigate('/')
-}
+  const handleLogout = () => {
+  logoutMutation.mutate(undefined, {
+    onSuccess: () => {
+      localStorage.clear();
+      setAnchorElUser(null);
+      handleSuccess("You are logout!");
+      navigate("/");
+    },
+    onError: () => {
+      localStorage.clear();
+      setAnchorElUser(null);
+      navigate("/");
+    },
+  });
+};
 
   return (
     <Toolbar disableGutters sx={{ minHeight: "0px !important" }}>

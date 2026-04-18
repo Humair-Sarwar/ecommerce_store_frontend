@@ -51,10 +51,8 @@ export default function PreviewImage({list}) {
                                   objectFit: "cover",
                                 }}
                                 src={
-                                  list?.brand_image
-                                    ? import.meta.env.VITE_BASE_URL +
-                                      "/uploads/" +
-                                      list?.brand_image
+                                  list?.media
+                                    ? `${import.meta.env.VITE_BASE_URL}/storage/${list.media.media_path}`
                                     : "/empty-image.jpg"
                                 }
                                 alt=""
@@ -84,10 +82,8 @@ export default function PreviewImage({list}) {
         <DialogContent dividers>
         <Box sx={{ width: '400px'}}>
             <img style={{width: '100%', height: '200px', objectFit: 'contain'}} src={
-                                  list?.brand_image
-                                    ? import.meta.env.VITE_BASE_URL +
-                                      "/uploads/" +
-                                      list?.brand_image
+                                  list?.media
+                                    ? `${import.meta.env.VITE_BASE_URL}/storage/${list.media.media_path}`
                                     : "/empty-image.jpg"
                                 } alt="" />
         </Box>

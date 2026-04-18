@@ -6,6 +6,7 @@ import {
   debounce,
   IconButton,
   Pagination,
+  Skeleton,
   Switch,
   TextField,
   Tooltip,
@@ -25,9 +26,7 @@ import BrandModal from "./BrandCreateModal";
 
 import Paper from "@mui/material/Paper";
 import {
-  deleteBrandApi,
   deleteSelectedBrandsApi,
-  getBrandsApi,
   updateBrandActiveApi,
 } from "../../utils/apis/APIs";
 import { handleSuccess } from "../../toast";
@@ -35,35 +34,20 @@ import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
 import LoaderSpinner from "../../components/LoaderSpinner";
 import PreviewImage from "../../components/PreviewImage";
 import ViewBrandDetails from "./ViewBrandDetails";
+import { fetchBrands, useDeleteBrand, useDeleteSelectedBrands, useUpdateBrandStatus } from "../../hook/vendor/useBrand";
+import PaginationSet from "../../components/PaginationSet";
 
 const label = { inputProps: { "aria-label": "Color switch demo" } };
 
 const Brands = () => {
-  const [reload, setReload] = useState(false);
-  const [getBrandsDataResult, setBrandsDataResult] = useState([]);
   const [selectedBrandIds, setSelectedBrandIds] = useState([]);
-  const [loading, isLoading] = useState(true);
-  const [searchVal, setSearchVal] = useState("");
-
+  const [search, setSearch] = useState("");
+const deleteSelectedMutation = useDeleteSelectedBrands();
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 5;
-
-  const getBrandsData = async () => {
-    let res = await getBrandsApi({ business_id: "123", page, pageSize });
-    if (res.status == 200) {
-      setBrandsDataResult(res.data);
-      isLoading(false);
-      setTotalPages(res.data.totalPages || 1);
-    }
-  };
-  const handleSetReloadFunc = () => {
-    setReload(!reload);
-    setSearchVal("");
-  };
-  useEffect(() => {
-    getBrandsData();
-  }, [reload, setReload, page]);
+  const [per_page, setPerPage] = useState(15);
+  const { data, isLoading } = fetchBrands(page, per_page, search);
+  const brands = data?.data || [];
+  const pagination = data?.pagination;
 
   const handleSelectBrand = (e, list) => {
     const data = {
@@ -78,7 +62,7 @@ const Brands = () => {
   };
 
   // derive all full objects once (you need business_id for each)
-  const allBrandObjects = getBrandsDataResult?.brands?.map((b) => ({
+  const allBrandObjects = brands?.map((b) => ({
     id: b.id,
     business_id: b.business_id,
   }));
@@ -100,108 +84,56 @@ const Brands = () => {
     }
   };
 
-  const handleDeleteAllSltBrands = async () => {
-    isLoading(true);
-    let res = await deleteSelectedBrandsApi(selectedBrandIds);
-    if (res.status == 200) {
-      setReload(!reload);
-      setSelectedBrandIds([]);
-      handleSuccess("Selected Brands Deleted Successfully!");
-      isLoading(false);
-      setSearchVal("");
-      setPage(1);
-    }
-  };
+  const handleDeleteAllSltBrands = () => {
+  const selectedIds = selectedBrandIds.map((item) => item.id);
+
+  deleteSelectedMutation.mutate(selectedIds, {
+    onSuccess: (res) => {
+      handleSuccess(res?.message || "Brands deleted successfully");
+      setSelectedBrandIds([]); // important reset
+    },
+    onError: () => {
+      handleError("Failed to delete brands");
+    },
+  });
+};
+  const deleteBrandMutation = useDeleteBrand();
+  const updateStatusMutation = useUpdateBrandStatus();
 
   const handleDeleteBrand = async (data) => {
-    let res = await deleteBrandApi(data);
-    if (res.status == 200) {
-      setReload(!reload);
-      handleSuccess("Brand Deleted Successfully!");
-
-      setSelectedBrandIds((prev) => prev.filter((sid) => sid.id !== data.id));
-      setSearchVal("");
-      setPage(1);
-    }
+    deleteBrandMutation.mutate(data.id, {
+    onSuccess: (res) => {
+      handleSuccess(res?.message || "Brand deleted successfully");
+      setPage(1)
+    },
+    onError: () => {
+      handleError("Failed to delete brand");
+    },
+  });
   };
 
-  const handleStatusChange = async (e, list) => {
-    const newActive = e.target.checked; // the updated value from the switch
+  const handleStatusChange = (e, list) => {
+  const newStatus = e.target.checked;
 
-    // Optional: early return if required fields are missing
-    if (!list?.id || !list?.business_id) {
-      console.warn("Missing id or business_id on list", list);
-      return;
-    }
-
-    // Build payload with the new status
-    const payload = {
+  updateStatusMutation.mutate(
+    {
       id: list.id,
-      business_id: list.business_id,
-      is_active: newActive,
-    };
-
-    try {
-      // You could do an optimistic UI update here if desired
-
-      const res = await updateBrandActiveApi(payload);
-      if (res?.status === 200) {
-        // Refresh or reconcile state
-        setReload((prev) => !prev);
-        setSearchVal("");
-      } else {
-        console.error("Failed to update status", res);
-        // Optionally show error toast / rollback if you did optimistic update
-      }
-    } catch (err) {
-      console.error("Error updating status", err);
-      // show user feedback if needed
+      status: newStatus,
+    },
+    {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Status updated");
+      },
+      onError: () => {
+        handleError("Failed to update status");
+      },
     }
-  };
-
-  const debounce = (fn, delay) => {
-    let timer;
-    return function (...argus) {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...argus), delay);
-    };
-  };
-
-  const searchInput = useCallback(
-    debounce(async (searchText) => {
-      setPage(1); // Always reset to first page on search
-      isLoading(true);
-
-      if (searchText.trim() === "") {
-        // No search - go back to paginated result
-        getBrandsData();
-        return;
-      }
-
-      try {
-        const res = await getBrandsApi({
-          business_id: "123",
-          search: searchText.trim(),
-          page: 1,
-          pageSize: 9999, // Get all matching results
-        });
-
-        if (res.status === 200) {
-          setBrandsDataResult(res.data);
-          setTotalPages(1); // Only 1 page during search
-        }
-      } catch (err) {
-        console.error("Search failed:", err);
-      } finally {
-        isLoading(false);
-      }
-    }, 2000),
-    []
   );
+};
 
   const handleSearchBrand = (e) => {
-    searchInput(e.target.value);
-    setSearchVal(e.target.value);
+    setSearch(e.target.value);
+    setPage(1);
   };
 
   return (
@@ -209,16 +141,20 @@ const Brands = () => {
       <Box
         sx={{
           backgroundColor: "#f0f0f0",
-          height: "100%",
-          width: "100%",
-          py: 3,
-          overflowY: "auto",
+          minHeight: "100vh", py: 6
         }}
       >
         <Container sx={{ maxWidth: "100% !important" }}>
-          <Box component={"h2"} sx={{ display: "flex", alignItems: "center", fontSize: '17px' }}>
+          <Box
+            component={"h2"}
+            sx={{ display: "flex", alignItems: "center", fontSize: "17px" }}
+          >
             {" "}
-            <LocalOfferIcon sx={{ mr: 1, fontSize: '17px' }} color="secondary" /> Brands
+            <LocalOfferIcon
+              sx={{ mr: 1, fontSize: "17px" }}
+              color="secondary"
+            />{" "}
+            Brands
           </Box>
           <Box
             sx={{
@@ -237,11 +173,7 @@ const Brands = () => {
                 size="small"
                 color="secondary"
                 onChange={handleSearchBrand}
-                onPaste={(e) => {
-                  // slight delay to allow pasted text to update in DOM
-                  setTimeout(() => handleSearchBrand(e), 0);
-                }}
-                value={searchVal}
+                value={search}
               />
 
               {selectedBrandIds?.length > 0 ? (
@@ -258,14 +190,16 @@ const Brands = () => {
                 ""
               )}
             </Box>
-            <BrandModal
-              handleSetReloadFunc={handleSetReloadFunc}
-              showCrtBrandBtn={true}
-              title={"Create"}
-            />
+            <BrandModal showCrtBrandBtn={true} title_heading={"Create"} />
           </Box>
 
-          <TableContainer component={Paper} sx={{ borderRadius: "15px", boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: "15px",
+              boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+            }}
+          >
             <Table
               size="small"
               sx={{ minWidth: 250 }}
@@ -293,12 +227,23 @@ const Brands = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {loading ? (
-                  <Box sx={{ my: 2 }}>
-                    <LoaderSpinner />
-                  </Box>
-                ) : getBrandsDataResult?.brands?.length > 0 ? (
-                  getBrandsDataResult?.brands?.map((list) => (
+                {isLoading ? Array.from(new Array(per_page || 5)).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell><Skeleton variant="rectangular" width={20} height={20} /></TableCell>
+                      <TableCell><Skeleton variant="rounded" width={40} height={40} /></TableCell>
+                      <TableCell><Skeleton variant="text" width="80%" /></TableCell>
+                      <TableCell><Skeleton variant="text" width="60%" /></TableCell>
+                      <TableCell><Skeleton variant="rectangular" width={34} height={20} sx={{ borderRadius: 10 }} /></TableCell>
+                      <TableCell align="center">
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                           <Skeleton variant="circular" width={30} height={30} />
+                           <Skeleton variant="circular" width={30} height={30} />
+                           <Skeleton variant="circular" width={30} height={30} />
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )) : brands?.length > 0 ? (
+                  brands?.map((list) => (
                     <TableRow
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
@@ -307,7 +252,7 @@ const Brands = () => {
                           size="small"
                           onChange={(e) => handleSelectBrand(e, list)}
                           checked={selectedBrandIds.some(
-                            (b) => b.id === list?.id
+                            (b) => b.id === list?.id,
                           )}
                           color="secondary"
                         />
@@ -323,7 +268,7 @@ const Brands = () => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {list?.brand_name}
+                        {list?.title}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -340,22 +285,21 @@ const Brands = () => {
                           size="small"
                           color="secondary"
                           onChange={(e) => handleStatusChange(e, list)}
-                          checked={Boolean(list?.is_active)}
+                          checked={Boolean(list?.status)}
                         />
                       </TableCell>
                       <TableCell align="center">
                         <ViewBrandDetails list={list} />
 
                         <BrandModal
-                          handleSetReloadFunc={handleSetReloadFunc}
                           showEditBtn={true}
-                          title={"Edit"}
+                          title_heading={"Edit"}
                           list={list}
                         />
                         <ConfirmDeletePopup
                           title={"Brand"}
                           description={
-                            "Are your sure you want to deletehis brand?"
+                            "Are your sure you want to delete this brand?"
                           }
                           showDelBtn={true}
                           handleDeleteBrand={handleDeleteBrand}
@@ -368,30 +312,49 @@ const Brands = () => {
                     </TableRow>
                   ))
                 ) : (
-                  <Box sx={{ textAlign: "center" }}>
-                    <Typography>No data available!</Typography>
-                  </Box>
+                   <TableCell align="center" colSpan={7}>
+                  <Box
+                          sx={{
+                            textAlign: "center",
+                            py: 4,
+                            color: "#888",
+                            fontSize: "14px",
+                            width: '100%'
+                          }}
+                        >
+                          No brands available!
+                        </Box></TableCell>
                 )}
               </TableBody>
             </Table>
+            {brands.length > 0 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  my: 2,
+                  mx: 2,
+                }}
+              >
+                <PaginationSet
+                  count={pagination?.last_page || 1}
+                  page={page}
+                  per_page={per_page}
+                  from={pagination?.from}
+                  to={pagination?.to}
+                  total={pagination?.total}
+                  onPageChange={(value) => setPage(value)}
+                  onPerPageChange={(value) => {
+                    setPerPage(value);
+                    setPage(1); // reset page when per_page changes
+                  }}
+                  variant="outlined"
+                  color="secondary"
+                />
+              </Box>
+            )}
           </TableContainer>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              my: 4,
-            }}
-          >
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={(event, value) => setPage(value)}
-              variant="outlined"
-              color="secondary"
-              sx={{ mt: 2 }}
-            />
-          </Box>
         </Container>
       </Box>
     </>

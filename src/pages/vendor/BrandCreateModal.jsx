@@ -7,6 +7,7 @@ import {
   IconButton,
   Switch,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,6 +28,8 @@ import {
 import { handleError, handleSuccess } from "../../toast";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
+import { useCreateBrand, useUpdateBrand } from "../../hook/vendor/useBrand";
+import MediaSelectModal from "../../components/MediaSelectModal";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -44,15 +47,29 @@ export default function BrandModal({
   handleSetReloadFunc,
   showEditBtn,
   showCrtBrandBtn,
-  title,
+  title_heading,
   list,
 }) {
   const [open, setOpen] = React.useState(false);
+  const [imageData, setImageData] = useState({ image_id: "", image_path: "" });
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
+    // setImageData({ image_id: "", image_path: "" })
   };
-
-  const [imageCategory, setImageCategory] = useState(null);
+  React.useEffect(() => {
+    if (showEditBtn && list) {
+      setImageData({
+        image_id: list?.image_id ?? list?.media?.id ?? "",
+        image_path: list?.media?.media_path
+          ? `${import.meta.env.VITE_BASE_URL}/storage/${list.media.media_path}`
+          : "",
+      });
+    }
+  }, [showEditBtn, list]);
+  const createBrandMutation = useCreateBrand();
+  const updateBrandMutation = useUpdateBrand();
+  const isLoading =
+    createBrandMutation.isPending || updateBrandMutation.isPending;
   const {
     values,
     errors,
@@ -62,74 +79,85 @@ export default function BrandModal({
     handleSubmit,
     setFieldValue,
   } = useFormik({
-    enableReinitialize: true, // <-- key for updating when `list` changes
+    enableReinitialize: true,
     initialValues: {
-      is_active: list?.is_active ?? true,
-      brand_name: list?.brand_name || "",
+      status: list ? list?.status === 1 || list?.status === true : true,
+      title: list?.title || "",
       sort_order: list?.sort_order ?? 1,
-      brandImage: null,
     },
     validationSchema: yup.object({
-      brand_name: yup
+      title: yup
         .string()
         .min(3)
         .max(200)
-        .required("Brand name is required!"),
+        .required("Brand name is required!")
+        .trim(),
       sort_order: yup.number().required("Sort order is required!"),
     }),
     onSubmit: async (values, action) => {
- 
-  const formData = new FormData();
+      const formData = new FormData();
 
-  if (values.brandImage instanceof File) {
-    formData.append("brandImage", values.brandImage, values.brandImage.name);
-  }
+      if (values.brandImage instanceof File) {
+        formData.append(
+          "brandImage",
+          values.brandImage,
+          values.brandImage.name,
+        );
+      }
 
-  const slug = generateSlug(values.brand_name);
-  formData.append("is_active", values.is_active);
-  formData.append("slug", slug);
-  formData.append("brand_name", values.brand_name);
-  formData.append("sort_order", values.sort_order);
-   formData.append("business_id", "123");
+      formData.append("status", values.status);
+      formData.append("title", values.title);
+      formData.append("sort_order", values.sort_order);
+      formData.append("image_id", imageData.image_id);
 
+      // If editing (assuming list has an id), call update; else create
+      let res;
+      if (list?.id) {
+        updateBrandMutation.mutate(
+          {
+            id: list.id,
+            formData,
+          },
+          {
+            onSuccess: (res) => {
+              handleSuccess(res?.message || "Brand updated successfully");
+              setOpen(false); // drawer close
+            },
 
-  // If editing (assuming list has an id), call update; else create
-  let res;
-  if (list?.id) {
-    // Optionally only include fields that changed, depending on backend
-    formData.append("id", list?.id);
-    res = await updateBrandApi(formData);
-  } else {
-    res = await createBrandApi(formData);
-  }
+            onError: (error) => {
+              const status = error?.response?.status;
 
-  if (res.status === 200 || res.status === 201) {
-     handleSetReloadFunc();
-    setImageCategory(null);
-    handleSuccess(list?.id ? "Brand Updated Successfully!" : "New Brand Added Successfully!");
-    action.resetForm();
-    setOpen(false);
-    setParentCategoryIdSelect?.(); // guard if undefined
-  } else {
-    handleError("Internal Server Error!");
-  }
-}
+              if (status === 422) {
+                handleError("Brand already exist!");
+              } else if (status === 404) {
+                handleError("Brand not found");
+              } else {
+                handleError("Failed to update brand");
+              }
+            },
+          },
+        );
+      } else {
+        createBrandMutation.mutate(formData, {
+          onSuccess: () => {
+            handleSuccess("Brand created successfully");
+            setOpen(false); // modal close
+            action.resetForm();
+            setImageData({ image_id: "", image_path: "" });
+          },
+          onError: (error) => {
+            const status = error?.response?.status;
 
+            if (status === 422) {
+              handleError("Brand already exist!");
+            } else {
+              handleError("Failed to create brand");
+            }
+          },
+        });
+      }
+    },
   });
-
-  const handleBrandImage = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Show preview
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setImageCategory(reader.result); // this is just for preview
-    };
-
-    setFieldValue("brandImage", file);
-  };
 
   const nameInputRef = React.useRef(null);
 
@@ -147,10 +175,21 @@ export default function BrandModal({
       role="presentation"
       className="inner-modal-search-view-set"
     >
-      <Box sx={{ textAlign: "start" }} onClick={toggleDrawer(false)}>
-        <CloseIcon sx={{ cursor: "pointer" }} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Typography sx={{ mb: 1, fontWeight: "600" }}>
+          {title_heading} Brand
+        </Typography>
+        <Box sx={{ textAlign: "start" }} onClick={toggleDrawer(false)}>
+          <CloseIcon sx={{ cursor: "pointer" }} />
+        </Box>
       </Box>
-      <Typography sx={{ mb: 1, fontWeight: "600" }}>{title} Brand</Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={1}>
           <Grid size={{ xs: 2, sm: 2, md: 2 }}>
@@ -164,42 +203,11 @@ export default function BrandModal({
                 height: "100%",
               }}
             >
-              <Box
-                component="label"
-                sx={{
-                  border: "1px dotted black",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  position: "relative",
-                }}
-                className="image-upload-box-target"
-              >
-                <img
-                  src={
-                    imageCategory == null ? "/empty-image.jpg" : imageCategory
-                  }
-                />
-                <VisuallyHiddenInput
-                  type="file"
-                  name="brandImage"
-                  accept="image/jpg, image/jpeg, image/png"
-                  onChange={handleBrandImage}
-                />
-
-                <AddCircleIcon
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: "50%",
-                    fontSize: "18px",
-                    cursor: "pointer",
-                    color: "#9c27b0",
-                    position: "absolute",
-                    right: "-5px",
-                    bottom: "-5px",
-                  }}
-                />
-                {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
-              </Box>
+              <MediaSelectModal
+                setImageData={setImageData}
+                imageData={imageData}
+                isBrand={true}
+              />
             </Box>
           </Grid>
           <Grid size={{ xs: 10 }}>
@@ -225,9 +233,9 @@ export default function BrandModal({
               </Typography>
 
               <Switch
-                name="is_active"
+                name="status"
                 color="secondary"
-                checked={values.is_active}
+                checked={values.status}
                 onChange={handleChange}
               />
             </Box>
@@ -253,19 +261,19 @@ export default function BrandModal({
                     label="Name"
                     variant="outlined"
                     type="text"
-                    name="brand_name"
-                    value={values.brand_name}
+                    name="title"
+                    value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={Boolean(errors.brand_name && touched.brand_name)}
+                    error={Boolean(errors.title && touched.title)}
                     inputRef={nameInputRef} // 👈 this enables auto-focus
                   />
 
-                  {touched.brand_name && errors.brand_name && (
+                  {touched.title && errors.title && (
                     <Typography
                       sx={{ fontSize: "12px", color: "red", mt: 0.5 }}
                     >
-                      {errors.brand_name}
+                      {errors.title}
                     </Typography>
                   )}
                 </Grid>
@@ -295,9 +303,18 @@ export default function BrandModal({
                 <Box sx={{ textAlign: "end", width: "100%" }}>
                   <Button
                     type="submit"
+                    disabled={isLoading}
                     className="custom-secondary-btn-admin-side"
+                    sx={{
+                      opacity: isLoading ? 0.6 : 1,
+                      cursor: isLoading ? "not-allowed" : "pointer",
+                    }}
                   >
-                    {list?.id ? 'Update' : 'Create Brand'}
+                    {isLoading
+                      ? "Saving..."
+                      : list?.id
+                        ? "Update"
+                        : "Create Brand"}
                   </Button>
                 </Box>
               </Grid>
@@ -319,14 +336,20 @@ export default function BrandModal({
         </Button>
       )}
       {showEditBtn && (
-        <IconButton
-          onClick={toggleDrawer(true)}
-          size="small"
-          aria-label="edit"
-          color="primary"
-        >
-          <EditIcon />
-        </IconButton>
+        <Tooltip title="Edit" arrow>
+          <IconButton
+            onClick={toggleDrawer(true)}
+            size="small"
+            sx={{
+              color: "#1976d2",
+              ml: 1,
+              bgcolor: "#e3f2fd",
+              "&:hover": { bgcolor: "#bbdefb" },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       )}
 
       <Drawer

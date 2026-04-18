@@ -9,8 +9,10 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { loginApi } from "../../utils/apis/APIs";
 import { handleError, handleSuccess } from "../../toast";
+import { useLogin } from "../../hook/auth/useLogin";
 const Login = () => {
   const navigation = useNavigate();
+  const loginMutation = useLogin();
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
@@ -19,28 +21,41 @@ const Login = () => {
       },
       validationSchema: yup.object({
         email: yup.string().email().required(),
-        password: yup.string().required(),
+        password: yup.string().min(5).required(),
       }),
-      onSubmit: async (values, action) => {
-        let res = await loginApi({
-          email: values.email,
-          password: values.password,
-        });
-        if (res.status == 404) {
-          handleError("Email or password is wrong!");
-        } else if (res.status == 200) {
-          console.log(res.data)
-          handleSuccess("You're Successfully Login!");
-          localStorage.setItem("token", res.data?.token);
-          localStorage.setItem("user_id", res.data.user?.id);
-          localStorage.setItem("user_type", res.data.user?.user_type);
+      onSubmit: (values) => {
+        loginMutation.mutate(
+          {
+            email: values.email,
+            password: values.password,
+          },
+          {
+            onSuccess: (data) => {
+              handleSuccess("You're Successfully Login!");
 
-          if (res.data.user?.user_type == 1) {
-            navigation("/");
-          } else {
-            navigation("/vendor/dashboard");
-          }
-        }
+              localStorage.setItem("token", data?.token);
+              localStorage.setItem("user_id", data.user?.id);
+              localStorage.setItem("user_type", data.user?.user_type);
+              // console.log(data)
+              if (data?.user?.user_type == 1) {
+                navigation("/");
+              } else {
+                navigation("/vendor/dashboard");
+              }
+            },
+
+            onError: (error) => {
+              if (
+                error?.response?.status === 401 ||
+                error?.response?.status === 404
+              ) {
+                handleError("Email or password is wrong!");
+              } else {
+                handleError("Something went wrong!");
+              }
+            },
+          },
+        );
       },
     });
   return (
@@ -111,9 +126,24 @@ const Login = () => {
               onClick={handleSubmit}
               className="custom-primary-btn"
               fullWidth
-              sx={{ marginBottom: "10px", marginTop: "25px" }}
+              disabled={loginMutation.isPending}
+              sx={{
+                marginBottom: "10px",
+                marginTop: "25px",
+                "&.Mui-disabled": {
+                  backgroundColor: "#ccc !important",
+                  color: "#666 !important",
+                  cursor: "not-allowed",
+                },
+              }}
             >
-              <LoginIcon sx={{ marginRight: "10px" }} /> Login
+              {loginMutation.isPending ? (
+                "Logging in..."
+              ) : (
+                <>
+                  <LoginIcon sx={{ marginRight: "10px" }} /> Login
+                </>
+              )}
             </Button>
             <Typography sx={{ textAlign: "center", marginBottom: "10px" }}>
               OR

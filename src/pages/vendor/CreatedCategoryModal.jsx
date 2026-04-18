@@ -31,6 +31,8 @@ import { handleError, handleSuccess } from "../../toast";
 import CategoriesLoadModal from "../../components/CategoriesLoadModal";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import MediaSelectModal from "../../components/MediaSelectModal";
+import { useCreateCategory } from "../../hook/vendor/useCategories";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -73,13 +75,19 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function CategoryModal() {
+export default function CategoryModal({list}) {
   const [open, setOpen] = React.useState(false);
-
+  const [imageData, setImageData] = useState({ image_id: "", image_path: "" });
+  const [imageDataCover, setImageDataCover] = useState({
+    cover_image_id: "",
+    image_path: "",
+  });
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
-
+  const createCategory = useCreateCategory();
+  const isLoading =
+    createCategory.isPending || createCategory.isPending;
   const [value, setValue] = React.useState(0);
   const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState();
   const imageInputRef = React.useRef(null);
@@ -97,70 +105,51 @@ export default function CategoryModal() {
   } = useFormik({
     initialValues: {
       is_active_for_buy: true,
-      name: "",
+      title: "",
       sort_order: 1,
-      description: "",
-      design_switch: false,
-      design_view: 1,
-      buy_meta_title: "",
-      buy_meta_description: "",
-      buy_page_description: "",
-      categoryImage: null, // <-- file goes here
+      page_description: "",
+      is_listing_switch_in_buy: false,
+      listing_design: 1,
+      meta_title: "",
+      meta_description: "",
+      
     },
     validationSchema: yup.object({
-      name: yup.string().min(3).max(200).required("Name is required!"),
+      title: yup.string().min(3).max(200).required("Name is required!").trim(),
       sort_order: yup.number().required("Sort order is required!"),
     }),
     onSubmit: async (values, action) => {
-      const slug = generateSlug(values.name);
-      const formData = new FormData();
+      const category_slug = generateSlug(values.name);
+      const payload = {
+        ...values,
+        category_slug: generateSlug(values.title),
+        image_id: imageData.image_id,
+      cover_image_id: imageDataCover.cover_image_id,
+      };
+      // if (parentCategoryIdSelect) {
+      //   formData.append("parent_category_id", parentCategoryIdSelect);
+      // }
 
-      formData.append("business_id", "123");
-      formData.append("level", "0");
-      formData.append("slug", slug);
-      if (parentCategoryIdSelect) {
-        formData.append("parent_category_id", parentCategoryIdSelect);
-      }
-      formData.append("is_active_for_buy", values.is_active_for_buy.toString());
-      formData.append("name", values.name);
-      formData.append("sort_order", values.sort_order.toString());
-      formData.append("description", values.description);
-      formData.append("design_switch", values.design_switch.toString());
-      formData.append("design_view", values.design_view.toString());
-      formData.append("buy_meta_title", values.buy_meta_title);
-      formData.append("buy_meta_description", values.buy_meta_description);
-      formData.append("buy_page_description", values.buy_page_description);
-
-      if (values.categoryImage instanceof File) {
-        formData.append(
-          "categoryImage",
-          values.categoryImage,
-          values.categoryImage.name
-        );
-      }
-      if (values.coverImage instanceof File) {
-        formData.append(
-          "coverImage",
-          values.coverImage,
-          values.coverImage.name
-        );
-      }
-      try {
-        const res = await createCategoryApi(formData); // must accept multipart/form-data
-        if (res.status === 201) {
-          handleSuccess("New Category Added Successfully!");
+      createCategory.mutate(payload, {
+        onSuccess: () => {
+          handleSuccess("Category created successfully");
+          setOpen(false)
           action.resetForm();
-          setOpen(false);
-          setParentCategoryIdSelect();
-          setImageCategory(null);
-          setImageCover(null);
-        } else {
-          handleError("Internal Server Error!");
-        }
-      } catch (err) {
-        handleError("Upload failed!");
-        console.error(err);
-      }
+          setImageData({image_id: "", image_path: ""});
+          setImageDataCover({cover_image_id: "", image_path: ""})
+        },
+        onError: (err) => {
+          const status = error?.response?.status;
+
+          if (status === 422) {
+            handleError("Category already exist!");
+          } else if (status === 404) {
+            handleError("Category not found");
+          } else {
+            handleError("Failed to create category");
+          }
+        },
+      });
     },
   });
 
@@ -168,33 +157,6 @@ export default function CategoryModal() {
     setParentCategoryIdSelect(parent_category_id);
   };
   const nameInputRef = React.useRef(null);
-
-  const getCategoryImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // preview
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setImageCategory(reader.result);
-    };
-
-    setFieldValue("categoryImage", file);
-  };
-  const getCoverImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // preview
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setImageCover(reader.result);
-    };
-
-    setFieldValue("coverImage", file);
-  };
 
   React.useEffect(() => {
     if (open) {
@@ -225,76 +187,16 @@ export default function CategoryModal() {
                 height: "100%",
               }}
             >
-              <Box
-                component="label"
-                sx={{
-                  border: "1px dotted black",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  position: "relative",
-                }}
-                className="image-upload-box-target"
-              >
-                <img
-                  src={
-                    imageCategory == null ? "/empty-image.jpg" : imageCategory
-                  }
-                />
-                <VisuallyHiddenInput
-                  type="file"
-                  name="categoryImage"
-                  accept="image/jpg, image/jpeg, image/png"
-                  onChange={getCategoryImage}
-                />
-
-                <AddCircleIcon
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: "50%",
-                    fontSize: "18px",
-                    cursor: "pointer",
-                    color: "#9c27b0",
-                    position: "absolute",
-                    right: "-5px",
-                    bottom: "-5px",
-                  }}
-                />
-                {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
-              </Box>
-              <Box
-                component="label"
-                sx={{
-                  border: "1px dotted black",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  position: "relative",
-                  ml: 1,
-                }}
-                className="image-upload-box-target-cover-img"
-              >
-                <img
-                  src={imageCover == null ? "/empty-image.jpg" : imageCover}
-                />
-                <VisuallyHiddenInput
-                  type="file"
-                  name="coverImage"
-                  accept="image/jpg, image/jpeg, image/png"
-                  onChange={getCoverImage}
-                />
-                <AddCircleIcon
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: "50%",
-                    fontSize: "18px",
-                    cursor: "pointer",
-                    color: "#9c27b0",
-                    position: "absolute",
-                    right: "-5px",
-                    bottom: "-5px",
-                  }}
-                />
-                {/* <RemoveCircleIcon sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/> */}
-              </Box>
+              <MediaSelectModal
+                setImageData={setImageData}
+                imageData={imageData}
+                isCategory={true}
+              />
+              <MediaSelectModal
+                setImageDataCover={setImageDataCover}
+                imageDataCover={imageDataCover}
+                isCategoryCover={true}
+              />
             </Box>
           </Grid>
           <Grid size={{ xs: 6, sm: 6, md: 6 }}>
@@ -353,19 +255,19 @@ export default function CategoryModal() {
                     label="Name"
                     variant="outlined"
                     type="text"
-                    name="name"
-                    value={values.name}
+                    name="title"
+                    value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={Boolean(errors.name && touched.name)}
+                    error={Boolean(errors.title && touched.title)}
                     inputRef={nameInputRef} // 👈 this enables auto-focus
                   />
 
-                  {touched.name && errors.name && (
+                  {touched.title && errors.title && (
                     <Typography
                       sx={{ fontSize: "12px", color: "red", mt: 0.5 }}
                     >
-                      {errors.name}
+                      {errors.title}
                     </Typography>
                   )}
                 </Grid>
@@ -398,8 +300,8 @@ export default function CategoryModal() {
                     color="secondary"
                     label="Description"
                     variant="outlined"
-                    name="description"
-                    value={values.description}
+                    name="page_description"
+                    value={values.page_description}
                     onChange={handleChange}
                   />
                 </Grid>
@@ -420,9 +322,9 @@ export default function CategoryModal() {
                     }}
                   >
                     <Switch
-                      name="design_switch"
+                      name="is_listing_switch_in_buy"
                       color="secondary"
-                      checked={values.design_switch}
+                      checked={values.is_listing_switch_in_buy}
                       onChange={handleChange}
                     />
                     <Typography sx={{ fontSize: "14px" }}>
@@ -455,8 +357,8 @@ export default function CategoryModal() {
                     <FormControl>
                       <RadioGroup
                         row
-                        name="design_view"
-                        value={values.design_view}
+                        name="listing_design"
+                        value={values.listing_design}
                         onChange={handleChange}
                       >
                         <FormControlLabel
@@ -527,8 +429,8 @@ export default function CategoryModal() {
                                 size="small"
                                 label="Sale Meta Title"
                                 variant="outlined"
-                                name="buy_meta_title"
-                                value={values.buy_meta_title}
+                                name="meta_title"
+                                value={values.meta_title}
                                 onChange={handleChange}
                               />
                             </Grid>
@@ -539,8 +441,8 @@ export default function CategoryModal() {
                                 multiline
                                 color="secondary"
                                 rows={1}
-                                name="buy_meta_description"
-                                value={values.buy_meta_description}
+                                name="meta_description"
+                                value={values.meta_description}
                                 onChange={handleChange}
                               />
                             </Grid>
@@ -558,13 +460,23 @@ export default function CategoryModal() {
                 )}
 
                 <Box sx={{ textAlign: "end", width: "100%" }}>
-                  <Button
-                    type="submit"
-                    disabled={values.is_active_for_buy == false}
-                    className={`${values.is_active_for_buy ? "custom-secondary-btn-admin-side" : "custom-disable-btn-target"}`}
-                  >
-                    Create Category
-                  </Button>
+                 
+
+                   <Button
+                                      type="submit"
+                                      disabled={isLoading}
+                                      className="custom-secondary-btn-admin-side"
+                                      sx={{
+                                        opacity: isLoading ? 0.6 : 1,
+                                        cursor: isLoading ? "not-allowed" : "pointer",
+                                      }}
+                                    >
+                                      {isLoading
+                                        ? "Saving..."
+                                        : list?.id
+                                          ? "Update Category"
+                                          : "Create Category"}
+                                    </Button>
                 </Box>
               </Grid>
             </Box>

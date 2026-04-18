@@ -15,6 +15,7 @@ import GavelIcon from "@mui/icons-material/Gavel";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import PeopleIcon from "@mui/icons-material/People";
+import SettingsInputComponentTwoToneIcon from '@mui/icons-material/SettingsInputComponentTwoTone';
 
 const NAVIGATION = [
   {
@@ -78,7 +79,11 @@ const NAVIGATION = [
     title: "Categories",
     icon: <CategoryIcon />,
   },
-
+  {
+    segment: "attributes-terms",
+    title: "Attributes & Terms",
+    icon: <SettingsInputComponentTwoToneIcon />,
+  },
   {
     segment: "voucher-and-gift-cards",
     title: "Vouchers & Gift Cards",
