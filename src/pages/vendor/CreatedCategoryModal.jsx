@@ -9,9 +9,11 @@ import {
   IconButton,
   Switch,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import * as yup from "yup";
@@ -32,7 +34,10 @@ import CategoriesLoadModal from "../../components/CategoriesLoadModal";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import MediaSelectModal from "../../components/MediaSelectModal";
-import { useCreateCategory } from "../../hook/vendor/useCategories";
+import {
+  useCreateCategory,
+  useUpdateCategory,
+} from "../../hook/vendor/useCategories";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -75,25 +80,50 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function CategoryModal({list}) {
+export default function CategoryModal({ list, isEdit, category }) {
   const [open, setOpen] = React.useState(false);
   const [imageData, setImageData] = useState({ image_id: "", image_path: "" });
   const [imageDataCover, setImageDataCover] = useState({
     cover_image_id: "",
     image_path: "",
   });
+  console.log(category, list, "00000");
+  React.useEffect(() => {
+    if (isEdit && category) {
+      setImageData({
+        image_id: category?.image_id ?? category?.media?.id ?? "",
+        image_path: category?.media?.media_path
+          ? `${import.meta.env.VITE_BASE_URL}/storage/${category.media.media_path}`
+          : "",
+      });
+      setImageDataCover({
+        cover_image_id:
+          category?.cover_image_id ?? category?.cover_media?.id ?? "",
+        image_path: category?.cover_media?.media_path
+          ? `${import.meta.env.VITE_BASE_URL}/storage/${category.cover_media.media_path}`
+          : "",
+      });
+
+      setParentCategoryIdSelect({
+        parent_category_id: category?.parent_category_id || null,
+        level: category?.level || null,
+      });
+    }
+  }, [isEdit, category]);
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
   const createCategory = useCreateCategory();
-  const isLoading =
-    createCategory.isPending || createCategory.isPending;
+  const updateCategory = useUpdateCategory();
+  const isLoading = createCategory.isPending || updateCategory.isPending;
   const [value, setValue] = React.useState(0);
-  const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState();
+  const [parentCategoryIdSelect, setParentCategoryIdSelect] = useState({
+    parent_category_id: null,
+    level: null,
+  });
   const imageInputRef = React.useRef(null);
   const [imageCategory, setImageCategory] = useState(null);
   const [imageCover, setImageCover] = useState(null);
-
   const {
     values,
     errors,
@@ -103,16 +133,24 @@ export default function CategoryModal({list}) {
     handleSubmit,
     setFieldValue,
   } = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      is_active_for_buy: true,
-      title: "",
-      sort_order: 1,
-      page_description: "",
-      is_listing_switch_in_buy: false,
-      listing_design: 1,
-      meta_title: "",
-      meta_description: "",
-      
+      is_active_for_buy: category
+        ? Number(category.is_active_for_buy) === 1
+          ? true
+          : false
+        : true,
+      title: category?.title || "",
+      sort_order: category?.sort_order || 1,
+      page_description: category?.page_description || "",
+      is_listing_switch_in_buy: category
+        ? Number(category.is_listing_switch_in_buy) === 1
+          ? true
+          : false
+        : false,
+      listing_design: category?.listing_design || 1,
+      meta_title: category?.meta_title || "",
+      meta_description: category?.meta_description || "",
     },
     validationSchema: yup.object({
       title: yup.string().min(3).max(200).required("Name is required!").trim(),
@@ -124,37 +162,78 @@ export default function CategoryModal({list}) {
         ...values,
         category_slug: generateSlug(values.title),
         image_id: imageData.image_id,
-      cover_image_id: imageDataCover.cover_image_id,
+        cover_image_id: imageDataCover.cover_image_id,
+        ...parentCategoryIdSelect,
       };
       // if (parentCategoryIdSelect) {
       //   formData.append("parent_category_id", parentCategoryIdSelect);
       // }
 
-      createCategory.mutate(payload, {
-        onSuccess: () => {
-          handleSuccess("Category created successfully");
-          setOpen(false)
-          action.resetForm();
-          setImageData({image_id: "", image_path: ""});
-          setImageDataCover({cover_image_id: "", image_path: ""})
-        },
-        onError: (err) => {
-          const status = error?.response?.status;
+      if (category?.id) {
+        updateCategory.mutate(
+          { ...payload, id: category?.id },
+          {
+            onSuccess: (res) => {
+              handleSuccess(res?.message || "Category updated successfully!");
+              setOpen(false);
+              action.resetForm();
+              setImageData({ image_id: "", image_path: "" });
+              setImageDataCover({ cover_image_id: "", image_path: "" });
+              setParentCategoryIdSelect({
+                parent_category_id: null,
+                level: null,
+              });
+            },
+            onError: (error) => {
+              const status = error?.response?.status;
 
-          if (status === 422) {
-            handleError("Category already exist!");
-          } else if (status === 404) {
-            handleError("Category not found");
-          } else {
-            handleError("Failed to create category");
-          }
-        },
-      });
+              if (status === 422) {
+                handleError("Slug already exists!");
+              } else if (status === 404) {
+                handleError("Category not found!");
+              } else {
+                handleError(
+                  error?.response?.data?.message ||
+                    "Failed to update category!",
+                );
+              }
+            },
+          },
+        );
+      } else {
+        createCategory.mutate(payload, {
+          onSuccess: () => {
+            handleSuccess("Category created successfully");
+            setOpen(false);
+            action.resetForm();
+            setImageData({ image_id: "", image_path: "" });
+            setImageDataCover({ cover_image_id: "", image_path: "" });
+            setParentCategoryIdSelect({
+              parent_category_id: null,
+              level: null,
+            });
+          },
+          onError: (err) => {
+            const status = err?.response?.status;
+
+            if (status === 422) {
+              handleError("Slug already exist!");
+            } else if (status === 404) {
+              handleError("Category not found");
+            } else {
+              handleError("Failed to create category");
+            }
+          },
+        });
+      }
     },
   });
 
-  const handleTargetParentCategoryId = (parent_category_id) => {
-    setParentCategoryIdSelect(parent_category_id);
+  const handleTargetParentCategoryId = (parent_category_id, level) => {
+    setParentCategoryIdSelect({
+      parent_category_id: parent_category_id,
+      level: level,
+    });
   };
   const nameInputRef = React.useRef(null);
 
@@ -165,6 +244,7 @@ export default function CategoryModal({list}) {
       }, 100); // Small delay to ensure DOM is ready
     }
   }, [open]);
+
   const DrawerList = (
     <Box
       sx={{ width: 630, p: 2 }}
@@ -308,6 +388,8 @@ export default function CategoryModal({list}) {
                 <Grid size={{ xs: 12 }}>
                   <CategoriesLoadModal
                     handleTargetParentCategoryId={handleTargetParentCategoryId}
+                    initialParentId={category?.parent_category_id}
+                    initialParentTitle={category?.title}
                   />
                 </Grid>
 
@@ -460,23 +542,21 @@ export default function CategoryModal({list}) {
                 )}
 
                 <Box sx={{ textAlign: "end", width: "100%" }}>
-                 
-
-                   <Button
-                                      type="submit"
-                                      disabled={isLoading}
-                                      className="custom-secondary-btn-admin-side"
-                                      sx={{
-                                        opacity: isLoading ? 0.6 : 1,
-                                        cursor: isLoading ? "not-allowed" : "pointer",
-                                      }}
-                                    >
-                                      {isLoading
-                                        ? "Saving..."
-                                        : list?.id
-                                          ? "Update Category"
-                                          : "Create Category"}
-                                    </Button>
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="custom-secondary-btn-admin-side"
+                    sx={{
+                      opacity: isLoading ? 0.6 : 1,
+                      cursor: isLoading ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {isLoading
+                      ? "Saving..."
+                      : category?.id
+                        ? "Update Category"
+                        : "Create Category"}
+                  </Button>
                 </Box>
               </Grid>
             </Box>
@@ -488,12 +568,30 @@ export default function CategoryModal({list}) {
 
   return (
     <>
-      <Button
-        onClick={toggleDrawer(true)}
-        className="custom-secondary-btn-admin-side"
-      >
-        <AddIcon sx={{ mr: 1 }} /> Create Category
-      </Button>
+      {isEdit ? (
+        <Tooltip title="Edit" arrow>
+          <IconButton
+            onClick={toggleDrawer(true)}
+            size="small"
+            sx={{
+              color: "#1976d2",
+              ml: 1,
+              bgcolor: "#e3f2fd",
+              "&:hover": { bgcolor: "#bbdefb" },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Button
+          onClick={toggleDrawer(true)}
+          className="custom-secondary-btn-admin-side"
+        >
+          <AddIcon sx={{ mr: 1 }} /> Create Category
+        </Button>
+      )}
+
       <Drawer
         anchor="right"
         open={open}

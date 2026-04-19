@@ -74,3 +74,55 @@ export const useDeleteCategory = () => {
 
 
 
+
+
+
+const fetchCategoriesPanelApi = async ({ search }) => {
+  const res = await apiAuth.get("/api/vendor/categories/panel", {
+    params: {
+      search,
+    },
+  });
+
+  return res.data;
+};
+
+export const fetchCategoriesPanel = ( search) => {
+  return useQuery({
+    queryKey: ["categories-panel", search],
+    queryFn: () =>
+      fetchCategoriesPanelApi({ search }),
+    keepPreviousData: true,
+  });
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      const res = await apiAuth.put("/api/vendor/category", payload);
+      return res.data;
+    },
+
+    onSuccess: (res) => {
+      // 🔥 auto refresh
+      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries(["categories-panel"]);
+    },
+  });
+};

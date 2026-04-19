@@ -34,7 +34,12 @@ import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
 import LoaderSpinner from "../../components/LoaderSpinner";
 import PreviewImage from "../../components/PreviewImage";
 import ViewBrandDetails from "./ViewBrandDetails";
-import { fetchBrands, useDeleteBrand, useDeleteSelectedBrands, useUpdateBrandStatus } from "../../hook/vendor/useBrand";
+import {
+  fetchBrands,
+  useDeleteBrand,
+  useDeleteSelectedBrands,
+  useUpdateBrandStatus,
+} from "../../hook/vendor/useBrand";
 import PaginationSet from "../../components/PaginationSet";
 
 const label = { inputProps: { "aria-label": "Color switch demo" } };
@@ -42,7 +47,7 @@ const label = { inputProps: { "aria-label": "Color switch demo" } };
 const Brands = () => {
   const [selectedBrandIds, setSelectedBrandIds] = useState([]);
   const [search, setSearch] = useState("");
-const deleteSelectedMutation = useDeleteSelectedBrands();
+  const deleteSelectedMutation = useDeleteSelectedBrands();
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(15);
   const { data, isLoading } = fetchBrands(page, per_page, search);
@@ -85,51 +90,51 @@ const deleteSelectedMutation = useDeleteSelectedBrands();
   };
 
   const handleDeleteAllSltBrands = () => {
-  const selectedIds = selectedBrandIds.map((item) => item.id);
+    const selectedIds = selectedBrandIds.map((item) => item.id);
 
-  deleteSelectedMutation.mutate(selectedIds, {
-    onSuccess: (res) => {
-      handleSuccess(res?.message || "Brands deleted successfully");
-      setSelectedBrandIds([]); // important reset
-    },
-    onError: () => {
-      handleError("Failed to delete brands");
-    },
-  });
-};
+    deleteSelectedMutation.mutate(selectedIds, {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Brands deleted successfully");
+        setSelectedBrandIds([]); // important reset
+      },
+      onError: () => {
+        handleError("Failed to delete brands");
+      },
+    });
+  };
   const deleteBrandMutation = useDeleteBrand();
   const updateStatusMutation = useUpdateBrandStatus();
 
   const handleDeleteBrand = async (data) => {
     deleteBrandMutation.mutate(data.id, {
-    onSuccess: (res) => {
-      handleSuccess(res?.message || "Brand deleted successfully");
-      setPage(1)
-    },
-    onError: () => {
-      handleError("Failed to delete brand");
-    },
-  });
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Brand deleted successfully");
+        setPage(1);
+      },
+      onError: () => {
+        handleError("Failed to delete brand");
+      },
+    });
   };
 
   const handleStatusChange = (e, list) => {
-  const newStatus = e.target.checked;
+    const newStatus = e.target.checked;
 
-  updateStatusMutation.mutate(
-    {
-      id: list.id,
-      status: newStatus,
-    },
-    {
-      onSuccess: (res) => {
-        handleSuccess(res?.message || "Status updated");
+    updateStatusMutation.mutate(
+      {
+        id: list.id,
+        status: newStatus,
       },
-      onError: () => {
-        handleError("Failed to update status");
+      {
+        onSuccess: (res) => {
+          handleSuccess(res?.message || "Status updated");
+        },
+        onError: () => {
+          handleError("Failed to update status");
+        },
       },
-    }
-  );
-};
+    );
+  };
 
   const handleSearchBrand = (e) => {
     setSearch(e.target.value);
@@ -141,7 +146,8 @@ const deleteSelectedMutation = useDeleteSelectedBrands();
       <Box
         sx={{
           backgroundColor: "#f0f0f0",
-          minHeight: "100vh", py: 6
+          minHeight: "100vh",
+          py: 6,
         }}
       >
         <Container sx={{ maxWidth: "100% !important" }}>
@@ -227,22 +233,49 @@ const deleteSelectedMutation = useDeleteSelectedBrands();
                 </TableRow>
               </TableHead>
               <TableBody>
-                {isLoading ? Array.from(new Array(per_page || 5)).map((_, index) => (
+                {isLoading ? (
+                  Array.from(new Array(per_page || 5)).map((_, index) => (
                     <TableRow key={index}>
-                      <TableCell><Skeleton variant="rectangular" width={20} height={20} /></TableCell>
-                      <TableCell><Skeleton variant="rounded" width={40} height={40} /></TableCell>
-                      <TableCell><Skeleton variant="text" width="80%" /></TableCell>
-                      <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                      <TableCell><Skeleton variant="rectangular" width={34} height={20} sx={{ borderRadius: 10 }} /></TableCell>
+                      <TableCell>
+                        <Skeleton
+                          variant="rectangular"
+                          width={20}
+                          height={20}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="rounded" width={40} height={40} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="80%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="60%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton
+                          variant="rectangular"
+                          width={34}
+                          height={20}
+                          sx={{ borderRadius: 10 }}
+                        />
+                      </TableCell>
                       <TableCell align="center">
-                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                           <Skeleton variant="circular" width={30} height={30} />
-                           <Skeleton variant="circular" width={30} height={30} />
-                           <Skeleton variant="circular" width={30} height={30} />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <Skeleton variant="circular" width={30} height={30} />
+                          <Skeleton variant="circular" width={30} height={30} />
+                          <Skeleton variant="circular" width={30} height={30} />
                         </Box>
                       </TableCell>
                     </TableRow>
-                  )) : brands?.length > 0 ? (
+                  ))
+                ) : brands?.length > 0 ? (
                   brands?.map((list) => (
                     <TableRow
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -312,18 +345,19 @@ const deleteSelectedMutation = useDeleteSelectedBrands();
                     </TableRow>
                   ))
                 ) : (
-                   <TableCell align="center" colSpan={7}>
-                  <Box
-                          sx={{
-                            textAlign: "center",
-                            py: 4,
-                            color: "#888",
-                            fontSize: "14px",
-                            width: '100%'
-                          }}
-                        >
-                          No brands available!
-                        </Box></TableCell>
+                  <TableCell align="center" colSpan={7}>
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        py: 4,
+                        color: "#888",
+                        fontSize: "14px",
+                        width: "100%",
+                      }}
+                    >
+                      No brands available!
+                    </Box>
+                  </TableCell>
                 )}
               </TableBody>
             </Table>
