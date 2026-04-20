@@ -1,10 +1,10 @@
 export const generateSlug = (text) => {
+  if (!text) return "";
+
   return text
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9& ]/g, '') // Remove everything except letters, numbers, space, and &
-    .replace(/\s+/g, '-')        // Replace spaces with hyphens
-}
-
-
+    .replace(/[^a-z0-9& ]/g, "")
+    .replace(/\s+/g, "-");
+};

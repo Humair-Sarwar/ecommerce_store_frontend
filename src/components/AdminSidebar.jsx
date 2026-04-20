@@ -1,13 +1,16 @@
 import { Box, List, ListItem } from "@mui/material";
 
-import { NavLink, useNavigation } from "react-router";
+import { NavLink, useNavigate, useNavigation } from "react-router";
 import LogoutIcon from "@mui/icons-material/Logout";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useLogout } from "../hook/auth/useLogout";
+import { handleSuccess } from "../toast";
 
 const AdminSidebar = ({ navigation, sidebarOpen, title }) => {
-  const navigate = useNavigation();
+  const navigate = useNavigate();
+  const logoutMutation = useLogout();
   const [menuChildren, setMenuChildren] = useState();
   const location = useLocation();
   const segments = location.pathname.split("/").filter(Boolean); // removes empty strings
@@ -16,11 +19,20 @@ const AdminSidebar = ({ navigation, sidebarOpen, title }) => {
 
   console.log(lastSlug); // "/sale"
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("user_type");
-    navigate("/login");
-  };
+  logoutMutation.mutate(undefined, {
+    onSuccess: () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("user_type");
+      handleSuccess("You are logout!");
+      navigate("/login");
+    },
+    onError: () => {
+      localStorage.clear();
+      navigate("/login");
+    }
+  });
+};
   return (
     <Box
       className={

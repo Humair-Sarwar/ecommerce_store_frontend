@@ -9,6 +9,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  alpha,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
@@ -18,37 +19,22 @@ import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 
 import { useFormik } from "formik";
-import { generateSlug } from "../../utils/apis/slugGenerate";
-import {
-  addImageApi,
-  createBrandApi,
-  createCategoryApi,
-  updateBrandApi,
-} from "../../utils/apis/APIs";
-import { handleError, handleSuccess } from "../../toast";
+
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
-import { useCreateBrand, useUpdateBrand } from "../../hook/vendor/useBrand";
-import MediaSelectModal from "../../components/MediaSelectModal";
+import { handleError, handleSuccess } from "../toast";
+import MediaSelectModal from "./MediaSelectModal";
+import TextEditor from "./TextEditor";
+import {
+  useCreateTerm,
+  useUpdateTerm,
+} from "../hook/vendor/useAttributesTerms";
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
-
-export default function BrandModal({
-  handleSetReloadFunc,
+export default function CreateUpdateTermModal({
   showEditBtn,
-  showCrtBrandBtn,
   title_heading,
-  list,
+  term,
+  selectedId,
 }) {
   const [open, setOpen] = React.useState(false);
   const [imageData, setImageData] = useState({ image_id: "", image_path: "" });
@@ -57,19 +43,18 @@ export default function BrandModal({
     // setImageData({ image_id: "", image_path: "" })
   };
   React.useEffect(() => {
-    if (showEditBtn && list) {
+    if (showEditBtn && term) {
       setImageData({
-        image_id: list?.image_id ?? list?.media?.id ?? "",
-        image_path: list?.media?.media_path
-          ? `${import.meta.env.VITE_BASE_URL}/storage/${list.media.media_path}`
+        image_id: term?.image_id ?? term?.media?.id ?? "",
+        image_path: term?.media?.media_path
+          ? `${import.meta.env.VITE_BASE_URL}/storage/${term.media.media_path}`
           : "",
       });
     }
-  }, [showEditBtn, list]);
-  const createBrandMutation = useCreateBrand();
-  const updateBrandMutation = useUpdateBrand();
-  const isLoading =
-    createBrandMutation.isPending || updateBrandMutation.isPending;
+  }, [showEditBtn, term]);
+  const createTerm = useCreateTerm();
+  const updateTerm = useUpdateTerm();
+  const isLoading = createTerm.isPending || updateTerm.isPending;
   const {
     values,
     errors,
@@ -81,77 +66,67 @@ export default function BrandModal({
   } = useFormik({
     enableReinitialize: true,
     initialValues: {
-      status: list ? list?.status === 1 || list?.status === true : true,
-      title: list?.title || "",
-      sort_order: list?.sort_order ?? 1,
+      title: term?.title || "",
+      sort_order: term?.sort_order ?? 1,
+      //   image_id: term?.image_id ?? imageData?.image_id,
+      description: term?.description || "",
     },
     validationSchema: yup.object({
       title: yup
         .string()
-        .min(2)
+        .min(3)
         .max(200)
-        .required("Brand name is required!")
+        .required("Term name is required!")
         .trim(),
       sort_order: yup.number().required("Sort order is required!"),
     }),
     onSubmit: async (values, action) => {
-      const formData = new FormData();
+      const payload = {
+        attribute_id: selectedId,
+        ...values,
+        image_id: imageData?.image_id,
+      };
 
-      if (values.brandImage instanceof File) {
-        formData.append(
-          "brandImage",
-          values.brandImage,
-          values.brandImage.name,
-        );
-      }
-
-      formData.append("status", values.status);
-      formData.append("title", values.title);
-      formData.append("sort_order", values.sort_order);
-      formData.append("image_id", imageData.image_id);
-
-      // If editing (assuming list has an id), call update; else create
       let res;
-      if (list?.id) {
-        updateBrandMutation.mutate(
-          {
-            id: list.id,
-            formData,
-          },
-          {
-            onSuccess: (res) => {
-              handleSuccess(res?.message || "Brand updated successfully");
-              setOpen(false); // drawer close
-            },
-
-            onError: (error) => {
-              const status = error?.response?.status;
-
-              if (status === 422) {
-                handleError("Brand already exist!");
-              } else if (status === 404) {
-                handleError("Brand not found");
-              } else {
-                handleError("Failed to update brand");
-              }
-            },
-          },
-        );
-      } else {
-        createBrandMutation.mutate(formData, {
-          onSuccess: () => {
-            handleSuccess("Brand created successfully");
-            setOpen(false); // modal close
+      if (term?.id) {
+        updateTerm.mutate({...payload, id: term?.id}, {
+          onSuccess: (res) => {
+              setOpen(false);
+            handleSuccess(res?.message || "Term updated successfully!");
             action.resetForm();
             setImageData({ image_id: "", image_path: "" });
           },
           onError: (error) => {
             const status = error?.response?.status;
 
-            if (status === 422) {
-              handleError("Brand already exist!");
+            if (status === 404) {
+              handleError("Term not found!");
+            } else if (status === 422) {
+              handleError("Term already exists!");
             } else {
-              handleError("Failed to create brand");
+              handleError(
+                error?.response?.data?.message || "Failed to update term!",
+              );
+            }
+          },
+        });
+      } else {
+        createTerm.mutate(payload, {
+          onSuccess: (res) => {
+            handleSuccess(res?.message || "Term created successfully!");
+            action.resetForm();
+            setOpen(false);
+            setImageData({ image_id: "", image_path: "" });
+          },
+          onError: (error) => {
+            const status = error?.response?.status;
+
+            if (status === 422) {
+              handleError("Validation errors!!");
+            } else {
+              handleError(
+                error?.response?.data?.message || "Failed to create term!",
+              );
             }
           },
         });
@@ -184,7 +159,7 @@ export default function BrandModal({
         }}
       >
         <Typography sx={{ mb: 1, fontWeight: "600" }}>
-          {title_heading} Brand
+          {title_heading} Term
         </Typography>
         <Box sx={{ textAlign: "start" }} onClick={toggleDrawer(false)}>
           <CloseIcon sx={{ cursor: "pointer" }} />
@@ -192,55 +167,6 @@ export default function BrandModal({
       </Box>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={1}>
-          <Grid size={{ xs: 2, sm: 2, md: 2 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid rgb(197, 196, 196)",
-                borderRadius: "10px",
-                padding: "8px 8px",
-                height: "100%",
-              }}
-            >
-              <MediaSelectModal
-                setImageData={setImageData}
-                imageData={imageData}
-                isBrand={true}
-              />
-            </Box>
-          </Grid>
-          <Grid size={{ xs: 10 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid rgb(197, 196, 196)",
-                borderRadius: "10px",
-                padding: "2px 15px",
-                height: "100%",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontWeight: "600",
-                  fontSize: "13px",
-                  textWrap: "nowrap",
-                  mr: 1,
-                }}
-              >
-                Is Active :
-              </Typography>
-
-              <Switch
-                name="status"
-                color="secondary"
-                checked={values.status}
-                onChange={handleChange}
-              />
-            </Box>
-          </Grid>
-
           <Grid size={{ xs: 12 }}>
             <Box
               sx={{
@@ -258,7 +184,7 @@ export default function BrandModal({
                     fullWidth
                     size="small"
                     color="secondary"
-                    label="Name"
+                    label="Title"
                     variant="outlined"
                     type="text"
                     name="title"
@@ -299,27 +225,49 @@ export default function BrandModal({
                     </Typography>
                   )}
                 </Grid>
-
-                <Box sx={{ textAlign: "end", width: "100%" }}>
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="custom-secondary-btn-admin-side"
-                    sx={{
-                      opacity: isLoading ? 0.6 : 1,
-                      cursor: isLoading ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {isLoading
-                      ? "Saving..."
-                      : list?.id
-                        ? "Update"
-                        : "Create Brand"}
-                  </Button>
-                </Box>
               </Grid>
             </Box>
           </Grid>
+          <Grid size={{ xs: 2, sm: 2, md: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid rgb(197, 196, 196)",
+                borderRadius: "10px",
+                padding: "8px 8px",
+                height: "100%",
+              }}
+            >
+              <MediaSelectModal
+                setImageData={setImageData}
+                imageData={imageData}
+                isBrand={true}
+              />
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 10 }}>
+            <TextEditor
+              value={values.description}
+              onChange={(content) => {
+                const baseContent = content === "<p><br></p>" ? "" : content;
+                setFieldValue("description", baseContent);
+              }}
+            />
+          </Grid>
+          <Box sx={{ textAlign: "end", width: "100%" }}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="custom-secondary-btn-admin-side"
+              sx={{
+                opacity: isLoading ? 0.6 : 1,
+                cursor: isLoading ? "not-allowed" : "pointer",
+              }}
+            >
+              {isLoading ? "Saving..." : term?.id ? "Update" : "Create Term"}
+            </Button>
+          </Box>
         </Grid>
       </form>
     </Box>
@@ -327,15 +275,7 @@ export default function BrandModal({
 
   return (
     <>
-      {showCrtBrandBtn && (
-        <Button
-          onClick={toggleDrawer(true)}
-          className="custom-secondary-btn-admin-side"
-        >
-          <AddIcon sx={{ mr: 1 }} /> Create Brand
-        </Button>
-      )}
-      {showEditBtn && (
+      {showEditBtn ? (
         <Tooltip title="Edit" arrow>
           <IconButton
             onClick={toggleDrawer(true)}
@@ -350,6 +290,31 @@ export default function BrandModal({
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
+      ) : (
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={!selectedId}
+          onClick={toggleDrawer(true)}
+          startIcon={<AddIcon />}
+          sx={{
+            textWrap: "nowrap",
+            px: 4,
+            py: 1.1,
+            borderRadius: "14px",
+            textTransform: "capitalize",
+            fontWeight: 700,
+            fontSize: "0.85rem",
+            boxShadow: `0 8px 16px ${alpha("#673ab7", 0.25)}`,
+            transition: "all 0.3s ease",
+            "&:hover": {
+              transform: "translateY(-2px)",
+              boxShadow: `0 12px 20px ${alpha("#673ab7", 0.35)}`,
+            },
+          }}
+        >
+          Create Term
+        </Button>
       )}
 
       <Drawer

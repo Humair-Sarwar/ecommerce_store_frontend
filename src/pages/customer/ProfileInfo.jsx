@@ -8,19 +8,27 @@ import Paper from '@mui/material/Paper';
 import EditProfile from "./EditProfile";
 import { useNavigate } from "react-router";
 import { handleSuccess } from "../../toast";
+import { useLogout } from "../../hook/auth/useLogout";
 
 
 const ProfileInfo = () => {
     const navigate = useNavigate()
-    const handleLogout = ()=>{
-        
-      localStorage.removeItem('token');
-      localStorage.removeItem('user_id');
-      localStorage.removeItem('user_type');
-
-      handleSuccess('You are logout!')
-      navigate('/')
-    }
+    const logoutMutation = useLogout();
+    const handleLogout = () => {
+  logoutMutation.mutate(undefined, {
+    onSuccess: () => {
+      localStorage.clear();
+      setAnchorElUser(null);
+      handleSuccess("You are logout!");
+      navigate("/");
+    },
+    onError: () => {
+      localStorage.clear();
+      setAnchorElUser(null);
+      navigate("/");
+    },
+  });
+};
   return (
     <>
       <Box sx={{ width: "100%" }}>

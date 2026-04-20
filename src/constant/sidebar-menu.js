@@ -61,6 +61,11 @@
     icon: <CategoryIcon />,
   },
   {
+    segment: "attributes-terms",
+    title: "Attributes & Terms",
+    icon: <CategoryIcon />,
+  },
+  {
     segment: "voucher-and-gift-cards",
     title: "Vouchers & Gift Cards",
     icon: <CardGiftcardIcon />,

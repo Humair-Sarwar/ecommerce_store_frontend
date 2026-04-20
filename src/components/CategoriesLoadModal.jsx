@@ -1,83 +1,136 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import { Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import CategoryIcon from "@mui/icons-material/Category";
 import {
+  Box,
+  Drawer,
+  Button,
+  TextField,
+  Typography,
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  CircularProgress,
+  alpha,
+  Skeleton,
 } from "@mui/material";
+import CategoryIcon from "@mui/icons-material/Category";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { getCategoriesApi } from "../utils/apis/APIs";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Highlight indicator ke liye
+import { fetchCategoriesPanel } from "../hook/vendor/useCategories";
 import { handleError } from "../toast";
 
-export default function CategoriesLoadModal({ handleTargetParentCategoryId }) {
+export default function CategoriesLoadModal({ handleTargetParentCategoryId, 
+  initialParentId, 
+  initialParentTitle }) {
   const [open, setOpen] = useState(false);
-  const [categoriesList, setCategoriesList] = useState([]);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [currentSelectedId, setCurrentSelectedId] = useState(null); // Highlight state
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleDrawer = (newOpen) => () => setOpen(newOpen);
 
-  const getCategoriesList = async () => {
-    try {
-      const res = await getCategoriesApi({ business_id: "123" });
-      if (res.status === 200) {
-        setCategoriesList(res.data?.result || []);
-      } else {
-        handleError("Internal Server Error!");
-      }
-    } catch (error) {
-      handleError("Error fetching categories!");
-    }
-  };
+  const { data, isLoading, isError } = fetchCategoriesPanel(searchQuery);
+  const categoriesList = data?.data || [];
 
   useEffect(() => {
-    getCategoriesList();
-  }, []);
+    if (isError) {
+      handleError("Error fetching categories!");
+    }
+  }, [isError]);
+  useEffect(() => {
+  if (initialParentId && !currentSelectedId) {
+    setCurrentSelectedId(initialParentId);
+    setSelectedCategoryName(initialParentTitle || "Selected Parent");
+  }
+}, [initialParentId, initialParentTitle]);
 
-  const handleSelectCategory = (categoryId, categoryName) => {
+  const handleSelectCategory = (categoryId, categoryName, level) => {
+  if (currentSelectedId === categoryId) {
+    // Unselect logic
+    setCurrentSelectedId(null);
+    setSelectedCategoryName("");
+    handleTargetParentCategoryId(null, null);
+  } else {
+    // Selection logic
+    setCurrentSelectedId(categoryId);
     setSelectedCategoryName(categoryName);
-    handleTargetParentCategoryId(categoryId);
-    setOpen(false)
-  };
+    handleTargetParentCategoryId(categoryId, level);
+  }
+  setOpen(false);
+};
 
-  // 🔁 Recursive rendering function for categories
-  const renderCategoryAccordion = (node, level = 0) => {
-    const current = node.category;
-    const children = node.child || [];
+  const renderCategoryAccordion = (category, level = 0) => {
+    const hasChildren = category.children && category.children.length > 0;
+    const isSelected = currentSelectedId === category.id;
 
     return (
       <Accordion
-        key={current.id}
-        className="accordion-expand-left-filter-target"
+        key={category.id}
+        disableGutters
         sx={{
-          backgroundColor: "transparent",
+          backgroundColor: isSelected ? alpha("#673ab7", 0.08) : "transparent", // Highlight color
           boxShadow: "none",
-          borderTop: "1px solid rgb(26 26 26 / 12%)",
-          borderRadius: "0 !important",
-          ml: `${level * 10}px`,
+          borderTop: level === 0 ? "1px solid rgba(0, 0, 0, 0.08)" : "none",
+          "&:before": { display: "none" },
+          ml: `${level * 12}px`,
+          transition: "0.2s",
+          borderRadius: isSelected ? "8px" : "0px",
         }}
       >
         <AccordionSummary
-          expandIcon={children.length > 0 && <ExpandMoreIcon />}
-          aria-controls={`panel-content-${current.id}`}
-          id={`panel-header-${current.id}`}
-          sx={{ px: 0, py: 1 }}
+          expandIcon={
+            hasChildren ? <ExpandMoreIcon sx={{ fontSize: "1.2rem" }} /> : null
+          }
+          sx={{
+            px: 1,
+            minHeight: "44px !important",
+            "& .MuiAccordionSummary-content": {
+              my: "8px !important",
+              alignItems: "center",
+            },
+            "&:hover": {
+              backgroundColor: isSelected
+                ? alpha("#673ab7", 0.12)
+                : "rgba(0,0,0,0.02)",
+            },
+          }}
         >
-          <Typography
-            sx={{ fontWeight: "600", color: "black", cursor: "pointer" }}
-            onClick={() => handleSelectCategory(current.id, current.name)}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "space-between",
+              pr: 1,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelectCategory(category.id, category.title, category.level);
+            }}
           >
-            {current.name}
-          </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: isSelected ? "700" : level === 0 ? "700" : "500",
+                color: isSelected ? "secondary.main" : "text.primary",
+                cursor: "pointer",
+              }}
+            >
+              {category.title}
+            </Typography>
+
+            {isSelected && (
+              <CheckCircleIcon
+                sx={{ fontSize: "1rem", color: "secondary.main" }}
+              />
+            )}
+          </Box>
         </AccordionSummary>
 
-        {children.length > 0 && (
-          <AccordionDetails sx={{ p: 0, pb: 2 }}>
-            {children.map((childNode) =>
-              renderCategoryAccordion(childNode, level + 1)
+        {hasChildren && (
+          <AccordionDetails sx={{ p: 0 }}>
+            {category.children.map((child) =>
+              renderCategoryAccordion(child, level + 1),
             )}
           </AccordionDetails>
         )}
@@ -85,65 +138,133 @@ export default function CategoriesLoadModal({ handleTargetParentCategoryId }) {
     );
   };
 
-  const DrawerList = (
-    <Box sx={{ width: 270 }} role="presentation">
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          pb: 3,
-          pt: 1,
-        }}
-      >
-        <Typography sx={{ display: "flex", alignItems: "center" }}>
-          <CategoryIcon />
-          <Box sx={{ ml: 1 }}>Categories</Box>
-        </Typography>
-        <Box sx={{ cursor: "pointer" }} onClick={toggleDrawer(false)}>
-          <svg
-            role="presentation"
-            strokeWidth="2"
-            focusable="false"
-            width="19"
-            height="19"
-            className="icon icon-close"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M17.658 6.343 6.344 17.657M17.658 17.657 6.344 6.343"
-              stroke="currentColor"
-            ></path>
-          </svg>
-        </Box>
-      </Box>
-
-      <Box className="left-slt-filters-target">
-        {Array.isArray(categoriesList) &&
-          categoriesList.map((item) => renderCategoryAccordion(item))}
-      </Box>
-    </Box>
-  );
-
   return (
     <>
       <Button
         onClick={toggleDrawer(true)}
         fullWidth
+        variant="outlined"
         className="custom-primary-btn-admin-side"
+        sx={{
+          justifyContent: "space-between",
+          textTransform: "none",
+          borderColor: selectedCategoryName
+            ? "secondary.main"
+            : "rgba(0,0,0,0.23)",
+          borderWidth: selectedCategoryName ? "2px" : "1px",
+          "&:hover": { borderWidth: selectedCategoryName ? "2px" : "1px" },
+        }}
       >
         {selectedCategoryName
-          ? `Parent Category: ${selectedCategoryName}`
+          ? `Parent: ${selectedCategoryName}`
           : "Select Parent Category"}
+        <ExpandMoreIcon />
       </Button>
+
       <Drawer
         anchor="right"
         open={open}
         onClose={toggleDrawer(false)}
-        className="categories-load-modal-target"
         sx={{ zIndex: "6001" }}
+        PaperProps={{ sx: { width: 340, p: 2, borderRadius: "16px 0 0 16px" } }}
       >
-        {DrawerList}
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              fontWeight: 700,
+            }}
+          >
+            <CategoryIcon color="secondary" /> Categories
+          </Typography>
+          <Box
+            sx={{
+              cursor: "pointer",
+              p: 0.5,
+              "&:hover": { bgcolor: "rgba(0,0,0,0.05)", borderRadius: "50%" },
+            }}
+            onClick={toggleDrawer(false)}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </Box>
+        </Box>
+
+        {/* Search */}
+        <TextField
+          size="small"
+          fullWidth
+          color="secondary"
+          placeholder="Search categories..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": { borderRadius: "10px" },
+          }}
+        />
+
+        {/* List Content */}
+        <Box
+          sx={{ overflowY: "auto", maxHeight: "calc(100vh - 150px)", pr: 0.5 }}
+        >
+          {isLoading ? (
+            <Box sx={{ mt: 1 }}>
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <Box
+                  key={item}
+                  sx={{ display: "flex", alignItems: "center", p: 1.5, gap: 2 }}
+                >
+                  <Skeleton
+                    variant="circular"
+                    width={24}
+                    height={24}
+                    animation="wave"
+                  />
+                  <Skeleton
+                    variant="text"
+                    width="80%"
+                    height={25}
+                    animation="wave"
+                    sx={{ borderRadius: "4px" }}
+                  />
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            categoriesList.map((item) => renderCategoryAccordion(item))
+          )}
+
+          {!isLoading && categoriesList.length === 0 && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ mt: 4 }}
+            >
+              No categories found.
+            </Typography>
+          )}
+        </Box>
       </Drawer>
     </>
   );

@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -9,12 +9,15 @@ import AdminSidebar from "../../components/AdminSidebar";
 import { Box } from "@mui/material";
 import AdminHeader from "../../components/AdminHeader";
 import PermMediaIcon from "@mui/icons-material/PermMedia";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import GavelIcon from "@mui/icons-material/Gavel";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import PeopleIcon from "@mui/icons-material/People";
+import SettingsInputComponentTwoToneIcon from '@mui/icons-material/SettingsInputComponentTwoTone';
+import nprogress from "nprogress"; // nprogress import karein
+import "nprogress/nprogress.css"; // CSS lazmi import karein
 
 const NAVIGATION = [
   {
@@ -78,7 +81,11 @@ const NAVIGATION = [
     title: "Categories",
     icon: <CategoryIcon />,
   },
-
+  {
+    segment: "attributes-terms",
+    title: "Attributes & Terms",
+    icon: <SettingsInputComponentTwoToneIcon />,
+  },
   {
     segment: "voucher-and-gift-cards",
     title: "Vouchers & Gift Cards",
@@ -168,6 +175,38 @@ export default function AdminLayout(props) {
   const handleLeftSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+
+  const location = useLocation(); // URL track karne ke liye
+
+  // NProgress Configuration (Optional)
+  useEffect(() => {
+    nprogress.configure({ showSpinner: false, speed: 400 });
+  }, []);
+
+  // Jab bhi path change ho, progress bar chalayein
+  useEffect(() => {
+    nprogress.start();
+    
+    // Page render hone par bar khatam karein
+    // Ek chota timeout takay bar thori nazar aaye (premium feel)
+    const timer = setTimeout(() => {
+      nprogress.done();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      nprogress.done();
+    };
+  }, [location.pathname]);
+
+
+
+
+
+
+
+
   return (
     <>
       <Box sx={{ display: "flex" }}>

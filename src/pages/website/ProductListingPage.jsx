@@ -159,7 +159,7 @@ const ProductListingPage = () => {
         sx={{
           backgroundColor: "#f0f0f0",
           pt: 6,
-          px: 4,
+          px: 6,
           textAlign: "start",
           pb: 2,
         }}
