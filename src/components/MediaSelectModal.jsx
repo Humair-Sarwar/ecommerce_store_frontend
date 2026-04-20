@@ -188,7 +188,7 @@ function SimpleDialog(props) {
 
           {/* Validation Info Text */}
           <Typography sx={{ fontSize: "11px", color: "#888", mt: 0.5 }}>
-            JPG, JPEG, PNG (Max: 2MB per file)
+            JPG, JPEG, PNG, WEBP (Max: 2MB per file)
           </Typography>
 
           <Typography sx={{ my: 1, fontSize: "12px", color: "#aaa" }}>

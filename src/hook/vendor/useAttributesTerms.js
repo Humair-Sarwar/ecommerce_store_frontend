@@ -88,7 +88,8 @@ export const useDeleteAttribute = () => {
 
     onSuccess: () => {
       // 🔥 refresh attributes list
-      queryClient.invalidateQueries(["attributes"]);
+      queryClient.invalidateQueries({ queryKey: ["attributes"] });
+      queryClient.invalidateQueries({ queryKey: ["terms"] });
     },
   });
 };
@@ -135,6 +136,60 @@ export const useDeleteTerm = () => {
     onSuccess: (_, id, context) => {
       // 🔥 refresh terms list (all pages / filters)
       queryClient.invalidateQueries({ queryKey: ["terms"] });
+    },
+  });
+};
+
+
+
+
+
+
+
+
+
+export const useCreateTerm = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      const res = await apiAuth.post("/api/vendor/term", payload);
+      return res.data;
+    },
+
+    onSuccess: (_, variables) => {
+      // 🔥 refresh terms list (specific attribute)
+      if (variables?.attribute_id) {
+        queryClient.invalidateQueries(["terms", variables.attribute_id]);
+      } else {
+        queryClient.invalidateQueries(["terms"]);
+      }
+    },
+  });
+};
+
+
+
+
+
+
+
+export const useUpdateTerm = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      const res = await apiAuth.put("/api/vendor/term/update", payload);
+      return res.data;
+    },
+
+    onSuccess: (_, variables) => {
+      // 🔥 refresh terms list (specific attribute)
+      if (variables?.attribute_id) {
+        queryClient.invalidateQueries(["terms", variables.attribute_id]);
+      } else {
+        queryClient.invalidateQueries(["terms"]);
+      }
     },
   });
 };

@@ -38,13 +38,15 @@ import {
 import CreateUpdateAttributeModal from "../../components/CreateUpdateAttributeModal";
 import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
 import { handleError, handleSuccess } from "../../toast";
+import CreateUpdateTermModal from "../../components/CreateUpdateTermModal";
 
 const AttributesTerms = () => {
   const [attributeSearch, setAttributeSearch] = useState("");
   const [termSearch, setTermSearch] = useState("");
   const [termsData, setTermsData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  
+  const [selectedAttribute, setSelectedAttribute] = useState("");
+
   const [pageAttribute, setPageAttribute] = useState(1);
   const [pageTerm, setPageTerm] = useState(1);
   const per_page = 15;
@@ -53,9 +55,15 @@ const AttributesTerms = () => {
     per_page,
     attributeSearch,
   );
-  const { data: terms, isLoading: isLoadingTerms } = useFetchTerms(selectedId, pageTerm, per_page, termSearch, {
-    enabled: !!selectedId,
-  });
+  const { data: terms, isLoading: isLoadingTerms } = useFetchTerms(
+    selectedId,
+    pageTerm,
+    per_page,
+    termSearch,
+    {
+      enabled: !!selectedId,
+    },
+  );
   const deleteAttribute = useDeleteAttribute();
   const deleteTerm = useDeleteTerm();
   const attributes = data?.data || [];
@@ -65,75 +73,79 @@ const AttributesTerms = () => {
     setPageAttribute(1);
   };
   const handleDeleteBrand = async (data, type) => {
-    if(type == 'term'){
-        deleteTerm.mutate(data.id, {
-    onSuccess: (res) => {
-      handleSuccess(res?.message || "Term deleted successfully!");
-    },
-    onError: (error) => {
-      const status = error?.response?.status;
+    if (type == "term") {
+      deleteTerm.mutate(data.id, {
+        onSuccess: (res) => {
+          handleSuccess(res?.message || "Term deleted successfully!");
+        },
+        onError: (error) => {
+          const status = error?.response?.status;
 
-      if (status === 404) {
-        handleError("Term not found!");
-      } else {
-        handleError(
-          error?.response?.data?.message || "Failed to delete term!"
-        );
-      }
-    },
-  });
-    }else{
-        deleteAttribute.mutate(data?.id, {
-      onSuccess: (res) => {
-        handleSuccess(res?.message || "Attribute deleted successfully!");
-      },
-      onError: (error) => {
-        const status = error?.response?.status;
-
-        if (status === 404) {
-          handleError("Attribute not found!");
-        } else {
-          handleError(
-            error?.response?.data?.message || "Failed to delete attribute!",
-          );
-        }
-      },
-    });
+          if (status === 404) {
+            handleError("Term not found!");
+          } else {
+            handleError(
+              error?.response?.data?.message || "Failed to delete term!",
+            );
+          }
+        },
+      });
+    } else {
+      deleteAttribute.mutate(data?.id, {
+        onSuccess: (res) => {
+          handleSuccess(res?.message || "Attribute deleted successfully!");
+          setSelectedId("");
+          setSelectedAttribute("");
+          if (typeof setTermsData === "function") {
+      setTermsData([]);
     }
-    
+        },
+        onError: (error) => {
+          const status = error?.response?.status;
+
+          if (status === 404) {
+            handleError("Attribute not found!");
+          } else {
+            handleError(
+              error?.response?.data?.message || "Failed to delete attribute!",
+            );
+          }
+        },
+      });
+    }
   };
-  const handleShowTerms = (id) => {
+  const handleShowTerms = (id, title) => {
     setSelectedId(id);
-    console.log(termsData, "yyy");
+    setSelectedAttribute(title);
   };
   useEffect(() => {
     if (terms) {
       setTermsData(terms.data);
     }
-  }, [terms, termSearch]);
+  }, [terms, termSearch, selectedId, selectedAttribute]);
   const handleSearchTerm = (e) => {
-    setTermSearch(e.target.value)
-  }
-
+    setTermSearch(e.target.value);
+    setPageTerm(1)
+  };
 
   const handleDeleteImage = (id) => {
-  deleteTerm.mutate(id, {
-    onSuccess: (res) => {
-      handleSuccess(res?.message || "Term deleted successfully!");
-    },
-    onError: (error) => {
-      const status = error?.response?.status;
+    deleteTerm.mutate(id, {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Term deleted successfully!");
+      },
+      onError: (error) => {
+        const status = error?.response?.status;
 
-      if (status === 404) {
-        handleError("Term not found!");
-      } else {
-        handleError(
-          error?.response?.data?.message || "Failed to delete term!"
-        );
-      }
-    },
-  });
-};
+        if (status === 404) {
+          handleError("Term not found!");
+        } else {
+          handleError(
+            error?.response?.data?.message || "Failed to delete term!",
+          );
+        }
+      },
+    });
+  };
 
   return (
     <Box sx={{ bgcolor: "#f0f0f0", minHeight: "100vh", py: 6 }}>
@@ -408,7 +420,12 @@ const AttributesTerms = () => {
 
                               <Tooltip title="Show Terms" arrow>
                                 <IconButton
-                                  onClick={() => handleShowTerms(attribute?.id)}
+                                  onClick={() =>
+                                    handleShowTerms(
+                                      attribute?.id,
+                                      attribute?.title,
+                                    )
+                                  }
                                   size="small"
                                   sx={{
                                     color: "#1e9a0b",
@@ -484,12 +501,32 @@ const AttributesTerms = () => {
               )}
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 6 }}>
-              <Typography
-                component={"h3"}
-                sx={{ fontSize: "18px", fontWeight: 700, mb: 1 }}
-              >
-                Terms
-              </Typography>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                {selectedAttribute && (
+                  <>
+                    <Typography
+                      component={"h3"}
+                      sx={{ fontSize: "18px", fontWeight: 700, mb: 1 }}
+                    >
+                      Attribute
+                    </Typography>
+                    <Typography
+                      component={"h3"}
+                      sx={{ fontSize: "18px", fontWeight: 700, mb: 1 }}
+                      color="secondary"
+                    >
+                      ({selectedAttribute})
+                    </Typography>
+                  </>
+                )}
+
+                <Typography
+                  component={"h3"}
+                  sx={{ fontSize: "18px", fontWeight: 700, mb: 1 }}
+                >
+                  Terms
+                </Typography>
+              </Box>
               <Box
                 sx={{
                   display: "flex",
@@ -527,14 +564,14 @@ const AttributesTerms = () => {
                     mr: 2,
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      backgroundColor: selectedId ? 'white' : "#e0e0e0", // Pure white for search field to make it pop
+                      backgroundColor: selectedId ? "white" : "#e0e0e0", // Pure white for search field to make it pop
                       boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)", // Soft shadow for depth
                       transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "& fieldset": {
                         borderColor: "rgba(0,0,0,0.05)",
                       },
                       "&:hover": {
-                        backgroundColor: selectedId ? 'white' : "#e0e0e0",
+                        backgroundColor: selectedId ? "white" : "#e0e0e0",
                         transform: "translateY(-1px)",
                         boxShadow: "0 5px 15px rgba(0, 0, 0, 0.08)",
                         "& fieldset": { borderColor: alpha("#673ab7", 0.3) },
@@ -551,29 +588,10 @@ const AttributesTerms = () => {
                   }}
                 />
 
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={!selectedId}
-                  startIcon={<AddIcon />}
-                  sx={{
-                    textWrap: "nowrap",
-                    px: 4,
-                    py: 1.1,
-                    borderRadius: "14px",
-                    textTransform: "capitalize",
-                    fontWeight: 700,
-                    fontSize: "0.85rem",
-                    boxShadow: `0 8px 16px ${alpha("#673ab7", 0.25)}`,
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      boxShadow: `0 12px 20px ${alpha("#673ab7", 0.35)}`,
-                    },
-                  }}
-                >
-                  Create Term
-                </Button>
+                <CreateUpdateTermModal
+                  selectedId={selectedId}
+                  title_heading={"Create"}
+                />
               </Box>
 
               <TableContainer
@@ -593,7 +611,7 @@ const AttributesTerms = () => {
                       <TableCell sx={{ fontWeight: "bold" }}>Image</TableCell>
                       <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
                       <TableCell sx={{ fontWeight: "bold" }}>Slug</TableCell>
-                      <TableCell sx={{ fontWeight: "bold" }}>
+                      <TableCell sx={{ fontWeight: "bold", textWrap: 'nowrap' }}>
                         Sort Order
                       </TableCell>
                       <TableCell
@@ -717,24 +735,13 @@ const AttributesTerms = () => {
                           <TableCell>{term.term_slug}</TableCell>
                           <TableCell>{term.sort_order}</TableCell>
                           <TableCell sx={{ textAlign: "center" }}>
-                            <Box>
-                              <Tooltip title="Edit" arrow>
-                                <IconButton
-                                  //   onClick={toggleDrawer(true)}
-                                  size="small"
-                                  sx={{
-                                    color: "#1976d2",
-                                    ml: 1,
-                                    bgcolor: "#e3f2fd",
-                                    "&:hover": { bgcolor: "#bbdefb" },
-                                  }}
-                                >
-                                  <EditIcon fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-
-                             
-
+                            <Box sx={{textWrap: 'nowrap'}}>
+                              <CreateUpdateTermModal
+                                showEditBtn={true}
+                                selectedId={selectedId}
+                                term={term}
+                                title_heading={"Edit"}
+                              />
 
                               <ConfirmDeletePopup
                                 title={"Term"}
@@ -742,7 +749,9 @@ const AttributesTerms = () => {
                                   "Are your sure you want to delete this term?"
                                 }
                                 showDelBtn={true}
-                                handleDeleteBrand={()=>handleDeleteBrand(term, "term")}
+                                handleDeleteBrand={() =>
+                                  handleDeleteBrand(term, "term")
+                                }
                                 singleBrandDelRec={{
                                   id: term?.id,
                                   business_id: term?.business_id,
@@ -783,7 +792,8 @@ const AttributesTerms = () => {
                   }}
                 >
                   <Box sx={{ mb: 0, fontSize: "14px" }}>
-                    Showing {terms?.pagination?.from}-{terms?.pagination?.to} of {terms?.pagination?.total}
+                    Showing {terms?.pagination?.from}-{terms?.pagination?.to} of{" "}
+                    {terms?.pagination?.total}
                   </Box>
                   <Pagination
                     size="small"
@@ -793,13 +803,6 @@ const AttributesTerms = () => {
                     variant={"outlined"}
                     color={"secondary"}
                   />
-
-
-
-
-
-
-
                 </Box>
               )}
             </Grid>

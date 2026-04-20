@@ -40,7 +40,6 @@ export default function CreateUpdateAttributeModal({
     createAttribute.isPending || updateAttribute.isPending;
   const { data } = fetchCategoriesPanel("");
   const categoriesList = data?.data || [];
-  console.log(attribute, '55555544')
 
   // --- 1. Helper: Saari nested IDs nikaalne ke liye ---
   const getAllCategoryIds = (items) => {

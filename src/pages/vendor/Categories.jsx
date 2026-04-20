@@ -62,7 +62,7 @@ const CategoryRow = ({ category, depth = 0 }) => {
   const handleDeleteBrand = (data) => {
     deleteCategory.mutate(data.id, {
       onSuccess: (res) => {
-        handleSuccess(res?.message || "Category deleted successfully!");
+        handleSuccess("Category deleted successfully!");
       },
 
       onError: (error) => {
@@ -74,7 +74,9 @@ const CategoryRow = ({ category, depth = 0 }) => {
           handleError("You are not allowed to delete this category!");
         } else if (status === 422) {
           handleError("Invalid request!");
-        } else {
+        }else if(status == 500){
+                      handleError("Internal server error!");
+                    } else {
           handleError(
             error?.response?.data?.message || "Failed to delete category!",
           );

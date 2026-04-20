@@ -68,17 +68,7 @@ function a11yProps(index) {
   };
 }
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
+
 
 export default function CategoryModal({ list, isEdit, category }) {
   const [open, setOpen] = React.useState(false);
@@ -141,6 +131,7 @@ export default function CategoryModal({ list, isEdit, category }) {
           : false
         : true,
       title: category?.title || "",
+      category_slug: category?.category_slug || (category?.title ? generateSlug(category.title) : ""),
       sort_order: category?.sort_order || 1,
       page_description: category?.page_description || "",
       is_listing_switch_in_buy: category
@@ -155,12 +146,13 @@ export default function CategoryModal({ list, isEdit, category }) {
     validationSchema: yup.object({
       title: yup.string().min(3).max(200).required("Name is required!").trim(),
       sort_order: yup.number().required("Sort order is required!"),
+      category_slug: yup.string().trim().required("Slug is required!")
     }),
     onSubmit: async (values, action) => {
       const category_slug = generateSlug(values.name);
       const payload = {
         ...values,
-        category_slug: generateSlug(values.title),
+        // category_slug: generateSlug(values.title),
         image_id: imageData.image_id,
         cover_image_id: imageDataCover.cover_image_id,
         ...parentCategoryIdSelect,
@@ -220,6 +212,8 @@ export default function CategoryModal({ list, isEdit, category }) {
               handleError("Slug already exist!");
             } else if (status === 404) {
               handleError("Category not found");
+            } else if (status == 500) {
+              handleError("Internal server error!");
             } else {
               handleError("Failed to create category");
             }
@@ -337,7 +331,11 @@ export default function CategoryModal({ list, isEdit, category }) {
                     type="text"
                     name="title"
                     value={values.title}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      setFieldValue("title", newTitle);
+                      setFieldValue("category_slug", generateSlug(newTitle));
+                    }}
                     onBlur={handleBlur}
                     error={Boolean(errors.title && touched.title)}
                     inputRef={nameInputRef} // 👈 this enables auto-focus
@@ -373,7 +371,7 @@ export default function CategoryModal({ list, isEdit, category }) {
                     </Typography>
                   )}
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                <Grid size={{ xs: 8 }}>
                   <TextField
                     fullWidth
                     size="small"
@@ -384,6 +382,25 @@ export default function CategoryModal({ list, isEdit, category }) {
                     value={values.page_description}
                     onChange={handleChange}
                   />
+                </Grid>
+                <Grid size={{ xs: 4 }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    color="secondary"
+                    label="Slug"
+                    variant="outlined"
+                    name="category_slug"
+                    value={values.category_slug}
+                    onChange={handleChange}
+                  />
+                  {touched.category_slug && errors.category_slug && (
+                    <Typography
+                      sx={{ fontSize: "12px", color: "red", mt: 0.5 }}
+                    >
+                      {errors.category_slug}
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid size={{ xs: 12 }}>
                   <CategoriesLoadModal
@@ -522,7 +539,7 @@ export default function CategoryModal({ list, isEdit, category }) {
                                 label="Sale Meta Description"
                                 multiline
                                 color="secondary"
-                                rows={1}
+                                rows={3}
                                 name="meta_description"
                                 value={values.meta_description}
                                 onChange={handleChange}

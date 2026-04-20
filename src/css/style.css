@@ -2068,3 +2068,16 @@ a {
 .payment-input-target-set .MuiInputBase-input{
   padding-top: 30px !important;
 }
+
+
+
+
+#nprogress .bar {
+  background: #9c27b0 !important;
+  height: 3px !important;
+  z-index: 9999 !important;
+}
+
+#nprogress .spinner {
+  display: none !important;
+}

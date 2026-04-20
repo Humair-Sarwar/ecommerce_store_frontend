@@ -48,13 +48,13 @@ const Media = () => {
   };
 
   const handleDeleteImage = async (data) => {
-     deleteMutation.mutate(data.id, {
+    deleteMutation.mutate(data.id, {
       onSuccess: () => {
-        handleSuccess('Media Deleted Successfully!');
+        handleSuccess("Media Deleted Successfully!");
         setPage(1);
       },
     });
-    };
+  };
 
   console.log(media);
   return (
@@ -91,131 +91,140 @@ const Media = () => {
           }}
         >
           <Grid container spacing={1}>
-            {isLoading
-              ? Array.from(new Array(22)).map((_, index) => (
-                  <Grid item key={index} sx={{ width: "8.33%" }}>
-                    <Skeleton
-                      variant="rounded"
-                      animation="wave"
-                      sx={{
+            {isLoading ? (
+              Array.from(new Array(22)).map((_, index) => (
+                <Grid item key={index} sx={{ width: "8.33%" }}>
+                  <Skeleton
+                    variant="rounded"
+                    animation="wave"
+                    sx={{
+                      width: "100%",
+                      height: 0,
+                      pt: "100%",
+                      borderRadius: "10px",
+                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    }}
+                  />
+                </Grid>
+              ))
+            ) : media.length === 0 ? (
+              <Grid item xs={12} sx={{ width: "100%" }}>
+                <Box
+                  sx={{
+                    textAlign: "center",
+                    py: 4,
+                    color: "#888",
+                    fontSize: "14px",
+                    width: "100%",
+                  }}
+                >
+                  No media available!
+                </Box>
+              </Grid>
+            ) : (
+              media.map((list) => (
+                <Grid item key={list.id} sx={{ width: "8.33%" }}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      width: "100%",
+                      aspectRatio: "1 / 1",
+                      borderRadius: "10px", // Rounded corners for modern look
+                      overflow: "hidden",
+                      backgroundColor: "#fff",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      transition: "transform 0.2s",
+                      "&:hover": { transform: "scale(1.02)" }, // Hover effect
+                    }}
+                  >
+                    <img
+                      src={`${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`}
+                      style={{
                         width: "100%",
-                        height: 0,
-                        pt: "100%",
-                        borderRadius: "10px",
-                        backgroundColor: "rgba(0, 0, 0, 0.05)",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      alt="media content"
+                    />
+
+                    {/* Delete Button (Top Right) */}
+                    <ConfirmDeletePopup
+                      showMediaDelBtn={true}
+                      title={"Image"}
+                      description={
+                        "Are your sure you want to delete this image?"
+                      }
+                      handleDeleteImage={handleDeleteImage}
+                      singleImageDelRec={{
+                        id: list?.id,
                       }}
                     />
-                  </Grid>
-                ))
-              : (media.length === 0 ? <Grid item xs={12} sx={{width: '100%'}}>
-      <Box
-        sx={{
-          textAlign: "center",
-          py: 4,
-          color: "#888",
-          fontSize: "14px",
-          width: '100%'
-        }}
-      >
-        No media available!
-      </Box>
-    </Grid> : media.map((list) => (
-                  <Grid item key={list.id} sx={{ width: "8.33%" }}>
-                    <Box
-                      sx={{
-                        position: "relative",
-                        width: "100%",
-                        aspectRatio: "1 / 1",
-                        borderRadius: "10px", // Rounded corners for modern look
-                        overflow: "hidden",
-                        backgroundColor: "#fff",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                        transition: "transform 0.2s",
-                        "&:hover": { transform: "scale(1.02)" }, // Hover effect
-                      }}
-                    >
-                      <img
-                        src={`${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
+
+                    {/* Copy Button (Bottom Left) */}
+                    <Tooltip describeChild title="Copy URL" arrow>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          bottom: 4,
+                          left: 4,
+                          backgroundColor: "rgba(255, 255, 255, 0.8)",
+                          color: "#1976d2",
+                          "&:hover": {
+                            backgroundColor: "#1976d2",
+                            color: "#fff",
+                          },
+                          padding: "2px",
                         }}
-                        alt="media content"
-                      />
+                        onClick={() => {
+                          const url = `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`;
+                          navigator.clipboard.writeText(url);
+                          handleClick({
+                            vertical: "top",
+                            horizontal: "center",
+                          })();
+                        }}
+                      >
+                        <ContentCopyIcon sx={{ fontSize: "14px" }} />
+                      </IconButton>
+                    </Tooltip>
 
-                      {/* Delete Button (Top Right) */}
-                      <ConfirmDeletePopup showMediaDelBtn={true} title={"Image"} description={
-                            "Are your sure you want to delete this image?"
-                          }
-                          handleDeleteImage={handleDeleteImage}
-                          singleImageDelRec={{
-                            id: list?.id,
-                          }}
-                          />
-                     
+                    {/* Eye/View Button (Bottom Right) */}
 
-                      {/* Copy Button (Bottom Left) */}
-                      <Tooltip describeChild title="Copy URL" arrow>
-                        <IconButton
-                          size="small"
-                          sx={{
-                            position: "absolute",
-                            bottom: 4,
-                            left: 4,
-                            backgroundColor: "rgba(255, 255, 255, 0.8)",
-                            color: "#1976d2",
-                            "&:hover": {
-                              backgroundColor: "#1976d2",
-                              color: "#fff",
-                            },
-                            padding: "2px",
-                          }}
-                          onClick={() => {
-                            const url = `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`;
-                            navigator.clipboard.writeText(url);
-                            handleClick({
-                              vertical: "top",
-                              horizontal: "center",
-                            })();
-                          }}
-                        >
-                          <ContentCopyIcon sx={{ fontSize: "14px" }} />
-                        </IconButton>
-                      </Tooltip>
-
-                      {/* Eye/View Button (Bottom Right) */}
-                      
-                        <MediaImageView src={`${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`}/>
-                    </Box>
-                  </Grid>
-                ))) }
+                    <MediaImageView
+                      src={`${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`}
+                    />
+                  </Box>
+                </Grid>
+              ))
+            )}
           </Grid>
-                {media.length > 0 && <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              mt: 2,
-            }}
-          >
-            <PaginationSet
-              count={pagination?.last_page || 1}
-              page={page}
-              per_page={per_page}
-              from={pagination?.from}
-              to={pagination?.to}
-              total={pagination?.total}
-              onPageChange={(value) => setPage(value)}
-              onPerPageChange={(value) => {
-                setPerPage(value);
-                setPage(1); // reset page when per_page changes
+          {media.length > 0 && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 2,
               }}
-              variant="outlined"
-              color="secondary"
-            />
-          </Box>}
-          
+            >
+              <PaginationSet
+                count={pagination?.last_page || 1}
+                page={page}
+                per_page={per_page}
+                from={pagination?.from}
+                to={pagination?.to}
+                total={pagination?.total}
+                onPageChange={(value) => setPage(value)}
+                onPerPageChange={(value) => {
+                  setPerPage(value);
+                  setPage(1); // reset page when per_page changes
+                }}
+                variant="outlined"
+                color="secondary"
+              />
+            </Box>
+          )}
         </Box>
       </Container>
       <Snackbar
