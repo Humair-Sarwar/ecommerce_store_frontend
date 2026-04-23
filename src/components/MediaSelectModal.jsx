@@ -33,7 +33,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function SimpleDialog(props) {
-    const uploadSingleMedia = useUploadSingleMedia();
+  const uploadSingleMedia = useUploadSingleMedia();
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(15);
   const { data, isLoading } = fetchMedia(page, per_page);
@@ -84,11 +84,11 @@ function SimpleDialog(props) {
   };
 
   const handleFileChange = (event) => {
-  const file = event.target.files[0];
-  if (file) handleUpload(file);
+    const file = event.target.files[0];
+    if (file) handleUpload(file);
 
-  event.target.value = null;
-};
+    event.target.value = null;
+  };
 
   // --- Drag & Drop Handlers ---
   const handleDragOver = (e) => {
@@ -101,32 +101,32 @@ function SimpleDialog(props) {
   };
 
   const handleDrop = (e) => {
-  e.preventDefault();
-  setIsDragging(false);
+    e.preventDefault();
+    setIsDragging(false);
 
-  const file = Array.from(e.dataTransfer.files).find((f) =>
-    f.type.startsWith("image/")
-  );
+    const file = Array.from(e.dataTransfer.files).find((f) =>
+      f.type.startsWith("image/"),
+    );
 
-  if (file) handleUpload(file);
-};
+    if (file) handleUpload(file);
+  };
 
- const handleUpload = (file) => {
-  if (!file) return;
+  const handleUpload = (file) => {
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append("image", file); // 👈 backend expects single file
+    const formData = new FormData();
+    formData.append("image", file); // 👈 backend expects single file
 
-  uploadSingleMedia.mutate(formData, {
-    onSuccess: () => {
-      handleSuccess("Uploaded successfully");
-    //   onClose();
-    },
-    onError: () => {
-      handleError("Upload failed");
-    },
-  });
-};
+    uploadSingleMedia.mutate(formData, {
+      onSuccess: () => {
+        handleSuccess("Uploaded successfully");
+        //   onClose();
+      },
+      onError: () => {
+        handleError("Upload failed");
+      },
+    });
+  };
 
   return (
     <Dialog
@@ -249,19 +249,24 @@ function SimpleDialog(props) {
                 <Grid item key={list.id} sx={{ width: "10%" }}>
                   <Box
                     onClick={() => {
-                        if(props.imageData){
-                            props.setImageData({
-                                image_id: list.id,
-                                image_path: `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`,
-                            });
-                        }else{
-                            props.setImageDataCover({
-                                cover_image_id: list.id,
-                                image_path: `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`,
-                            });
+                      const imagePayload = {
+                        image_id: list.id,
+                        cover_image_id: list.id, 
+                        image_path: `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`,
+                      };
+
+                      if (props.isProduct || props.imageData) {
+                        if (typeof props.setImageData === "function") {
+                          props.setImageData(imagePayload);
                         }
-                      
-                      
+                      } else {
+                        if (typeof props.setImageDataCover === "function") {
+                          props.setImageDataCover(imagePayload);
+                        } else if (typeof props.setImageData === "function") {
+                          props.setImageData(imagePayload);
+                        }
+                      }
+
                       handleDialogClose();
                     }}
                     sx={{
@@ -317,7 +322,7 @@ function SimpleDialog(props) {
                           padding: "2px",
                         }}
                         onClick={(e) => {
-                            e.stopPropagation();
+                          e.stopPropagation();
                           const url = `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`;
                           navigator.clipboard.writeText(url);
                           handleClick({
@@ -388,125 +393,203 @@ function SimpleDialog(props) {
   );
 }
 
-export default function MediaSelectModal({ setImageData, imageData, isBrand, isCategory, setImageDataCover, imageDataCover, isCategoryCover }) {
+export default function MediaSelectModal({
+  setImageData,
+  imageData,
+  isBrand,
+  isCategory,
+  setImageDataCover,
+  imageDataCover,
+  isCategoryCover,
+  isProduct,
+}) {
   const [open, setOpen] = React.useState(false);
   return (
     <>
-    
-      
-    {isBrand &&  <Box sx={{
-          border: "1px dotted black",
-          
-          borderRadius: "5px",
-          position: "relative",
-        }}
-        className="image-upload-box-target"><Box
-      onClick={() => setOpen(true)}
-        component="label"
-        sx={{cursor: "pointer"}}
-      >
-        <img
-          src={imageData.image_id ?  imageData.image_path : "/empty-image.jpg"}
-        />
-       
-        
-      </Box>
-       {imageData.image_id == "" ? <AddCircleIcon
-        onClick={() => setOpen(true)}
+      {isBrand && (
+        <Box
           sx={{
-            backgroundColor: "white",
-            borderRadius: "50%",
-            fontSize: "18px",
-            cursor: "pointer",
-            color: "#9c27b0",
-            position: "absolute",
-            right: "-5px",
-            bottom: "-5px",
+            border: "1px dotted black",
+
+            borderRadius: "5px",
+            position: "relative",
           }}
-        /> :  <RemoveCircleIcon onClick={()=>setImageData({image_id: "", image_path: ""})} sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
-}
-      </Box>}
+          className="image-upload-box-target"
+        >
+          <Box
+            onClick={() => setOpen(true)}
+            component="label"
+            sx={{ cursor: "pointer" }}
+          >
+            <img
+              src={
+                imageData.image_id ? imageData.image_path : "/empty-image.jpg"
+              }
+            />
+          </Box>
+          {imageData.image_id == "" ? (
+            <AddCircleIcon
+              onClick={() => setOpen(true)}
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "#9c27b0",
+                position: "absolute",
+                right: "-5px",
+                bottom: "-5px",
+              }}
+            />
+          ) : (
+            <RemoveCircleIcon
+              onClick={() => setImageData({ image_id: "", image_path: "" })}
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "red",
+                position: "absolute",
+                right: "-5px",
+                bottom: "-5px",
+              }}
+            />
+          )}
+        </Box>
+      )}
 
-
-
-
-      {isCategory &&  <Box sx={{
-          border: "1px dotted black",
-          
-          borderRadius: "5px",
-          position: "relative",
-        }}
-        className="image-upload-box-target"><Box
-      onClick={() => setOpen(true)}
-        component="label"
-        sx={{cursor: "pointer"}}
-      >
-        <img
-          src={imageData.image_id ?  imageData.image_path : "/empty-image.jpg"}
-        />
-       
-        
-      </Box>
-       {imageData.image_id == "" ? <AddCircleIcon
-        onClick={() => setOpen(true)}
+      {isCategory && (
+        <Box
           sx={{
-            backgroundColor: "white",
-            borderRadius: "50%",
-            fontSize: "18px",
-            cursor: "pointer",
-            color: "#9c27b0",
-            position: "absolute",
-            right: "-5px",
-            bottom: "-5px",
-          }}
-        /> :  <RemoveCircleIcon onClick={()=>setImageData({image_id: "", image_path: ""})} sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
-}
-      </Box>}
+            border: "1px dotted black",
 
-      {isCategoryCover &&  <Box
-      className="image-upload-box-target-cover-img"
-      sx={{
-                  border: "1px dotted black",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  position: "relative",
-                  ml: 1,
-                  width: "100% !important"
-                }}
-        ><Box
-      onClick={() => setOpen(true)}
-        component="label"
-        sx={{cursor: "pointer"}}
-      >
-        <img
-          src={imageDataCover.cover_image_id ?  imageDataCover.image_path : "/empty-image.jpg"}
-        />
-       
-        
-      </Box>
-       {imageDataCover.cover_image_id == "" ? <AddCircleIcon
-        onClick={() => setOpen(true)}
+            borderRadius: "5px",
+            position: "relative",
+          }}
+          className="image-upload-box-target"
+        >
+          <Box
+            onClick={() => setOpen(true)}
+            component="label"
+            sx={{ cursor: "pointer" }}
+          >
+            <img
+              src={
+                imageData.image_id ? imageData.image_path : "/empty-image.jpg"
+              }
+            />
+          </Box>
+          {imageData.image_id == "" ? (
+            <AddCircleIcon
+              onClick={() => setOpen(true)}
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "#9c27b0",
+                position: "absolute",
+                right: "-5px",
+                bottom: "-5px",
+              }}
+            />
+          ) : (
+            <RemoveCircleIcon
+              onClick={() => setImageData({ image_id: "", image_path: "" })}
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "red",
+                position: "absolute",
+                right: "-5px",
+                bottom: "-5px",
+              }}
+            />
+          )}
+        </Box>
+      )}
+
+      {isCategoryCover && (
+        <Box
+          className="image-upload-box-target-cover-img"
           sx={{
-            backgroundColor: "white",
-            borderRadius: "50%",
-            fontSize: "18px",
+            border: "1px dotted black",
             cursor: "pointer",
-            color: "#9c27b0",
-            position: "absolute",
-            right: "-5px",
-            bottom: "-5px",
+            borderRadius: "5px",
+            position: "relative",
+            ml: 1,
+            width: "100% !important",
           }}
-        /> :  <RemoveCircleIcon onClick={()=>setImageDataCover({cover_image_id: "", image_path: ""})} sx={{backgroundColor: 'white', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: 'red', position: 'absolute', right: '-5px', bottom: '-5px'}}/>
-}
-      </Box>}
-     
+        >
+          <Box
+            onClick={() => setOpen(true)}
+            component="label"
+            sx={{ cursor: "pointer" }}
+          >
+            <img
+              src={
+                imageDataCover.cover_image_id
+                  ? imageDataCover.image_path
+                  : "/empty-image.jpg"
+              }
+            />
+          </Box>
+          {imageDataCover.cover_image_id == "" ? (
+            <AddCircleIcon
+              onClick={() => setOpen(true)}
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "#9c27b0",
+                position: "absolute",
+                right: "-5px",
+                bottom: "-5px",
+              }}
+            />
+          ) : (
+            <RemoveCircleIcon
+              onClick={() =>
+                setImageDataCover({ cover_image_id: "", image_path: "" })
+              }
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "red",
+                position: "absolute",
+                right: "-5px",
+                bottom: "-5px",
+              }}
+            />
+          )}
+        </Box>
+      )}
 
-    <SimpleDialog
+      {isProduct && (
+        <Button
+          onClick={() => setOpen(true)}
+          variant="outlined"
+          component="span"
+          sx={{ textTransform: "none", borderRadius: "8px" }}
+        >
+          Select Media
+        </Button>
+      )}
+
+      <SimpleDialog
         open={open}
         onClose={() => setOpen(false)}
         setImageData={setImageData}
         setImageDataCover={setImageDataCover}
         imageData={imageData}
-      /></>
+        isProduct={isProduct}
+      />
+    </>
   );
 }

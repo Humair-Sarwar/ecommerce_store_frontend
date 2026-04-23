@@ -117,6 +117,7 @@ const AttributesTerms = () => {
   const handleShowTerms = (id, title) => {
     setSelectedId(id);
     setSelectedAttribute(title);
+    setPageTerm(1)
   };
   useEffect(() => {
     if (terms) {

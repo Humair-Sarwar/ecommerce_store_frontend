@@ -239,6 +239,8 @@ export default function CategoryModal({ list, isEdit, category }) {
     }
   }, [open]);
 
+
+
   const DrawerList = (
     <Box
       sx={{ width: 630, p: 2 }}
@@ -406,7 +408,7 @@ export default function CategoryModal({ list, isEdit, category }) {
                   <CategoriesLoadModal
                     handleTargetParentCategoryId={handleTargetParentCategoryId}
                     initialParentId={category?.parent_category_id}
-                    initialParentTitle={category?.title}
+                    initialParentTitle={category?.parent?.title}
                   />
                 </Grid>
 

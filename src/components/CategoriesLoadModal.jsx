@@ -21,7 +21,7 @@ import { handleError } from "../toast";
 
 export default function CategoriesLoadModal({ handleTargetParentCategoryId, 
   initialParentId, 
-  initialParentTitle }) {
+  initialParentTitle, categoryPMdl }) {
   const [open, setOpen] = useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [currentSelectedId, setCurrentSelectedId] = useState(null); // Highlight state
@@ -59,7 +59,7 @@ export default function CategoriesLoadModal({ handleTargetParentCategoryId,
   setOpen(false);
 };
 
-  const renderCategoryAccordion = (category, level = 0) => {
+  const renderCategoryAccordion = (category, level = 0, categoryPMdl) => {
     const hasChildren = category.children && category.children.length > 0;
     const isSelected = currentSelectedId === category.id;
 
@@ -156,8 +156,8 @@ export default function CategoriesLoadModal({ handleTargetParentCategoryId,
         }}
       >
         {selectedCategoryName
-          ? `Parent: ${selectedCategoryName}`
-          : "Select Parent Category"}
+          ? (categoryPMdl ? `Category: ${selectedCategoryName}` : `Parent: ${selectedCategoryName}`)
+          : (categoryPMdl ? 'Select Category' : "Select Parent Category")}
         <ExpandMoreIcon />
       </Button>
 

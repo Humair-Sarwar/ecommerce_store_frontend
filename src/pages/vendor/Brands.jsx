@@ -110,6 +110,7 @@ const Brands = () => {
       onSuccess: (res) => {
         handleSuccess(res?.message || "Brand deleted successfully");
         setPage(1);
+        setSelectedBrandIds([]);
       },
       onError: () => {
         handleError("Failed to delete brand");

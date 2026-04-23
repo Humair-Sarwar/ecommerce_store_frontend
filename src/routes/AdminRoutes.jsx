@@ -36,6 +36,7 @@ const AdminRoutes = [
       { path: "settings/site-settings", element: <PrivateRoute><SiteSettings /></PrivateRoute> },
        { path: "brands", element: <PrivateRoute><Brands /></PrivateRoute> },
        { path: "products/create", element: <PrivateRoute><Step1/></PrivateRoute> },
+       { path: "products/update/:id", element: <PrivateRoute><Step1/></PrivateRoute> },
        { path: "warranty-policy", element: <PrivateRoute><WarrantyPolicy/></PrivateRoute> },
        { path: "return-policy", element: <PrivateRoute><ReturnPolicy/></PrivateRoute> },
        { path: "pages", element: <PrivateRoute><Pages/></PrivateRoute> },
