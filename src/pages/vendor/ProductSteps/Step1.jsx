@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   Divider,
   FormControl,
@@ -69,6 +70,9 @@ const Step1 = () => {
     days: 1,
     hours: 1,
     minutes: 1,
+    meta_title: "",
+    meta_description: "",
+    keywords: "",
     apply_stock_strictly: true,
     get_stock_alert: true,
     description: "",
@@ -93,6 +97,8 @@ const Step1 = () => {
   const createProductStep1 = useCreateProductStep1();
   const updateProductType = useUpdateProductType();
   const updateStep1 = useUpdateProductStep1();
+
+  const isSubmitting = createProductStep1.isPending || updateStep1.isPending;
 
   const handleUpdateType = (values) => {
     updateProductType.mutate(values, {
@@ -141,7 +147,7 @@ const Step1 = () => {
 
   const handleBackStep = () => {
     setStep2(false);
-    navigate(`/vendor/products/update/${secondStepDataTI?.product_id}`)
+    navigate(`/vendor/products/update/${secondStepDataTI?.product_id}`);
   };
 
   const handleInputChange = (e) => {
@@ -168,97 +174,105 @@ const Step1 = () => {
       ...firstStepData,
     };
 
-    if(id){
-      updateStep1.mutate({...payload, id}, {
-      onSuccess: (res) => {
-        handleSuccess(res?.message || "Step 1 updated successfully!");
-        setStep2(true);
-        setFirstStepData({
-          active_for: 1,
-          condition: 1,
-          title: "",
-          sort_order: 1,
-          is_web: 1,
-          is_pos: 0,
-          is_hot: 0,
-          category_id: categoryIdSelect?.category_id,
-          brand_id: "",
-          days: 1,
-          hours: 1,
-          minutes: 1,
-          apply_stock_strictly: true,
-          get_stock_alert: true,
-          product_image_ids: [],
-          description: "",
-        });
-      },
-      onError: (error) => {
-        const status = error?.response?.status;
+    if (id) {
+      updateStep1.mutate(
+        { ...payload, id },
+        {
+          onSuccess: (res) => {
+            handleSuccess(res?.message || "Step 1 updated successfully!");
+            setStep2(true);
+            setFirstStepData({
+              active_for: 1,
+              condition: 1,
+              title: "",
+              sort_order: 1,
+              is_web: 1,
+              is_pos: 0,
+              is_hot: 0,
+              category_id: categoryIdSelect?.category_id,
+              brand_id: "",
+              days: 1,
+              hours: 1,
+              minutes: 1,
+              meta_title: "",
+              meta_description: "",
+              keywords: "",
+              apply_stock_strictly: true,
+              get_stock_alert: true,
+              product_image_ids: [],
+              description: "",
+            });
+          },
+          onError: (error) => {
+            const status = error?.response?.status;
 
-        if (status === 422) {
-          handleError("Validation error!");
-        } else if (status === 404) {
-          handleError("Product not found!");
-        } else {
-          handleError(
-            error?.response?.data?.message || "Failed to update step 1!"
-          );
-        }
-      },
-    });
-    }else{
+            if (status === 422) {
+              handleError("Validation error!");
+            } else if (status === 404) {
+              handleError("Product not found!");
+            } else {
+              handleError(
+                error?.response?.data?.message || "Failed to update step 1!",
+              );
+            }
+          },
+        },
+      );
+    } else {
       // API Call
-    createProductStep1.mutate(payload, {
-      onSuccess: (res) => {
-        handleSuccess(res?.message || "Product Step 1 created!");
-        handleUpdateType({ product_id: res?.data?.id, type: 1 });
-        const idFromBackend = res?.data?.id;
+      createProductStep1.mutate(payload, {
+        onSuccess: (res) => {
+          handleSuccess(res?.message || "Product Step 1 created!");
+          handleUpdateType({ product_id: res?.data?.id, type: 1 });
+          const idFromBackend = res?.data?.id;
 
-        if (idFromBackend) {
-          setSecondStepDataTI((prev) => ({
-            ...prev,
-            product_id: idFromBackend,
-          }));
+          if (idFromBackend) {
+            setSecondStepDataTI((prev) => ({
+              ...prev,
+              product_id: idFromBackend,
+            }));
 
-          handleUpdateType({ product_id: idFromBackend, type: 1 });
-        }
-        setStep2(true);
-        setFirstStepData({
-          active_for: 1,
-          condition: 1,
-          title: "",
-          sort_order: 1,
-          is_web: 1,
-          is_pos: 0,
-          is_hot: 0,
-          category_id: categoryIdSelect?.category_id,
-          brand_id: "",
-          days: 1,
-          hours: 1,
-          minutes: 1,
-          apply_stock_strictly: true,
-          get_stock_alert: true,
-          product_image_ids: [],
-          description: "",
-        });
-      },
-      onError: (error) => {
-        const status = error?.response?.status;
-        if (status === 422) {
-          const backendErrors = error?.response?.data?.errors;
-          if (backendErrors) {
-            setFirstStepErrors(backendErrors);
+            handleUpdateType({ product_id: idFromBackend, type: 1 });
           }
-          handleError("Validation error!");
-        } else {
-          handleError(
-            error?.response?.data?.message || "Failed to create product!",
-          );
-        }
-      },
-    });
+          setStep2(true);
+          setFirstStepData({
+            active_for: 1,
+            condition: 1,
+            title: "",
+            sort_order: 1,
+            is_web: 1,
+            is_pos: 0,
+            is_hot: 0,
+            category_id: categoryIdSelect?.category_id,
+            brand_id: "",
+            days: 1,
+            hours: 1,
+            minutes: 1,
+            meta_title: "",
+            meta_description: "",
+            keywords: "",
+            apply_stock_strictly: true,
+            get_stock_alert: true,
+            product_image_ids: [],
+            description: "",
+          });
+        },
+        onError: (error) => {
+          const status = error?.response?.status;
+          if (status === 422) {
+            const backendErrors = error?.response?.data?.errors;
+            if (backendErrors) {
+              setFirstStepErrors(backendErrors);
+            }
+            handleError("Validation error!");
+          } else {
+            handleError(
+              error?.response?.data?.message || "Failed to create product!",
+            );
+          }
+        },
+      });
     }
-    
   };
   useEffect(() => {
     if (step1DataSet) {
@@ -275,6 +289,9 @@ const Step1 = () => {
         days: step1DataSet.days || 1,
         hours: step1DataSet.hours || 1,
         minutes: step1DataSet.minutes || 1,
+        meta_title: step1DataSet.meta_title || "",
+        meta_description: step1DataSet.meta_description || "",
+        keywords: step1DataSet.keywords || "",
         apply_stock_strictly: !!step1DataSet.apply_stock_strictly,
         get_stock_alert: !!step1DataSet.get_stock_alert,
         description: step1DataSet.description || "",
@@ -378,162 +395,130 @@ const Step1 = () => {
             mt: 2,
           }}
         >
-          {step2 == false ? isStep1Loading ? <LoaderSpinner/> : (
-            <Grid container spacing={1}>
-              <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl sx={{ minWidth: 120 }} disabled size="small" fullWidth>
-                  <InputLabel id="is-active-for-label" color="secondary">
-                    Active For
-                  </InputLabel>
-                  <Select
-                    labelId="is-active-for-label"
-                    id="is_active_for"
-                    name="active_for"
-                    value={firstStepData.active_for}
-                    onChange={handleInputChange}
-                    label="Active For"
-                    color="secondary"
+          {step2 == false ? (
+            isStep1Loading ? (
+              <LoaderSpinner />
+            ) : (
+              <Grid container spacing={1}>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <FormControl
+                    sx={{ minWidth: 120 }}
+                    disabled
+                    size="small"
+                    fullWidth
                   >
-                    <MenuItem value={1} sx={{ fontSize: "14px" }}>
-                      Sale
-                    </MenuItem>
-                    <MenuItem value={2} sx={{ fontSize: "14px" }}>
-                      Trade-in
-                    </MenuItem>
-                    <MenuItem value={3} sx={{ fontSize: "14px" }}>
-                      Repair
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl fullWidth size="small">
-                  <InputLabel id="product-condition-label" color="secondary">
-                    Condition
-                  </InputLabel>
-                  <Select
-                    labelId="product-condition-label"
-                    id="product_condition"
-                    name="condition"
-                    value={firstStepData.condition}
+                    <InputLabel id="is-active-for-label" color="secondary">
+                      Active For
+                    </InputLabel>
+                    <Select
+                      labelId="is-active-for-label"
+                      id="is_active_for"
+                      name="active_for"
+                      value={firstStepData.active_for}
+                      onChange={handleInputChange}
+                      label="Active For"
+                      color="secondary"
+                    >
+                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                        Sale
+                      </MenuItem>
+                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                        Trade-in
+                      </MenuItem>
+                      <MenuItem value={3} sx={{ fontSize: "14px" }}>
+                        Repair
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="product-condition-label" color="secondary">
+                      Condition
+                    </InputLabel>
+                    <Select
+                      labelId="product-condition-label"
+                      id="product_condition"
+                      name="condition"
+                      value={firstStepData.condition}
+                      onChange={handleInputChange}
+                      label="Condition"
+                      color="secondary"
+                    >
+                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                        Brand New (Completely new, unopened, and unused.)
+                      </MenuItem>
+                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                        Refurbished (Professionally restored and tested.)
+                      </MenuItem>
+                      <MenuItem value={3} sx={{ fontSize: "14px" }}>
+                        Like New (Used but looks and works like new.)
+                      </MenuItem>
+                      <MenuItem value={4} sx={{ fontSize: "14px" }}>
+                        Excellent (Minor signs of use but fully functional.)
+                      </MenuItem>
+                      <MenuItem value={5} sx={{ fontSize: "14px" }}>
+                        Good (Noticeable wear but works perfectly.)
+                      </MenuItem>
+                      <MenuItem value={6} sx={{ fontSize: "14px" }}>
+                        Fair (Moderate wear and minor functional issues.)
+                      </MenuItem>
+                      <MenuItem value={7} sx={{ fontSize: "14px" }}>
+                        For Parts / Not Working (Broken or non-functional, sold
+                        for parts.)
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+                  <TextField
+                    id="title"
+                    name="title"
+                    value={firstStepData.title}
                     onChange={handleInputChange}
-                    label="Condition"
+                    label="Title"
+                    fullWidth
+                    size="small"
                     color="secondary"
-                  >
-                    <MenuItem value={1} sx={{ fontSize: "14px" }}>
-                      Brand New (Completely new, unopened, and unused.)
-                    </MenuItem>
-                    <MenuItem value={2} sx={{ fontSize: "14px" }}>
-                      Refurbished (Professionally restored and tested.)
-                    </MenuItem>
-                    <MenuItem value={3} sx={{ fontSize: "14px" }}>
-                      Like New (Used but looks and works like new.)
-                    </MenuItem>
-                    <MenuItem value={4} sx={{ fontSize: "14px" }}>
-                      Excellent (Minor signs of use but fully functional.)
-                    </MenuItem>
-                    <MenuItem value={5} sx={{ fontSize: "14px" }}>
-                      Good (Noticeable wear but works perfectly.)
-                    </MenuItem>
-                    <MenuItem value={6} sx={{ fontSize: "14px" }}>
-                      Fair (Moderate wear and minor functional issues.)
-                    </MenuItem>
-                    <MenuItem value={7} sx={{ fontSize: "14px" }}>
-                      For Parts / Not Working (Broken or non-functional, sold
-                      for parts.)
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-                <TextField
-                  id="title"
-                  name="title"
-                  value={firstStepData.title}
-                  onChange={handleInputChange}
-                  label="Title"
-                  fullWidth
-                  size="small"
-                  color="secondary"
-                  variant="outlined"
-                  placeholder="Enter product title"
-                  error={Boolean(firstStepErrors.title)}
-                  helperText={firstStepErrors.title}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  color="secondary"
-                  label="Sort Order"
-                  variant="outlined"
-                  type="number"
-                  name="sort_order"
-                  value={firstStepData.sort_order}
-                  placeholder="Enter product sort order"
-                  onChange={handleInputChange}
-                  error={Boolean(firstStepErrors.sort_order)}
-                  helperText={firstStepErrors.sort_order}
-                />
-              </Grid>
-              <Grid
-                size={{
-                  xs: 12,
-                  sm: 6,
-                  md: firstStepData.is_web || firstStepData.is_pos ? 4 : 12,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px solid rgb(197, 196, 196)",
-                    borderRadius: "10px",
-                    padding: "2px 15px",
-                    height: "100%",
+                    variant="outlined"
+                    placeholder="Enter product title"
+                    error={Boolean(firstStepErrors.title)}
+                    helperText={firstStepErrors.title}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    color="secondary"
+                    label="Sort Order"
+                    variant="outlined"
+                    type="number"
+                    name="sort_order"
+                    value={firstStepData.sort_order}
+                    placeholder="Enter product sort order"
+                    onChange={handleInputChange}
+                    error={Boolean(firstStepErrors.sort_order)}
+                    helperText={firstStepErrors.sort_order}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                    md: firstStepData.is_web || firstStepData.is_pos ? 4 : 12,
                   }}
                 >
-                  <FormControlLabel
+                  <Box
                     sx={{
-                      mr: 5,
-                      "& .MuiFormControlLabel-label": {
-                        fontSize: "14px",
-                      },
+                      display: "flex",
+                      alignItems: "center",
+                      border: "1px solid rgb(197, 196, 196)",
+                      borderRadius: "10px",
+                      padding: "2px 15px",
+                      height: "100%",
                     }}
-                    control={
-                      <Checkbox
-                        size="small"
-                        color="secondary"
-                        name="is_web"
-                        checked={firstStepData.is_web}
-                        onChange={handleInputChange}
-                        type="checkbox"
-                      />
-                    }
-                    label="Web"
-                  />
-                  <FormControlLabel
-                    sx={{
-                      mr: 5,
-                      "& .MuiFormControlLabel-label": {
-                        fontSize: "14px",
-                      },
-                    }}
-                    disabled
-                    control={
-                      <Checkbox
-                        size="small"
-                        color="secondary"
-                        name="is_pos"
-                        checked={Boolean(firstStepData.is_pos)}
-                        onChange={handleInputChange}
-                        type="checkbox"
-                      />
-                    }
-                    label="POS"
-                  />
-                  {firstStepData.is_pos ? (
+                  >
                     <FormControlLabel
                       sx={{
                         mr: 5,
@@ -545,191 +530,273 @@ const Step1 = () => {
                         <Checkbox
                           size="small"
                           color="secondary"
-                          name="is_hot"
-                          checked={Boolean(firstStepData.is_hot)}
+                          name="is_web"
+                          checked={firstStepData.is_web}
                           onChange={handleInputChange}
                           type="checkbox"
                         />
                       }
-                      label="Hot"
+                      label="Web"
                     />
-                  ) : (
-                    ""
-                  )}
-                </Box>
-              </Grid>
-              {firstStepData.is_web || firstStepData.is_pos ? (
-                <>
-                  <Grid size={{ xs: 12, sm: 6, md: 5 }}>
-                    <CategoriesLoadModal
-                      handleTargetParentCategoryId={
-                        handleTargetParentCategoryId
-                      }
-                      initialParentId={step1DataSet?.category_id}
-                      initialParentTitle={step1DataSet?.category?.title}
-                      categoryPMdl={true}
-                    />
-                    {firstStepErrors.category_id && (
-                      <Typography
-                        sx={{
-                          color: "#d32f2f", // MUI error red color
-                          fontSize: "12px",
-                          mt: 1,
-                          ml: 1.5,
-                        }}
-                      >
-                        {firstStepErrors.category_id}
-                      </Typography>
-                    )}
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Autocomplete
-                      disablePortal
-                      size="small"
-                      fullWidth
-                      id="brand"
-                      options={brands}
-                      getOptionLabel={(option) => option.title || ""}
-                      value={
-                        brands.find((b) => b.id === firstStepData.brand_id) ||
-                        null
-                      }
-                      onChange={(event, newValue) => {
-                        setFirstStepData((prev) => ({
-                          ...prev,
-                          brand_id: newValue ? newValue.id : "",
-                        }));
-
-                        if (newValue && firstStepErrors.brand_id) {
-                          setFirstStepErrors((prev) => ({
-                            ...prev,
-                            brand_id: "",
-                          }));
-                        }
+                    <FormControlLabel
+                      sx={{
+                        mr: 5,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "14px",
+                        },
                       }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Brands"
+                      disabled
+                      control={
+                        <Checkbox
+                          size="small"
                           color="secondary"
-                          error={Boolean(firstStepErrors.brand_id)}
-                          helperText={firstStepErrors.brand_id}
+                          name="is_pos"
+                          checked={Boolean(firstStepData.is_pos)}
+                          onChange={handleInputChange}
+                          type="checkbox"
                         />
+                      }
+                      label="POS"
+                    />
+                    {firstStepData.is_pos ? (
+                      <FormControlLabel
+                        sx={{
+                          mr: 5,
+                          "& .MuiFormControlLabel-label": {
+                            fontSize: "14px",
+                          },
+                        }}
+                        control={
+                          <Checkbox
+                            size="small"
+                            color="secondary"
+                            name="is_hot"
+                            checked={Boolean(firstStepData.is_hot)}
+                            onChange={handleInputChange}
+                            type="checkbox"
+                          />
+                        }
+                        label="Hot"
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Box>
+                </Grid>
+                {firstStepData.is_web || firstStepData.is_pos ? (
+                  <>
+                    <Grid size={{ xs: 12, sm: 6, md: 5 }}>
+                      <CategoriesLoadModal
+                        handleTargetParentCategoryId={
+                          handleTargetParentCategoryId
+                        }
+                        initialParentId={step1DataSet?.category_id}
+                        initialParentTitle={step1DataSet?.category?.title}
+                        categoryPMdl={true}
+                      />
+                      {firstStepErrors.category_id && (
+                        <Typography
+                          sx={{
+                            color: "#d32f2f", // MUI error red color
+                            fontSize: "12px",
+                            mt: 1,
+                            ml: 1.5,
+                          }}
+                        >
+                          {firstStepErrors.category_id}
+                        </Typography>
                       )}
-                      loading={isLoading}
-                    />
-                  </Grid>
-                </>
-              ) : (
-                ""
-              )}
-              {firstStepData.is_web ? (
-                <>
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                    <TextField
-                      id="days"
-                      name="days"
-                      label="Days"
-                      value={firstStepData.days}
-                      onChange={handleInputChange}
-                      fullWidth
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                      type="number"
-                      error={Boolean(firstStepErrors.days)}
-                      helperText={firstStepErrors.days}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                    <TextField
-                      id="hours"
-                      name="hours"
-                      label="Hours"
-                      value={firstStepData.hours}
-                      onChange={handleInputChange}
-                      fullWidth
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                      type="number"
-                      inputProps={{ min: 0, max: 23 }}
-                      error={Boolean(firstStepErrors.hours)}
-                      helperText={firstStepErrors.hours}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                    <TextField
-                      id="minutes"
-                      name="minutes"
-                      label="Minutes"
-                      value={firstStepData.minutes}
-                      onChange={handleInputChange}
-                      fullWidth
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                      type="number"
-                      inputProps={{ min: 0, max: 59 }}
-                      error={Boolean(firstStepErrors.minutes)}
-                      helperText={firstStepErrors.minutes}
-                    />
-                  </Grid>
-                </>
-              ) : (
-                ""
-              )}
-              <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px solid rgb(197, 196, 196)",
-                    borderRadius: "10px",
-                    padding: "2px 15px",
-                    height: "100%",
-                  }}
-                >
-                  <FormControlLabel
-                    sx={{
-                      mr: 5,
-                      "& .MuiFormControlLabel-label": {
-                        fontSize: "14px",
-                      },
-                    }}
-                    control={
-                      <Checkbox
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                      <Autocomplete
+                        disablePortal
+                        size="small"
+                        fullWidth
+                        id="brand"
+                        options={brands}
+                        getOptionLabel={(option) => option.title || ""}
+                        value={
+                          brands.find((b) => b.id === firstStepData.brand_id) ||
+                          null
+                        }
+                        onChange={(event, newValue) => {
+                          setFirstStepData((prev) => ({
+                            ...prev,
+                            brand_id: newValue ? newValue.id : "",
+                          }));
+
+                          if (newValue && firstStepErrors.brand_id) {
+                            setFirstStepErrors((prev) => ({
+                              ...prev,
+                              brand_id: "",
+                            }));
+                          }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Brands"
+                            color="secondary"
+                            error={Boolean(firstStepErrors.brand_id)}
+                            helperText={firstStepErrors.brand_id}
+                          />
+                        )}
+                        loading={isLoading}
+                      />
+                    </Grid>
+                  </>
+                ) : (
+                  ""
+                )}
+                {firstStepData.is_web ? (
+                  <>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                      <TextField
+                        id="days"
+                        name="days"
+                        label="Days"
+                        value={firstStepData.days}
+                        onChange={handleInputChange}
+                        fullWidth
                         size="small"
                         color="secondary"
-                        name="apply_stock_strictly"
-                        checked={firstStepData.apply_stock_strictly}
-                        onChange={handleInputChange}
-                        type="checkbox"
+                        variant="outlined"
+                        type="number"
+                        error={Boolean(firstStepErrors.days)}
+                        helperText={firstStepErrors.days}
                       />
-                    }
-                    label="Apply Stock Strictly"
-                  />
-                  <FormControlLabel
-                    sx={{
-                      mr: 5,
-                      "& .MuiFormControlLabel-label": {
-                        fontSize: "14px",
-                      },
-                    }}
-                    disabled
-                    control={
-                      <Checkbox
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                      <TextField
+                        id="hours"
+                        name="hours"
+                        label="Hours"
+                        value={firstStepData.hours}
+                        onChange={handleInputChange}
+                        fullWidth
                         size="small"
                         color="secondary"
-                        name="get_stock_alert"
-                        checked={firstStepData.get_stock_alert}
-                        onChange={handleInputChange}
-                        type="checkbox"
+                        variant="outlined"
+                        type="number"
+                        inputProps={{ min: 0, max: 23 }}
+                        error={Boolean(firstStepErrors.hours)}
+                        helperText={firstStepErrors.hours}
                       />
-                    }
-                    label="Get Stock Alert"
-                  />
-                  {/* <FormControlLabel
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                      <TextField
+                        id="minutes"
+                        name="minutes"
+                        label="Minutes"
+                        value={firstStepData.minutes}
+                        onChange={handleInputChange}
+                        fullWidth
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                        type="number"
+                        inputProps={{ min: 0, max: 59 }}
+                        error={Boolean(firstStepErrors.minutes)}
+                        helperText={firstStepErrors.minutes}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                      <TextField
+                        id="meta_title"
+                        name="meta_title"
+                        value={firstStepData.meta_title}
+                        onChange={handleInputChange}
+                        label="Meta Title"
+                        fullWidth
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                        placeholder="Write meta title..."
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                      <TextField
+                        id="meta_description"
+                        name="meta_description"
+                        value={firstStepData.meta_description}
+                        onChange={handleInputChange}
+                        label="Meta Description"
+                        fullWidth
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                        placeholder="Write meta description..."
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                      <TextField
+                        id="keywords"
+                        name="keywords"
+                        value={firstStepData.keywords}
+                        onChange={handleInputChange}
+                        label="Keywords"
+                        fullWidth
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                        placeholder="Write keywords..."
+                      />
+                    </Grid>
+                  </>
+                ) : (
+                  ""
+                )}
+                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      border: "1px solid rgb(197, 196, 196)",
+                      borderRadius: "10px",
+                      padding: "2px 15px",
+                      height: "100%",
+                    }}
+                  >
+                    <FormControlLabel
+                      sx={{
+                        mr: 5,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "14px",
+                        },
+                      }}
+                      control={
+                        <Checkbox
+                          size="small"
+                          color="secondary"
+                          name="apply_stock_strictly"
+                          checked={firstStepData.apply_stock_strictly}
+                          onChange={handleInputChange}
+                          type="checkbox"
+                        />
+                      }
+                      label="Apply Stock Strictly"
+                    />
+                    <FormControlLabel
+                      sx={{
+                        mr: 5,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "14px",
+                        },
+                      }}
+                      disabled
+                      control={
+                        <Checkbox
+                          size="small"
+                          color="secondary"
+                          name="get_stock_alert"
+                          checked={firstStepData.get_stock_alert}
+                          onChange={handleInputChange}
+                          type="checkbox"
+                        />
+                      }
+                      label="Get Stock Alert"
+                    />
+                    {/* <FormControlLabel
                     sx={{
                       mr: 5,
                       "& .MuiFormControlLabel-label": {
@@ -747,132 +814,149 @@ const Step1 = () => {
                     }
                     label="Offer Allowed"
                   /> */}
-                </Box>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 12, md: 12 }}>
-                <Box
-                  component="label"
-                  sx={{
-                    border: "2px dashed #e0e4f0",
-                    borderRadius: "12px",
-                    backgroundColor: "#f8faff",
-                    textAlign: "center",
-                    py: 4,
-                    // cursor: "pointer",
-                    display: "block",
-                    transition: "0.3s",
-                    "&:hover": {
-                      backgroundColor: "#f0f4ff",
-                      borderColor: "#cbd2e1",
-                    },
-                  }}
-                >
-                  <Typography sx={{ color: "#5f6368", fontWeight: 600 }}>
-                    Select Product Images Here!
-                  </Typography>
-
-                  {/* Validation Info Text */}
-                  <Typography
-                    sx={{ fontSize: "11px", color: "#888", mt: 0.5, mb: 2 }}
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 12, md: 12 }}>
+                  <Box
+                    component="label"
+                    sx={{
+                      border: "2px dashed #e0e4f0",
+                      borderRadius: "12px",
+                      backgroundColor: "#f8faff",
+                      textAlign: "center",
+                      py: 4,
+                      // cursor: "pointer",
+                      display: "block",
+                      transition: "0.3s",
+                      "&:hover": {
+                        backgroundColor: "#f0f4ff",
+                        borderColor: "#cbd2e1",
+                      },
+                    }}
                   >
-                    JPG, JPEG, PNG, WEBP (Max: 2MB per file)
-                  </Typography>
+                    <Typography sx={{ color: "#5f6368", fontWeight: 600 }}>
+                      Select Product Images Here!
+                    </Typography>
 
-                  <MediaSelectModal
-                    setImageData={setImageData}
-                    imageData={imageData}
-                    isProduct={true}
-                  />
-                </Box>
-                <Box sx={{ mt: selectedImagesList?.length > 0 ? 3 : 0 }}>
-                  <Grid container spacing={1.5}>
-                    {selectedImagesList.map((item, index) => (
-                      <Grid item key={item.image_id || index}>
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "80px",
-                            height: "80px",
-                            border: "1px solid #eee",
-                            borderRadius: "8px",
-                            backgroundColor: "#f8faff",
-                          }}
-                        >
-                          <img
-                            src={item.image_path}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              borderRadius: "8px",
-                            }}
-                          />
-                          <IconButton
-                            size="small"
-                            onClick={() => handleRemoveImage(item.image_id)}
+                    {/* Validation Info Text */}
+                    <Typography
+                      sx={{ fontSize: "11px", color: "#888", mt: 0.5, mb: 2 }}
+                    >
+                      JPG, JPEG, PNG, WEBP (Max: 2MB per file)
+                    </Typography>
+
+                    <MediaSelectModal
+                      setImageData={setImageData}
+                      imageData={imageData}
+                      isProduct={true}
+                    />
+                  </Box>
+                  <Box sx={{ mt: selectedImagesList?.length > 0 ? 3 : 0 }}>
+                    <Grid container spacing={1.5}>
+                      {selectedImagesList.map((item, index) => (
+                        <Grid item key={item.image_id || index}>
+                          <Box
                             sx={{
-                              position: "absolute",
-                              top: -6,
-                              right: -6,
-                              bgcolor: "#d32f2f",
-                              color: "white",
-                              width: 18,
-                              height: 18,
-                              "&:hover": { bgcolor: "#b71c1c" },
+                              position: "relative",
+                              width: "80px",
+                              height: "80px",
+                              border: "1px solid #eee",
+                              borderRadius: "8px",
+                              backgroundColor: "#f8faff",
                             }}
                           >
-                            <CloseIcon sx={{ fontSize: "12px" }} />
-                          </IconButton>
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 12, md: 12 }}>
-                <Box component={"h3"} sx={{ fontSize: "12px", mb: 1, mt: 2 }}>
-                  Product Description:
-                </Box>
-                <TextEditor
-                  value={firstStepData.description}
-                  onChange={(content) => {
-                    const baseContent =
-                      content === "<p><br></p>" ? "" : content;
+                            <img
+                              src={item.image_path}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                              }}
+                            />
+                            <IconButton
+                              size="small"
+                              onClick={() => handleRemoveImage(item.image_id)}
+                              sx={{
+                                position: "absolute",
+                                top: -6,
+                                right: -6,
+                                bgcolor: "#d32f2f",
+                                color: "white",
+                                width: 18,
+                                height: 18,
+                                "&:hover": { bgcolor: "#b71c1c" },
+                              }}
+                            >
+                              <CloseIcon sx={{ fontSize: "12px" }} />
+                            </IconButton>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 12, md: 12 }}>
+                  <Box component={"h3"} sx={{ fontSize: "12px", mb: 1, mt: 2 }}>
+                    Product Description:
+                  </Box>
+                  <TextEditor
+                    value={firstStepData.description}
+                    onChange={(content) => {
+                      const baseContent =
+                        content === "<p><br></p>" ? "" : content;
 
-                    setFirstStepData((prev) => ({
-                      ...prev,
-                      description: baseContent,
-                    }));
-
-                    if (firstStepErrors.description) {
-                      setFirstStepErrors((prev) => ({
+                      setFirstStepData((prev) => ({
                         ...prev,
-                        description: "",
+                        description: baseContent,
                       }));
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid
-                size={{ xs: 12, sm: 12, md: 12 }}
-                sx={{ textAlign: "end", mt: 1 }}
-              >
-                <Button
-                  className="custom-secondary-btn-admin-side"
-                  onClick={handleSubmitFirstStep}
-                  disabled={!firstStepData.is_web && !firstStepData.is_pos}
-                  sx={{
-                    "&.Mui-disabled": {
-                      backgroundColor: "#e0e0e0 !important",
-                      color: "#9e9e9e !important",
-                    },
-                  }}
+
+                      if (firstStepErrors.description) {
+                        setFirstStepErrors((prev) => ({
+                          ...prev,
+                          description: "",
+                        }));
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid
+                  size={{ xs: 12, sm: 12, md: 12 }}
+                  sx={{ textAlign: "end", mt: 1 }}
                 >
-                  <ArrowForwardIcon sx={{ mr: 1 }} />
-                  Next
-                </Button>
+                  <Button
+                    className="custom-secondary-btn-admin-side"
+                    onClick={handleSubmitFirstStep}
+                    disabled={
+                      isSubmitting ||
+                      (!firstStepData.is_web && !firstStepData.is_pos)
+                    }
+                    sx={{
+                      "&.Mui-disabled": {
+                        backgroundColor: "#e0e0e0 !important",
+                        color: "#9e9e9e !important",
+                      },
+                    }}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <CircularProgress
+                          size={20}
+                          color="inherit"
+                          sx={{ mr: 1 }}
+                        />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <ArrowForwardIcon sx={{ mr: 1 }} />
+                        Next
+                      </>
+                    )}
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
+            )
           ) : (
             <Step2
               handleBackStep={handleBackStep}

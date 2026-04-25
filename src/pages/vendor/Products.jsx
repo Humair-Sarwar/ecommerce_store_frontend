@@ -1,9 +1,16 @@
 import {
+  Autocomplete,
   Box,
   Button,
   Container,
+  FormControl,
+  Grid,
   IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Skeleton,
   Switch,
   Table,
@@ -12,6 +19,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -26,23 +34,75 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {
   useDeleteProduct,
   useFetchProducts,
+  useUpdateProductPublish,
 } from "../../hook/vendor/useProducts";
 import PaginationSet from "../../components/PaginationSet";
 import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
 import { handleError, handleSuccess } from "../../toast";
+import SearchIcon from "@mui/icons-material/Search";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { useFetchBrandsPanel } from "../../hook/vendor/useBrand";
 
 const Products = () => {
+  const [isExpandFilters, setIsExpandFilters] = useState(false);
+  const [searchBy, setSearchBy] = useState(2); // 1 for SKU, 2 for Title
+  const [searchTerm, setSearchTerm] = useState("");
+  const [listingType, setListingType] = useState("");
+  const [purposeType, setPurposeType] = useState("");
+  const [stockStatus, setStockStatus] = useState("");
+  const [postStatus, setPostStatus] = useState("");
+  const [activeFor, setActiveFor] = useState("");
+  const [searchByBrand, setSearchByBrand] = useState("");
   const navigation = useNavigate();
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(15);
   const [search, setSearch] = useState("");
-  const { data, isLoading, isError } = useFetchProducts(page, per_page, search);
+  const { data, isLoading, isError } = useFetchProducts({
+    page,
+    per_page,
+    search_product_purpose: purposeType,
+    search_product_type: listingType,
+    search_by_title: searchBy === 2 ? searchTerm : "",
+    search_by_sku: searchBy === 1 ? searchTerm : "",
+    search_product_stock_status: stockStatus,
+    search_product_status: postStatus,
+    search_active_for: activeFor,
+    search_by_brand: searchByBrand,
+  });
   const products = data?.data || [];
   const deleteProduct = useDeleteProduct();
   const pagination = data?.pagination;
 
+  const updatePublish = useUpdateProductPublish();
+
+  const handlePublishToggle = (productId, isPublished) => {
+    const payload = {
+      id: productId,
+      is_published: isPublished ? 1 : 0,
+    };
+
+    updatePublish.mutate(payload, {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Publish status updated!");
+      },
+      onError: (error) => {
+        handleError(
+          error?.response?.data?.message || "Failed to update status",
+        );
+      },
+    });
+  };
+
+  const {
+    data: forSearchBrand,
+    isLoading: forSearchBrandLoading,
+    isError: forSearchBrandErrors,
+  } = useFetchBrandsPanel();
+  const filterBrands = forSearchBrand?.data || [];
+
   const handleDeleteBrand = (id) => {
-    console.log(id, '7777777')
     deleteProduct.mutate(id?.id, {
       onSuccess: (res) => {
         handleSuccess(res?.message || "Product deleted successfully!");
@@ -61,14 +121,19 @@ const Products = () => {
     });
   };
   console.log(products, "--------------PRODUCTS--------------");
+  const handleExpandBtn = () => {
+    setIsExpandFilters(!isExpandFilters);
+  };
   return (
     <Box
       sx={{
         width: "100%",
         py: 3,
         overflowY: "auto",
+        backgroundColor: "#f0f0f0",
+        height: "calc(100vh - 60px)",
       }}
-      className="pages-admin-target-style"
+      // className="pages-admin-target-style"
     >
       <Container sx={{ maxWidth: "100% !important" }}>
         <Box
@@ -88,13 +153,583 @@ const Products = () => {
           Products
         </Box>
         <Box sx={{ textAlign: "end", mb: 2 }}>
-          <Button
-            className="custom-secondary-btn-admin-side"
-            onClick={() => navigation("/vendor/products/create")}
-          >
-            <AddIcon sx={{ mr: 1 }} />
-            Add
-          </Button>
+          <Grid container spacing={1}>
+            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+              <FormControl fullWidth size="small">
+                <Select
+                  labelId="search-by-select"
+                  id="search-by-select"
+                  value={searchBy}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setSearchBy(newValue);
+
+                    setSearchTerm("");
+                    setListingType("");
+                    setPurposeType("");
+                    setStockStatus("");
+                    setPostStatus("");
+                    setActiveFor("");
+                    setSearchByBrand("");
+                  }}
+                  displayEmpty
+                  renderValue={(selected) => {
+                    let label = selected === 2 ? "Title" : "SKU";
+
+                    return (
+                      <span style={{ fontSize: "14px" }}>
+                        <b style={{ color: "#666" }}>Search by: </b> {label}
+                      </span>
+                    );
+                  }}
+                  sx={{
+                    borderRadius: "8px",
+                    bgcolor: "white",
+                    "& .MuiSelect-select": {
+                      display: "flex",
+                      alignItems: "center",
+                    },
+                  }}
+                >
+                  <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                    SKU
+                  </MenuItem>
+                  <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                    Title
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+              <TextField
+                size="small"
+                id="search"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setPage(1)
+                }}
+                placeholder={
+                  searchBy === 1 ? "Search SKU..." : "Search Title..."
+                }
+                variant="outlined"
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon sx={{ color: "gray", fontSize: "20px" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "8px",
+                    backgroundColor: "#fff",
+                    "&:hover fieldset": {
+                      borderColor: "#9c27b0", // Purple hover effect (optional)
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    fontSize: "14px",
+                  },
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+              <FormControl disabled={searchBy == 1} fullWidth size="small">
+                <Select
+                  labelId="listing-type"
+                  id="listing-type"
+                  value={listingType || ""} // State variable connect karein
+                  onChange={(e) => {setListingType(e.target.value)
+                    setPage(1)
+                  }}
+                  displayEmpty
+                  renderValue={(selected) => {
+                    // Mapping values to labels
+                    const labels = {
+                      "": "All",
+                      1: "Simple",
+                      2: "Variable",
+                    };
+
+                    return (
+                      <span style={{ fontSize: "14px" }}>
+                        <b style={{ color: "#666" }}>Listing: </b>{" "}
+                        {labels[selected] || "All"}
+                      </span>
+                    );
+                  }}
+                  sx={{
+                    borderRadius: "8px",
+                    bgcolor: "white",
+                    "& .MuiSelect-select": {
+                      display: "flex",
+                      alignItems: "center",
+                      paddingY: "8.5px",
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <em style={{ fontSize: "14px", fontStyle: "normal" }}>
+                      All
+                    </em>
+                  </MenuItem>
+                  <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                    Simple
+                  </MenuItem>
+                  <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                    Variable
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+              <Button
+                onClick={handleExpandBtn}
+                rel="noopener noreferrer"
+                size="small"
+                startIcon={
+                  !isExpandFilters ? (
+                    <ExpandMoreIcon sx={{ fontSize: "20px" }} />
+                  ) : (
+                    <ExpandLessIcon sx={{ fontSize: "20px" }} />
+                  )
+                }
+                fullWidth
+                sx={{
+                  mr: 1,
+                  px: 3,
+                  py: 1,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderRadius: "5px", // Smooth rounded corners
+
+                  // Modern Indigo Gradient
+                  background:
+                    "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+                  color: "#ffffff",
+                  textWrap: "nowrap",
+                  // Glass effect and shadow
+                  boxShadow:
+                    "0 4px 15px rgba(168, 85, 247, 0.25), inset 0 1px 1px rgba(255,255,255,0.3)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+
+                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", // Bouncy premium feel
+                  cursor: "pointer",
+
+                  "&:hover": {
+                    // Glow effect on hover
+                    boxShadow:
+                      "0 8px 25px rgba(168, 85, 247, 0.4), inset 0 1px 1px rgba(255,255,255,0.4)",
+                    transform: "scale(1.05) translateY(-2px)",
+                    background:
+                      "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
+                  },
+
+                  "&:active": {
+                    transform: "scale(0.98)",
+                  },
+
+                  // Subtle icon animation
+                  "& .MuiButton-startIcon": {
+                    transition: "transform 0.4s ease",
+                  },
+                  "&:hover .MuiButton-startIcon": {
+                    transform: "translateX(-2px) scale(1.1)",
+                  },
+                }}
+              >
+                More Filters
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+              <Button
+                onClick={() => {
+                  setSearchBy(2);
+                  setSearchTerm("");
+                  setListingType("");
+                  setPurposeType("");
+                  setStockStatus("");
+                  setPostStatus("");
+                  setActiveFor("");
+                  setSearchByBrand("");
+                }}
+                fullWidth
+                rel="noopener noreferrer"
+                size="small"
+                startIcon={<RestartAltIcon sx={{ fontSize: "20px" }} />}
+                sx={{
+                  mr: 1,
+                  px: 3,
+                  py: 1,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderRadius: "5px", // Smooth rounded corners
+
+                  // Modern Indigo Gradient
+                  background:
+                    "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+                  color: "#ffffff",
+                  textWrap: "nowrap",
+                  // Glass effect and shadow
+                  boxShadow:
+                    "0 4px 15px rgba(168, 85, 247, 0.25), inset 0 1px 1px rgba(255,255,255,0.3)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+
+                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", // Bouncy premium feel
+                  cursor: "pointer",
+
+                  "&:hover": {
+                    // Glow effect on hover
+                    boxShadow:
+                      "0 8px 25px rgba(168, 85, 247, 0.4), inset 0 1px 1px rgba(255,255,255,0.4)",
+                    transform: "scale(1.05) translateY(-2px)",
+                    background:
+                      "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
+                  },
+
+                  "&:active": {
+                    transform: "scale(0.98)",
+                  },
+
+                  // Subtle icon animation
+                  "& .MuiButton-startIcon": {
+                    transition: "transform 0.4s ease",
+                  },
+                  "&:hover .MuiButton-startIcon": {
+                    transform: "translateX(-2px) scale(1.1)",
+                  },
+                }}
+              >
+                Reset Filters
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+              <Button
+                onClick={() => navigation("/vendor/products/create")}
+                rel="noopener noreferrer"
+                fullWidth
+                size="small"
+                startIcon={<AddIcon sx={{ fontSize: "20px" }} />}
+                sx={{
+                  mr: 1,
+                  px: 3,
+                  py: 1,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderRadius: "5px", // Smooth rounded corners
+
+                  // Modern Indigo Gradient
+                  background:
+                    "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+                  color: "#ffffff",
+                  textWrap: "nowrap",
+                  // Glass effect and shadow
+                  boxShadow:
+                    "0 4px 15px rgba(168, 85, 247, 0.25), inset 0 1px 1px rgba(255,255,255,0.3)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+
+                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", // Bouncy premium feel
+                  cursor: "pointer",
+
+                  "&:hover": {
+                    // Glow effect on hover
+                    boxShadow:
+                      "0 8px 25px rgba(168, 85, 247, 0.4), inset 0 1px 1px rgba(255,255,255,0.4)",
+                    transform: "scale(1.05) translateY(-2px)",
+                    background:
+                      "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
+                  },
+
+                  "&:active": {
+                    transform: "scale(0.98)",
+                  },
+
+                  // Subtle icon animation
+                  "& .MuiButton-startIcon": {
+                    transition: "transform 0.4s ease",
+                  },
+                  "&:hover .MuiButton-startIcon": {
+                    transform: "translateX(-2px) scale(1.1)",
+                  },
+                }}
+              >
+                Add New Product
+              </Button>
+            </Grid>
+            {isExpandFilters && (
+              <>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <FormControl
+                    disabled={searchBy == 1 || true}
+                    fullWidth
+                    size="small"
+                  >
+                    <Select
+                      labelId="purpose-select-label"
+                      id="purpose-select"
+                      value={purposeType || ""}
+                      onChange={(e) => {setPurposeType(e.target.value)
+                        setPage(1)
+                      }}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        const labels = {
+                          "": "All",
+                          1: "Sale",
+                          2: "Trade-in",
+                          3: "Repair",
+                        };
+
+                        return (
+                          <span style={{ fontSize: "14px" }}>
+                            <b style={{ color: "#666" }}>Purpose: </b>
+                            {labels[selected] || "All"}
+                          </span>
+                        );
+                      }}
+                      sx={{
+                        borderRadius: "8px",
+                        bgcolor: "white",
+                        "& .MuiSelect-select": {
+                          display: "flex",
+                          alignItems: "center",
+                          paddingY: "8.5px",
+                        },
+                      }}
+                    >
+                      <MenuItem value="">
+                        <em style={{ fontSize: "14px", fontStyle: "normal" }}>
+                          All
+                        </em>
+                      </MenuItem>
+                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                        Sale
+                      </MenuItem>
+                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                        Trade-in
+                      </MenuItem>
+                      <MenuItem value={3} sx={{ fontSize: "14px" }}>
+                        Repair
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <FormControl disabled={searchBy == 1} fullWidth size="small">
+                    <Select
+                      labelId="stock-status-label"
+                      id="stock-status"
+                      // 1. Ensure value is connected to state
+                      value={stockStatus === undefined ? "" : stockStatus}
+                      onChange={(e) => {setStockStatus(e.target.value)
+                        setPage(1)
+                      }}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        // 2. Labels mapping (Key matching is crucial)
+                        const labels = {
+                          "": "All",
+                          1: "In Stock",
+                          2: "Out Of Stock",
+                          3: "Unmanaged",
+                        };
+
+                        return (
+                          <span style={{ fontSize: "14px" }}>
+                            <b style={{ color: "#666" }}>Stock Status: </b>{" "}
+                            {labels[selected] || "All"}
+                          </span>
+                        );
+                      }}
+                      sx={{
+                        borderRadius: "8px",
+                        bgcolor: "white",
+                        "& .MuiSelect-select": {
+                          display: "flex",
+                          alignItems: "center",
+                          paddingY: "8.5px",
+                        },
+                      }}
+                    >
+                      {/* 3. Use strings for values to avoid type mismatch */}
+                      <MenuItem value="">
+                        <em style={{ fontSize: "14px", fontStyle: "normal" }}>
+                          All
+                        </em>
+                      </MenuItem>
+                      <MenuItem value="1" sx={{ fontSize: "14px" }}>
+                        In Stock
+                      </MenuItem>
+                      <MenuItem value="2" sx={{ fontSize: "14px" }}>
+                        Out Of Stock
+                      </MenuItem>
+                      <MenuItem value="3" sx={{ fontSize: "14px" }}>
+                        Unmanaged
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <FormControl disabled={searchBy == 1} fullWidth size="small">
+                    <Select
+                      labelId="post-status-label"
+                      id="post-status"
+                      // Un-comment this to make the component controlled
+                      value={postStatus ?? ""}
+                      onChange={(e) => {setPostStatus(e.target.value)
+                        setPage(1)
+                      }}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        const labels = {
+                          "": "All",
+                          0: "Draft",
+                          1: "Published",
+                        };
+
+                        return (
+                          <span style={{ fontSize: "14px" }}>
+                            <b style={{ color: "#666" }}>Status: </b>{" "}
+                            {/* Using (selected || selected === 0) handles the numeric 0 value correctly */}
+                            {labels[selected] !== undefined
+                              ? labels[selected]
+                              : "All"}
+                          </span>
+                        );
+                      }}
+                      sx={{
+                        borderRadius: "8px",
+                        bgcolor: "white",
+                        "& .MuiSelect-select": {
+                          display: "flex",
+                          alignItems: "center",
+                          paddingY: "8.5px",
+                        },
+                        // Optional: Add a subtle border to match a premium aesthetic
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#e0e0e0",
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#bdbdbd",
+                        },
+                      }}
+                    >
+                      <MenuItem value="">
+                        <span style={{ fontSize: "14px" }}>All</span>
+                      </MenuItem>
+                      <MenuItem value={0} sx={{ fontSize: "14px" }}>
+                        Draft
+                      </MenuItem>
+                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                        Published
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <FormControl
+                    disabled={searchBy == 1 || true}
+                    fullWidth
+                    size="small"
+                  >
+                    <Select
+                      labelId="active-for-label"
+                      id="active-for"
+                      value={activeFor ?? ""}
+                      onChange={(e) => {setActiveFor(e.target.value)
+                        setPage(1)
+                      }}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        const labels = {
+                          "": "All",
+                          1: "Web",
+                          2: "POS",
+                        };
+
+                        return (
+                          <span style={{ fontSize: "14px" }}>
+                            <b style={{ color: "#666" }}>Active For: </b>{" "}
+                            {labels[selected] || "All"}
+                          </span>
+                        );
+                      }}
+                      sx={{
+                        borderRadius: "8px",
+                        bgcolor: "white",
+                        "& .MuiSelect-select": {
+                          display: "flex",
+                          alignItems: "center",
+                          paddingY: "8.5px",
+                        },
+                        // Keeps the border subtle for that Apple-style minimalism
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#e0e0e0",
+                        },
+                      }}
+                    >
+                      <MenuItem value="">
+                        <span style={{ fontSize: "14px" }}>All</span>
+                      </MenuItem>
+                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                        Web
+                      </MenuItem>
+                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                        POS
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <Autocomplete
+                    disablePortal
+                    size="small"
+                    options={filterBrands}
+                    value={
+                      filterBrands.find(
+                        (brand) => brand.id === searchByBrand,
+                      ) || null
+                    }
+                    getOptionLabel={(option) => option.title || ""}
+                    onChange={(event, newValue) => {
+                      setSearchByBrand(newValue ? newValue.id : "");
+                      setPage(1)
+                    }}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    loading={forSearchBrandLoading}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "8px",
+                        bgcolor: "white",
+                      },
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Search Brands"
+                        placeholder="Select a brand"
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "capitalize" }}
+                    color="secondary"
+                    fullWidth
+                    disabled
+                  >
+                    Category
+                  </Button>
+                </Grid>
+              </>
+            )}
+          </Grid>
         </Box>
         <Box
           sx={{
@@ -109,24 +744,23 @@ const Products = () => {
             component={Paper}
             sx={{
               overflowX: "auto",
-              // Premium Look ke liye shadow reset
               "& .sticky-left": {
                 position: "sticky",
                 left: 0,
-                zIndex: 100,
+                zIndex: 2,
                 backgroundColor: "#f3f5f9",
               },
               "& .sticky-title": {
                 position: "sticky",
-                left: "80px", // SKU ki width ke baad shuru hoga
-                zIndex: 100,
+                left: "80px",
+                zIndex: 2,
                 backgroundColor: "#f3f5f9",
                 borderRight: "1px solid #e0e0e0",
               },
               "& .sticky-action": {
                 position: "sticky",
                 right: 0,
-                zIndex: 100,
+                zIndex: 2,
                 backgroundColor: "#f3f5f9",
                 borderLeft: "1px solid #e0e0e0",
               },
@@ -279,7 +913,7 @@ const Products = () => {
                   >
                     Draft|Published
                   </TableCell>
-                  <TableCell
+                  {/* <TableCell
                     sx={{
                       fontWeight: "600",
                       fontSize: "12px",
@@ -288,7 +922,7 @@ const Products = () => {
                     }}
                   >
                     Featured
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell
                     className="sticky-action"
                     sx={{
@@ -471,7 +1105,7 @@ const Products = () => {
                             color: "#4e97fd",
                           }}
                         >
-                          {product?.product_type ? "Simple" : "Variable"}
+                          {product?.product_type == 1 ? "Simple" : "Variable"}
                         </Box>
                       </TableCell>
                       <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
@@ -553,20 +1187,28 @@ const Products = () => {
                       <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
                         2
                       </TableCell>
-                      <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                      <TableCell>
+                        <Tooltip
+                          title={product.is_published ? "Unpublish" : "Publish"}
+                        >
+                          <Switch
+                            checked={Boolean(product.is_published)}
+                            onChange={(e) =>
+                              handlePublishToggle(product.id, e.target.checked)
+                            }
+                            color="secondary"
+                            size="small"
+                            disabled={updatePublish.isLoading} // Prevent double-clicks
+                          />
+                        </Tooltip>
+                      </TableCell>
+                      {/* <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
                         <Switch
                           name="is_active"
                           color="secondary"
                           size="small"
                         />
-                      </TableCell>
-                      <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
-                        <Switch
-                          name="is_active"
-                          color="secondary"
-                          size="small"
-                        />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell
                         className="sticky-action"
                         sx={{
@@ -623,26 +1265,25 @@ const Products = () => {
                               <EditIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                         
 
                           <ConfirmDeletePopup
-                                                    title={"Product"}
-                                                    description={
-                                                      "Are your sure you want to delete this product?"
-                                                    }
-                                                    showDelBtn={true}
-                                                    handleDeleteBrand={handleDeleteBrand}
-                                                    singleBrandDelRec={{
-                                                      id: product?.id
-                                                    }}
-                                                  />
+                            title={"Product"}
+                            description={
+                              "Are your sure you want to delete this product?"
+                            }
+                            showDelBtn={true}
+                            handleDeleteBrand={handleDeleteBrand}
+                            singleBrandDelRec={{
+                              id: product?.id,
+                            }}
+                          />
                         </Box>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell align="center" colSpan={16}>
+                    <TableCell align="center" colSpan={15}>
                       <Box
                         sx={{
                           textAlign: "center",

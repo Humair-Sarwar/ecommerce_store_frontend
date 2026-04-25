@@ -19,18 +19,6 @@ const MenuProps = {
   },
 };
 
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
 
 function getStyles(name, personName, theme) {
   return {
@@ -40,48 +28,57 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultipleSelectChip() {
+export default function MultipleSelectChip({ data = [], loading = false, value = [], onChange }) {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
 
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
+    const { target: { value: nextValue } } = event;
+    onChange(typeof nextValue === 'string' ? nextValue.split(',') : nextValue);
+  };
+
+  const handleDelete = (idToDelete) => {
+    onChange(value.filter((id) => id !== idToDelete));
   };
 
   return (
     <div>
-      <FormControl sx={{ minWidth: 300 }} className='chip-root-multiSlt-target' size="small" fullWidth>
-        <InputLabel id="demo-multiple-chip-label">Select Terms</InputLabel>
+      <FormControl sx={{ minWidth: 300 }} size="small" fullWidth>
+        <InputLabel id="demo-multiple-chip-label">
+          {loading ? "Loading Terms..." : "Select Terms"}
+        </InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
-          id="demo-multiple-chip"
           multiple
-          value={personName}
+          value={value}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+          input={<OutlinedInput label="Select Terms" />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((value) => (
-                <Chip key={value} label={value} />
-              ))}
+              {selected.map((id) => {
+                const term = data.find((item) => item.id === id);
+                return (
+                  <Chip
+                    key={id}
+                    label={term ? term.title : id}
+                    sx={{ backgroundColor: '#b9ddd4', border: '1px solid #3a9d85' }}
+                    size="small"
+                    onDelete={() => handleDelete(id)}
+                    onMouseDown={(event) => event.stopPropagation()}
+                  />
+                );
+              })}
             </Box>
           )}
-          MenuProps={MenuProps}
+          disabled={loading || data.length === 0}
         >
-          {names.map((name) => (
+          {data.map((item) => (
             <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
-              sx={{fontSize: '14px'}}
+              key={item.id}
+              value={item.id}
+              style={getStyles(item.id, value, theme)}
+              sx={{ fontSize: '14px' }}
             >
-              {name}
+              {item.title}
             </MenuItem>
           ))}
         </Select>
