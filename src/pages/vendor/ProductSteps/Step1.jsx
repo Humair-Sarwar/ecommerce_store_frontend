@@ -286,9 +286,9 @@ const Step1 = () => {
         is_hot: step1DataSet.is_hot ?? 0,
         category_id: step1DataSet.category_id || null,
         brand_id: step1DataSet.brand_id || "",
-        days: step1DataSet.days || 1,
-        hours: step1DataSet.hours || 1,
-        minutes: step1DataSet.minutes || 1,
+        days: step1DataSet.days || 0,
+        hours: step1DataSet.hours || 0,
+        minutes: step1DataSet.minutes || 0,
         meta_title: step1DataSet.meta_title || "",
         meta_description: step1DataSet.meta_description || "",
         keywords: step1DataSet.keywords || "",
@@ -497,9 +497,38 @@ const Step1 = () => {
                     name="sort_order"
                     value={firstStepData.sort_order}
                     placeholder="Enter product sort order"
-                    onChange={handleInputChange}
+                    // Inline fix: Prevent values below 1 and handle empty state
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const numericVal = parseInt(val, 10);
+
+                      // If user clears the field, allow it; otherwise, force minimum 1
+                      const finalValue =
+                        val === "" ? "" : Math.max(1, numericVal || 1);
+
+                      // Call your existing handler with the corrected value
+                      handleInputChange({
+                        target: {
+                          name: "sort_order",
+                          value: finalValue,
+                        },
+                      });
+                    }}
                     error={Boolean(firstStepErrors.sort_order)}
                     helperText={firstStepErrors.sort_order}
+                    // Browser hint to prevent decrementing below 1
+                    inputProps={{ min: 1 }}
+                    sx={{
+                      // Hide the up/down arrows (spinners)
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid
@@ -655,15 +684,42 @@ const Step1 = () => {
                         id="days"
                         name="days"
                         label="Days"
-                        value={firstStepData.days}
-                        onChange={handleInputChange}
                         fullWidth
                         size="small"
                         color="secondary"
                         variant="outlined"
                         type="number"
+                        value={firstStepData.days}
+                        // Inline fix: Allow 0 but prevent less than 0
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          // Allow empty string for clearing, otherwise force minimum 0
+                          const finalValue =
+                            val === ""
+                              ? ""
+                              : Math.max(0, parseInt(val, 10) || 0);
+
+                          handleInputChange({
+                            target: {
+                              name: "days",
+                              value: finalValue,
+                            },
+                          });
+                        }}
                         error={Boolean(firstStepErrors.days)}
                         helperText={firstStepErrors.days}
+                        // Browser-level hint to set minimum to 0
+                        inputProps={{ min: 0 }}
+                        sx={{
+                          "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                            {
+                              display: "none",
+                              margin: 0,
+                            },
+                          "& input[type=number]": {
+                            MozAppearance: "textfield",
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -671,16 +727,48 @@ const Step1 = () => {
                         id="hours"
                         name="hours"
                         label="Hours"
-                        value={firstStepData.hours}
-                        onChange={handleInputChange}
                         fullWidth
                         size="small"
                         color="secondary"
                         variant="outlined"
                         type="number"
-                        inputProps={{ min: 0, max: 23 }}
+                        value={firstStepData.hours}
+                        // Inline logic: Clamp values between 0 and 23
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          let numericVal = parseInt(val, 10);
+
+                          let finalValue;
+                          if (val === "") {
+                            finalValue = ""; // Allow clearing the field
+                          } else {
+                            // Logic: If < 0, set to 0. If > 23, set to 23.
+                            finalValue = Math.min(
+                              23,
+                              Math.max(0, numericVal || 0),
+                            );
+                          }
+
+                          handleInputChange({
+                            target: {
+                              name: "hours",
+                              value: finalValue,
+                            },
+                          });
+                        }}
                         error={Boolean(firstStepErrors.hours)}
                         helperText={firstStepErrors.hours}
+                        inputProps={{ min: 0, max: 23 }}
+                        sx={{
+                          "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                            {
+                              display: "none",
+                              margin: 0,
+                            },
+                          "& input[type=number]": {
+                            MozAppearance: "textfield",
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -688,16 +776,48 @@ const Step1 = () => {
                         id="minutes"
                         name="minutes"
                         label="Minutes"
-                        value={firstStepData.minutes}
-                        onChange={handleInputChange}
                         fullWidth
                         size="small"
                         color="secondary"
                         variant="outlined"
                         type="number"
-                        inputProps={{ min: 0, max: 59 }}
+                        value={firstStepData.minutes}
+                        // Inline logic: Clamp values between 0 and 59
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          let numericVal = parseInt(val, 10);
+
+                          let finalValue;
+                          if (val === "") {
+                            finalValue = ""; // Allow clearing the field so user can re-type
+                          } else {
+                            // Logic: Ensure value is never less than 0 and never more than 59
+                            finalValue = Math.min(
+                              59,
+                              Math.max(0, numericVal || 0),
+                            );
+                          }
+
+                          handleInputChange({
+                            target: {
+                              name: "minutes",
+                              value: finalValue,
+                            },
+                          });
+                        }}
                         error={Boolean(firstStepErrors.minutes)}
                         helperText={firstStepErrors.minutes}
+                        inputProps={{ min: 0, max: 59 }}
+                        sx={{
+                          "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                            {
+                              display: "none",
+                              margin: 0,
+                            },
+                          "& input[type=number]": {
+                            MozAppearance: "textfield",
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 12 }}>

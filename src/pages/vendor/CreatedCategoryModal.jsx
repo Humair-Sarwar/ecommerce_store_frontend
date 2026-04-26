@@ -68,8 +68,6 @@ function a11yProps(index) {
   };
 }
 
-
-
 export default function CategoryModal({ list, isEdit, category }) {
   const [open, setOpen] = React.useState(false);
   const [imageData, setImageData] = useState({ image_id: "", image_path: "" });
@@ -131,7 +129,9 @@ export default function CategoryModal({ list, isEdit, category }) {
           : false
         : true,
       title: category?.title || "",
-      category_slug: category?.category_slug || (category?.title ? generateSlug(category.title) : ""),
+      category_slug:
+        category?.category_slug ||
+        (category?.title ? generateSlug(category.title) : ""),
       sort_order: category?.sort_order || 1,
       page_description: category?.page_description || "",
       is_listing_switch_in_buy: category
@@ -146,7 +146,7 @@ export default function CategoryModal({ list, isEdit, category }) {
     validationSchema: yup.object({
       title: yup.string().min(3).max(200).required("Name is required!").trim(),
       sort_order: yup.number().required("Sort order is required!"),
-      category_slug: yup.string().trim().required("Slug is required!")
+      category_slug: yup.string().trim().required("Slug is required!"),
     }),
     onSubmit: async (values, action) => {
       const category_slug = generateSlug(values.name);
@@ -238,8 +238,6 @@ export default function CategoryModal({ list, isEdit, category }) {
       }, 100); // Small delay to ensure DOM is ready
     }
   }, [open]);
-
-
 
   const DrawerList = (
     <Box
@@ -361,9 +359,27 @@ export default function CategoryModal({ list, isEdit, category }) {
                     type="number"
                     name="sort_order"
                     value={values.sort_order}
-                    onChange={handleChange}
+                    // Standard handleChange replaced with inline validation logic
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // If empty, allow it; otherwise, force the value to be at least 1
+                      const finalVal =
+                        val === "" ? "" : Math.max(1, parseInt(val, 10) || 1);
+                      setFieldValue("sort_order", finalVal);
+                    }}
                     onBlur={handleBlur}
                     error={Boolean(errors.sort_order && touched.sort_order)}
+                    inputProps={{ min: 1 }} // Browser-level constraint for accessibility
+                    sx={{
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                   />
                   {touched.sort_order && errors.sort_order && (
                     <Typography

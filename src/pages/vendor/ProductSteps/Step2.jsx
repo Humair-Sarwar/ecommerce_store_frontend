@@ -1,5 +1,7 @@
 import {
   Autocomplete,
+  Avatar,
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -17,7 +19,9 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import HelpIcon from "@mui/icons-material/Help";
-
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import SyncIcon from "@mui/icons-material/Sync";
+import PhotoIcon from "@mui/icons-material/Photo";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import Divider from "@mui/material/Divider";
@@ -28,6 +32,7 @@ import TextEditor from "../../../components/TextEditor";
 import SaveIcon from "@mui/icons-material/Save";
 import MultipleSelectChip from "../../../components/MultiSelectChip";
 import {
+  useClearTermImage,
   useCreateProductStep2,
   useDeleteProductAttribute,
   useDeleteProductTerm,
@@ -40,6 +45,8 @@ import {
   useGenerateVariations,
   useRemoveTermAndVariations,
   useSaveProductAttributeTerms,
+  useSaveTermImage,
+  useSyncTermImageToVariations,
   useUpdateAttributeSortOrder,
   useUpdateVariation,
 } from "../../../hook/vendor/useProducts";
@@ -48,6 +55,8 @@ import { useNavigate } from "react-router";
 import { handleError, handleSuccess } from "../../../toast";
 import LoaderSpinner from "../../../components/LoaderSpinner";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ClearIcon from "@mui/icons-material/Clear";
+import MediaSelectModal from "../../../components/MediaSelectModal";
 
 const Step2 = ({
   handleBackStep,
@@ -546,6 +555,7 @@ const Step2 = ({
           keywords: variation?.keywords,
           description: variation?.description,
           is_default: variation?.is_default,
+          image_id: variation.image_id,
         },
       },
       {
@@ -569,6 +579,74 @@ const Step2 = ({
         variation.regular_price > 0 &&
         variation.product_sku?.trim() !== "",
     );
+
+  const saveTermImage = useSaveTermImage();
+
+  const handleSaveTermImage = (termId, imageId) => {
+    const payload = {
+      product_id: productId,
+      term_id: termId,
+      image_id: imageId,
+    };
+
+    saveTermImage.mutate(payload, {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Variation image updated!");
+      },
+      onError: (err) => {
+        handleError(
+            err?.response?.data?.message || "Failed to update image",
+          );
+      },
+    });
+  };
+
+
+  const clearTermImage = useClearTermImage();
+
+const handleClearTermImage = (termId) => {
+  clearTermImage.mutate(
+    {
+      product_id: productId,
+      term_id: termId,
+    },
+    {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Image removed successfully!");
+      },
+      onError: (err) => {
+        handleError(
+          err?.response?.data?.message || "Failed to remove image!"
+        );
+      },
+    }
+  );
+};
+
+
+const syncTermImage = useSyncTermImageToVariations();
+
+const handleSyncVariationImage = (termId) => {
+  syncTermImage.mutate(
+    {
+      product_id: productId,
+      term_id: termId,
+    },
+    {
+      onSuccess: (res) => {
+        handleSuccess(
+          res?.message || "Image synced to all variations!"
+        );
+      },
+      onError: (err) => {
+        handleError(
+          err?.response?.data?.message ||
+          "Failed to sync image!"
+        );
+      },
+    }
+  );
+};
 
   return (
     <>
@@ -715,8 +793,36 @@ const Step2 = ({
                   size="small"
                   color="secondary"
                   variant="outlined"
-                  value={simpleProductStep2Data.min_stock_alert || ""}
-                  onChange={handleInputChange}
+                  // Keep empty string handling to avoid uncontrolled component warnings
+                  value={simpleProductStep2Data.min_stock_alert ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const numericVal = parseInt(val, 10);
+
+                    // Logic: If empty allow it, otherwise allow 0 but nothing lower
+                    const finalValue =
+                      val === "" ? "" : Math.max(0, numericVal || 0);
+
+                    handleInputChange({
+                      target: {
+                        name: "min_stock_alert",
+                        value: finalValue,
+                      },
+                    });
+                  }}
+                  // Standard browser constraint
+                  inputProps={{ min: 0 }}
+                  sx={{
+                    // Hide arrows for a premium fintech look
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        display: "none",
+                        margin: 0,
+                      },
+                    "& input[type=number]": {
+                      MozAppearance: "textfield",
+                    },
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
@@ -727,11 +833,45 @@ const Step2 = ({
                   fullWidth
                   size="small"
                   color="secondary"
-                  value={simpleProductStep2Data.regular_price || 0}
-                  onChange={handleInputChange}
+                  // Use ?? 0 to handle null values gracefully
+                  value={simpleProductStep2Data.regular_price ?? 0}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // Parse to float for price; force minimum of 0
+                    const numericVal =
+                      val === "" ? "" : Math.max(0, parseFloat(val) || 0);
+
+                    // 1. Update Regular Price
+                    handleInputChange({
+                      target: { name: "regular_price", value: numericVal },
+                    });
+
+                    // 2. Sync Sale Price (Always set sale price equal to regular price initially)
+                    handleInputChange({
+                      target: { name: "sale_price", value: numericVal },
+                    });
+                  }}
                   required
-                  error={!!errors.regular_price}
-                  helperText={errors.regular_price}
+                  error={
+                    !!errors.regular_price ||
+                    simpleProductStep2Data.regular_price <= 0
+                  }
+                  helperText={
+                    simpleProductStep2Data.regular_price <= 0
+                      ? "Price must be greater than 0"
+                      : errors.regular_price
+                  }
+                  inputProps={{ min: 0.01, step: "0.01" }}
+                  sx={{
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        display: "none",
+                        margin: 0,
+                      },
+                    "& input[type=number]": {
+                      MozAppearance: "textfield",
+                    },
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
@@ -742,11 +882,54 @@ const Step2 = ({
                   fullWidth
                   size="small"
                   color="secondary"
-                  value={simpleProductStep2Data.sale_price || 0}
-                  onChange={handleInputChange}
+                  value={simpleProductStep2Data.sale_price ?? 0}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const numericVal = parseFloat(val);
+                    const regularPrice =
+                      parseFloat(simpleProductStep2Data.regular_price) || 0;
+
+                    let finalValue;
+                    if (val === "") {
+                      finalValue = "";
+                    } else {
+                      // 1. Minimum 0 logic
+                      // 2. Maximum logic: Cannot be more than Regular Price
+                      finalValue = Math.min(
+                        regularPrice,
+                        Math.max(0, numericVal || 0),
+                      );
+                    }
+
+                    handleInputChange({
+                      target: {
+                        name: "sale_price",
+                        value: finalValue,
+                      },
+                    });
+                  }}
                   required
-                  error={!!errors.sale_price}
-                  helperText={errors.sale_price}
+                  // Visual error if 0 or greater than regular price
+                  error={
+                    !!errors.sale_price ||
+                    simpleProductStep2Data.sale_price <= 0
+                  }
+                  helperText={
+                    simpleProductStep2Data.sale_price <= 0
+                      ? "Sale price required"
+                      : errors.sale_price
+                  }
+                  inputProps={{ min: 0, step: "0.01" }}
+                  sx={{
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        display: "none",
+                        margin: 0,
+                      },
+                    "& input[type=number]": {
+                      MozAppearance: "textfield",
+                    },
+                  }}
                 />
               </Grid>
               {/* <Grid size={{ xs: 12, sm: 6, md: 2 }}>
@@ -1228,6 +1411,18 @@ const Step2 = ({
                                     "&:hover": { bgcolor: "#e8e8ed" },
                                   }}
                                 >
+                                  {variationsDataProducts?.length > 0 ? (
+                                    <MediaSelectModal
+                                                    termImageP={term}
+                                                    handleClearTermImage={handleClearTermImage}
+                                                    handleSaveTermImg={handleSaveTermImage}
+                                                    isSelectedTermsS={true}
+                                                    handleSyncVariationImage={handleSyncVariationImage}
+                                                    syncTermImage={syncTermImage}
+                                                  />
+                                  ) : (
+                                    ""
+                                  )}
                                   {term?.name}{" "}
                                   {variationsDataProducts?.length > 0 ? (
                                     <CancelIcon
@@ -1295,7 +1490,6 @@ const Step2 = ({
                               label="Sort Order"
                               type="number"
                               variant="outlined"
-                              sx={{ width: "110px" }}
                               value={currentSortOrder}
                               required
                               slotProps={{
@@ -1317,6 +1511,17 @@ const Step2 = ({
                               helperText={
                                 currentSortOrder === "" ? "Required" : ""
                               }
+                              sx={{
+                                width: "110px",
+                                "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                                  {
+                                    display: "none",
+                                    margin: 0,
+                                  },
+                                "& input[type=number]": {
+                                  MozAppearance: "textfield",
+                                },
+                              }}
                             />
 
                             <Box sx={{ display: "flex", gap: 1 }}>
@@ -1396,7 +1601,7 @@ const Step2 = ({
               <Button
                 disabled={
                   selectedAttributesDataFetchShow?.length == 0 ||
-                  variationsDataProducts?.length > 0
+                  variationsDataProducts?.length > 0 || generateVariations?.isLoading || generateVariations?.isPending
                 }
                 className="custom-secondary-btn-admin-side"
                 onClick={
@@ -1514,7 +1719,32 @@ const Step2 = ({
                 </Grid>
 
                 {/* SKU and Stock Info */}
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>image</Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                  <MediaSelectModal
+                    isVariationSelectImg={true}
+                    variationImage={
+                      variation.image_path ||
+                      variation?.variation_image?.media_path
+                    }
+                    setImageData={(imagePayload) => {
+                      handleVariationChange(
+                        index,
+                        "image_id",
+                        imagePayload.image_id,
+                      );
+                      handleVariationChange(
+                        index,
+                        "image_path",
+                        imagePayload.image_path,
+                      );
+                    }}
+                    onClear={() => {
+                      handleVariationChange(index, "image_id", null);
+                      handleVariationChange(index, "image_path", null);
+                      handleVariationChange(index, "variation_image", null);
+                    }}
+                  />
+                </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 2 }}>
                   <TextField
                     label="SKU"
@@ -1574,17 +1804,34 @@ const Step2 = ({
                     size="small"
                     color="secondary"
                     variant="outlined"
-                    type="number" // Numeric input ke liye
-                    // Value ko state se link karein
+                    type="number"
+                    // Use 0 as fallback for the variation state
                     value={variation.min_stock_alert || 0}
-                    // Change handler attach karein
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Allow 0, but prevent anything lower
+                      const finalValue =
+                        val === "" ? "" : Math.max(0, parseInt(val, 10) || 0);
+
                       handleVariationChange(
                         index,
                         "min_stock_alert",
-                        e.target.value,
-                      )
-                    }
+                        finalValue,
+                      );
+                    }}
+                    // Accessibility hint
+                    inputProps={{ min: 0 }}
+                    sx={{
+                      // Remove the up/down arrows (spinners)
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                   />
                 </Grid>
 
@@ -1595,41 +1842,84 @@ const Step2 = ({
                     size="small"
                     type="number"
                     value={variation.regular_price || 0}
-                    // Show error state if price is 0
+                    // Error state if price is 0
                     error={variation.regular_price <= 0}
                     helperText={
                       variation.regular_price <= 0 ? "Price cannot be zero" : ""
                     }
                     onChange={(e) => {
+                      const rawVal = e.target.value;
+                      // Allow empty string to be 0, otherwise ensure minimum of 0
                       const val =
-                        e.target.value === "" ? 0 : parseFloat(e.target.value);
+                        rawVal === ""
+                          ? 0
+                          : Math.max(0, parseFloat(rawVal) || 0);
+
+                      // Update Regular Price
                       handleVariationChange(index, "regular_price", val);
+                      // Sync Sale Price automatically
                       handleVariationChange(index, "sale_price", val);
+                    }}
+                    inputProps={{ min: 0, step: "0.01" }}
+                    sx={{
+                      // Hide the up/down arrows
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
                     }}
                   />
                 </Grid>
 
                 <Grid size={{ xs: 12, sm: 6, md: 2 }}>
                   <TextField
-  label="Sale Price"
-  fullWidth
-  size="small"
-  type="number"
-  value={variation.sale_price || 0}
-  // Highlight red if 0 or if higher than regular price
-  error={variation.sale_price <= 0 || variation.sale_price > variation.regular_price}
-  helperText={
-    variation.sale_price <= 0 
-      ? "Sale price required" 
-      : variation.sale_price > variation.regular_price 
-      ? "Cannot exceed regular price" 
-      : ""
-  }
-  onChange={(e) => {
-    const val = e.target.value === "" ? 0 : parseFloat(e.target.value);
-    handleVariationChange(index, "sale_price", val);
-  }}
-/>
+                    label="Sale Price"
+                    fullWidth
+                    size="small"
+                    type="number"
+                    value={variation.sale_price || 0}
+                    // Error UI logic
+                    error={
+                      variation.sale_price <= 0 ||
+                      variation.sale_price > variation.regular_price
+                    }
+                    helperText={
+                      variation.sale_price <= 0
+                        ? "Sale price required"
+                        : variation.sale_price > variation.regular_price
+                          ? "Cannot exceed regular price"
+                          : ""
+                    }
+                    onChange={(e) => {
+                      const rawVal = e.target.value;
+                      const numericVal = parseFloat(rawVal) || 0;
+                      const regPrice = parseFloat(variation.regular_price) || 0;
+
+                      // Logic: Clamp between 0 and Regular Price
+                      const finalVal =
+                        rawVal === ""
+                          ? 0
+                          : Math.min(regPrice, Math.max(0, numericVal));
+
+                      handleVariationChange(index, "sale_price", finalVal);
+                    }}
+                    inputProps={{ min: 0, step: "0.01" }}
+                    sx={{
+                      // Hide the up/down arrows
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                    }}
+                  />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 2 }}>
                   <FormControl fullWidth size="small">

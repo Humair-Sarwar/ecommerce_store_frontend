@@ -12,6 +12,8 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  Badge,
+  Avatar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -31,6 +33,10 @@ import MediaImageView from "./MediaImageView";
 import ConfirmDeletePopup from "./ConfirmDeletePopup";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import SyncIcon from "@mui/icons-material/Sync";
+import PhotoIcon from "@mui/icons-material/Photo";
+import ClearIcon from "@mui/icons-material/Clear";
 
 function SimpleDialog(props) {
   const uploadSingleMedia = useUploadSingleMedia();
@@ -251,7 +257,7 @@ function SimpleDialog(props) {
                     onClick={() => {
                       const imagePayload = {
                         image_id: list.id,
-                        cover_image_id: list.id, 
+                        cover_image_id: list.id,
                         image_path: `${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`,
                       };
 
@@ -265,6 +271,10 @@ function SimpleDialog(props) {
                         } else if (typeof props.setImageData === "function") {
                           props.setImageData(imagePayload);
                         }
+                      }
+
+                      if(props.isSelectedTermsS){
+                        props.handleSaveTermImg(props.termImageP.id, list?.id)
                       }
 
                       handleDialogClose();
@@ -402,8 +412,24 @@ export default function MediaSelectModal({
   imageDataCover,
   isCategoryCover,
   isProduct,
+  isVariationSelectImg,
+  variationImage,
+  onClear,
+  isSelectedTermsS,
+  termImageP,
+  handleSaveTermImg,
+  handleClearTermImage,
+  clearTermImage,
+  saveTermImage,
+  syncTermImage,
+  handleSyncVariationImage
 }) {
   const [open, setOpen] = React.useState(false);
+  const getImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    return `${import.meta.env.VITE_BASE_URL}/storage/${path}`;
+  };
   return (
     <>
       {isBrand && (
@@ -582,6 +608,254 @@ export default function MediaSelectModal({
         </Button>
       )}
 
+      {isVariationSelectImg && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+          <Badge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            badgeContent={
+              <>
+                {variationImage && (
+                  <ClearIcon
+                    onClick={onClear}
+                    sx={{
+                      position: "absolute",
+                      top: -30,
+                      right: 8,
+                      fontSize: "1.1rem",
+                      p: 0.4,
+                      borderRadius: "50%",
+                      cursor: "pointer",
+
+                      // Glassmorphism & Premium Styling
+                      backgroundColor: "rgba(255, 255, 255, 0.85)",
+                      backdropFilter: "blur(8px)", // Apple-style blur
+                      color: "#ef4444",
+                      border: "1px solid rgba(239, 68, 68, 0.3)",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      zIndex: 10,
+
+                      "&:hover": {
+                        backgroundColor: "#ef4444",
+                        color: "#fff",
+                        transform: "scale(1.15) rotate(90deg)", // Sophisticated rotation on hover
+                        boxShadow: "0 6px 16px rgba(239, 68, 68, 0.4)",
+                      },
+                    }}
+                  />
+                )}
+
+                <IconButton
+                  onClick={() => setOpen(true)}
+                  component="label"
+                  sx={{
+                    width: 22,
+                    height: 22,
+                    // Premium Indigo Gradient
+                    background:
+                      "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
+                    color: "white",
+                    border: "3px solid #fff",
+                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(135deg, #4338ca 0%, #312e81 100%)",
+                      transform: "scale(1.1) rotate(5deg)", // Unique hover effect
+                      boxShadow: "0px 6px 15px rgba(99, 102, 241, 0.4)",
+                    },
+                  }}
+                >
+                  <CameraAltIcon sx={{ fontSize: "0.7rem" }} />
+                </IconButton>
+              </>
+            }
+          >
+            <Avatar
+              src={getImageUrl(variationImage)}
+              sx={{
+                width: 41,
+                height: 41,
+                bgcolor: "#f3f4f6", // Soft grey placeholder
+                color: "#9ca3af",
+                border: "1px solid #e5e7eb",
+                // Floating Depth Effect
+                boxShadow:
+                  "0px 20px 25px -5px rgba(0, 0, 0, 0.05), 0px 10px 10px -5px rgba(0, 0, 0, 0.02)",
+                transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                "&:hover": {
+                  borderColor: "#6366f1",
+                  boxShadow: "0px 25px 30px -5px rgba(99, 102, 241, 0.1)",
+                },
+              }}
+            >
+              {/* Default Person Icon if no image */}
+              <Box
+                component="span"
+                sx={{
+                  fontSize: "2rem",
+                  filter: "grayscale(1)",
+                  opacity: 0.9,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {!variationImage && <PhotoIcon sx={{ fontSize: 24 }} />}
+              </Box>
+            </Avatar>
+          </Badge>
+        </Box>
+      )}
+
+      {isSelectedTermsS && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+          <Badge
+            overlap="circular"
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            badgeContent={
+              <>
+              {termImageP?.media && <>
+              <SyncIcon
+              onClick={()=>handleSyncVariationImage(termImageP?.id)}
+                  sx={{
+                    position: "absolute",
+                    top: -12,
+                    left: -20,
+                    fontSize: "1.1rem",
+                    p: 0.3,
+                    borderRadius: "50%",
+                    cursor: "pointer",
+
+                    // Glassmorphism & Premium Styling
+                    backgroundColor: "rgba(255, 255, 255, 0.85)",
+                    backdropFilter: "blur(8px)", // Apple-style blur
+                    color: "#4cbd35",
+                    border: "1px solid rgba(111, 239, 68, 0.3)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+
+                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                    zIndex: 10,
+
+                    "&:hover": {
+                      backgroundColor: "#459c2f",
+                      color: "#fff",
+                      transform: "scale(1.15) rotate(90deg)", // Sophisticated rotation on hover
+                      boxShadow: "0 6px 16px rgba(82, 239, 68, 0.4)",
+                    },
+                  }}
+                />
+                <ClearIcon
+                onClick={()=>handleClearTermImage(termImageP?.id)}
+                
+                  sx={{
+                    position: "absolute",
+                    top: -24,
+                    right: 6,
+                    fontSize: "1.1rem",
+                    p: 0.3,
+                    borderRadius: "50%",
+                    cursor: "pointer",
+
+                    // Glassmorphism & Premium Styling
+                    backgroundColor: "rgba(255, 255, 255, 0.85)",
+                    backdropFilter: "blur(8px)", // Apple-style blur
+                    color: "#ef4444",
+                    border: "1px solid rgba(239, 68, 68, 0.3)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                    
+                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                    zIndex: 10,
+
+                    "&:hover": {
+                      backgroundColor: "#ef4444",
+                      color: "#fff",
+                      transform: "scale(1.15) rotate(90deg)", // Sophisticated rotation on hover
+                      boxShadow: "0 6px 16px rgba(239, 68, 68, 0.4)",
+                    },
+                  }}
+                /></>}
+                
+                <IconButton
+                onClick={() => setOpen(true)}
+                  component="label"
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    // Premium Indigo Gradient
+                    background:
+                      "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
+                    color: "white",
+                    border: "3px solid #fff",
+                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(135deg, #4338ca 0%, #312e81 100%)",
+                      transform: "scale(1.1) rotate(5deg)", // Unique hover effect
+                      boxShadow: "0px 6px 15px rgba(99, 102, 241, 0.4)",
+                    },
+                  }}
+                >
+                  <CameraAltIcon sx={{ fontSize: "0.7rem" }} />
+                </IconButton>
+              </>
+            }
+          >
+            <Avatar
+              src={`${import.meta.env.VITE_BASE_URL}/storage/${termImageP?.media?.media_path}`}
+              sx={{
+                width: 35,
+                height: 35,
+                bgcolor: "white", // Soft grey placeholder
+                color: "#9ca3af",
+                border: "1px solid #e5e7eb",
+                // Floating Depth Effect
+                boxShadow:
+                  "0px 20px 25px -5px rgba(0, 0, 0, 0.05), 0px 10px 10px -5px rgba(0, 0, 0, 0.02)",
+                transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                "&:hover": {
+                  borderColor: "#6366f1",
+                  boxShadow: "0px 25px 30px -5px rgba(99, 102, 241, 0.1)",
+                },
+              }}
+            >
+              {/* Default Person Icon if no image */}
+              <Box
+                component="span"
+                sx={{
+                  fontSize: "2rem",
+                  filter: "grayscale(1)",
+                  opacity: 0.9,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <PhotoIcon sx={{ fontSize: 25 }} />
+              </Box>
+            </Avatar>
+          </Badge>
+        </Box>
+      )}
+
       <SimpleDialog
         open={open}
         onClose={() => setOpen(false)}
@@ -589,6 +863,9 @@ export default function MediaSelectModal({
         setImageDataCover={setImageDataCover}
         imageData={imageData}
         isProduct={isProduct}
+        isSelectedTermsS={isSelectedTermsS}
+        termImageP={termImageP}
+        handleSaveTermImg={handleSaveTermImg}
       />
     </>
   );

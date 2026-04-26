@@ -503,3 +503,98 @@ export const useUpdateVariation = () => {
     },
   });
 };
+
+
+
+
+
+
+export const useSaveTermImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      const res = await apiAuth.post(
+        "/api/vendor/product/term/save-image",
+        payload
+      );
+      return res.data;
+    },
+
+    onSuccess: () => {
+      // optional: refetch related queries
+      queryClient.invalidateQueries(["product-terms"]);
+    },
+  });
+};
+
+
+
+
+
+
+export const useClearTermImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      const res = await apiAuth.post(
+        "/api/vendor/clear-term-image",
+        payload
+      );
+      return res.data;
+    },
+
+    onSuccess: (_, variables) => {
+      const productId = variables?.product_id;
+
+      // 🔄 refetch related data
+      if (productId) {
+        queryClient.invalidateQueries([
+          "selected-product-attributes",
+          productId,
+        ]);
+      }
+
+      queryClient.invalidateQueries(["product-terms"]);
+    },
+  });
+};
+
+
+
+
+
+
+export const useSyncTermImageToVariations = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      const res = await apiAuth.post(
+        "/api/vendor/sync-term-image-to-variations",
+        payload
+      );
+      return res.data;
+    },
+
+    onSuccess: (_, variables) => {
+      const productId = variables?.product_id;
+
+      // 🔄 refresh variations + terms
+      if (productId) {
+        queryClient.invalidateQueries([
+          "product-variations",
+          productId,
+        ]);
+
+        queryClient.invalidateQueries([
+          "selected-product-attributes",
+          productId,
+        ]);
+      }
+
+      queryClient.invalidateQueries(["product-terms"]);
+    },
+  });
+};
