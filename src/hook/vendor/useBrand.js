@@ -159,3 +159,23 @@ export const useDeleteSelectedBrands = () => {
     },
   });
 };
+
+
+
+
+
+
+
+
+export const useFetchBrandsPanel = () => {
+  return useQuery({
+    queryKey: ["brands-panel"],
+
+    queryFn: async () => {
+      const res = await apiAuth.get("/api/vendor/brands/panel");
+      return res.data;
+    },
+
+    staleTime: 1000 * 60 * 5, // ⏱ cache 5 min
+  });
+};

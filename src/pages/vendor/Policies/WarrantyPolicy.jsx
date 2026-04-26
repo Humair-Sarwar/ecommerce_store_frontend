@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   IconButton,
+  InputAdornment,
   Pagination,
   Switch,
   Table,
@@ -11,6 +12,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
 } from "@mui/material";
 import React from "react";
@@ -22,6 +24,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from "@mui/icons-material/Search";
 
 const WarrantyPolicy = () => {
   const navigation = useNavigate()
@@ -49,7 +52,38 @@ const WarrantyPolicy = () => {
          
           Warranty Policies
         </Box>
-          <Box sx={{textAlign: 'end', mb: 2}}>
+          <Box sx={{display: 'flex', mb: 2, justifyContent: 'space-between', alignItems: 'center'}}>
+            <TextField
+                            size="small"
+                            id="search"
+                            // value={searchTerm}
+                            // onChange={(e) => {
+                            //   setSearchTerm(e.target.value)
+                            //   setPage(1)
+                            // }}
+                            
+                            variant="outlined"
+                            placeholder="Search Warranty Policy..."
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <SearchIcon sx={{ color: "gray", fontSize: "20px" }} />
+                                </InputAdornment>
+                              ),
+                            }}
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "8px",
+                                backgroundColor: "#fff",
+                                "&:hover fieldset": {
+                                  borderColor: "#9c27b0", // Purple hover effect (optional)
+                                },
+                              },
+                              "& .MuiInputBase-input": {
+                                fontSize: "14px",
+                              },
+                            }}
+                          />
             <Button
           className="custom-secondary-btn-admin-side"
           onClick={()=>navigation('/vendor/products/create')}

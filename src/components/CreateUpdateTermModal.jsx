@@ -89,27 +89,30 @@ export default function CreateUpdateTermModal({
 
       let res;
       if (term?.id) {
-        updateTerm.mutate({...payload, id: term?.id}, {
-          onSuccess: (res) => {
+        updateTerm.mutate(
+          { ...payload, id: term?.id },
+          {
+            onSuccess: (res) => {
               setOpen(false);
-            handleSuccess(res?.message || "Term updated successfully!");
-            action.resetForm();
-            setImageData({ image_id: "", image_path: "" });
-          },
-          onError: (error) => {
-            const status = error?.response?.status;
+              handleSuccess(res?.message || "Term updated successfully!");
+              action.resetForm();
+              setImageData({ image_id: "", image_path: "" });
+            },
+            onError: (error) => {
+              const status = error?.response?.status;
 
-            if (status === 404) {
-              handleError("Term not found!");
-            } else if (status === 422) {
-              handleError("Term already exists!");
-            } else {
-              handleError(
-                error?.response?.data?.message || "Failed to update term!",
-              );
-            }
+              if (status === 404) {
+                handleError("Term not found!");
+              } else if (status === 422) {
+                handleError("Term already exists!");
+              } else {
+                handleError(
+                  error?.response?.data?.message || "Failed to update term!",
+                );
+              }
+            },
           },
-        });
+        );
       } else {
         createTerm.mutate(payload, {
           onSuccess: (res) => {
@@ -213,9 +216,29 @@ export default function CreateUpdateTermModal({
                     type="number"
                     name="sort_order"
                     value={values.sort_order}
-                    onChange={handleChange}
+                    // Custom inline handler to prevent values below 1
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Allow clearing the field, otherwise force minimum of 1
+                      const finalVal =
+                        val === "" ? "" : Math.max(1, parseInt(val, 10) || 1);
+                      setFieldValue("sort_order", finalVal);
+                    }}
                     onBlur={handleBlur}
                     error={Boolean(errors.sort_order && touched.sort_order)}
+                    // Browser-level hint to prevent decrementing below 1
+                    inputProps={{ min: 1 }}
+                    sx={{
+                      // Hide the up/down arrows (spinners)
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                   />
                   {touched.sort_order && errors.sort_order && (
                     <Typography

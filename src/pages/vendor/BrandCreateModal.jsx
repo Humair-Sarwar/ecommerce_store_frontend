@@ -287,9 +287,30 @@ export default function BrandModal({
                     type="number"
                     name="sort_order"
                     value={values.sort_order}
-                    onChange={handleChange}
+                    // Inline fix to force minimum value of 1
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const parsedVal = parseInt(val, 10);
+
+                      // Logic: If empty, set empty; otherwise, don't allow less than 1
+                      setFieldValue(
+                        "sort_order",
+                        val === "" ? "" : Math.max(1, parsedVal),
+                      );
+                    }}
                     onBlur={handleBlur}
                     error={Boolean(errors.sort_order && touched.sort_order)}
+                    inputProps={{ min: 1 }} // Browser-level hint
+                    sx={{
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                        {
+                          display: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                   />
                   {touched.sort_order && errors.sort_order && (
                     <Typography
