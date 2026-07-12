@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { getSiteMenuApi } from "../utils/apis/APIs";
+import { fetchSiteMenu } from "../hook/website/useSiteMenu";
 
 export default function ResponsiveViewMenu() {
   const [open, setOpen] = React.useState(false);
@@ -15,37 +16,26 @@ export default function ResponsiveViewMenu() {
     setOpen(newOpen);
   };
   const [tState, setState] = useState(false);
-  const [menuLists1, setMenuLists1] = useState([]);
   const [menuLists2, setMenuLists2] = useState([]);
+  const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [isActive, setIsActive] = useState(false);
+const { data, isLoading } = fetchSiteMenu("general-menu");
 
-  const getMenuJsonList = async () => {
-    const res = await getSiteMenuApi({ key: "general-menu" });
-
-    if (res.status === 200) {
-      setMenuLists1(res.data.result.menuData?.menuItems);
-      setIsActive(res.data.result?.is_active);
-    }
-  };
-
+const menuLists1 = data?.data?.menu?.menuItems || [];
+const isActive = data?.data?.is_active || false;
   const handleOpenNext = (data) => {
-    setMenuLists2(data.columns);
-    setSelectedCategory(data?.title);
-    setMenuLists1([]);
-  };
+  setMenuLists2(data?.columns || []);
+  setSelectedCategory(data?.title);
+  setShowSubMenu(true);
+};
   const handletoggleDrawerClose = () => {
-    setOpen(false);
-    setMenuLists1(menuLists1);
-  };
+  setOpen(false);
+  setShowSubMenu(false);
+};
 
   const handleBackCategory = () => {
-    setState(!tState);
-    setMenuLists1(menuLists1);
-  };
-  useEffect(() => {
-    getMenuJsonList();
-  }, [tState]);
+  setShowSubMenu(false);
+};
   const DrawerList = (
     <Box sx={{ width: 270 }} role="presentation">
       <Box sx={{ backgroundColor: "white", height: "40px" }}>
@@ -76,7 +66,7 @@ export default function ResponsiveViewMenu() {
           </svg>
         </Button>
       </Box>
-      {menuLists1.length > 0 && isActive == true ? (
+      {!showSubMenu && isActive ? (
         <Box sx={{ height: "83vh", overflowY: "auto" }}>
           <List className="responsive-menu-list-style">
             {menuLists1?.map((list1, i) => (

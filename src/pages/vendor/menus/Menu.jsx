@@ -9,6 +9,7 @@ import { useState } from "react";
 import { createUpdateMenuApi, getMenuApi } from "../../../utils/apis/APIs";
 import { handleError, handleSuccess } from "../../../toast";
 import LoaderSpinner from "../../../components/LoaderSpinner";
+import { fetchJsonMenu, useSaveMenu } from "../../../hook/vendor/useSiteSettings";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -18,56 +19,45 @@ const GeneralMenu = ({ keyMenu }) => {
   const [jsonValue, setJsonValue] = useState(JSON.stringify([], null, 2));
   const [isActive, setIsActive] = useState(false);
   const [menuTitle, setMenuTitle] = useState('');
-  const [isLoading, setLoading] = useState(true);
 
   const handleEditorChange = (value) => {
     setJsonValue(value);
   };
 
-  let handleSaveChangesMenu = async () => {
-    let data = {
-      menu: jsonValue,
-      key: keyMenu,
-      is_active: isActive,
-      business_id: 123,
-      id: menuId,
-      menu_title: menuTitle
+  const { mutateAsync: saveMenu, isPending } = useSaveMenu();
+  const handleSaveChangesMenu = async () => {
+  const data = {
+    menu: jsonValue,
+    key: keyMenu,
+    is_active: isActive,
+    id: menuId,
+    menu_title: menuTitle,
+  };
 
-    };
-    let res = await createUpdateMenuApi(data);
-   
-    if (res.status == 201) {
+  try {
+    const res = await saveMenu(data);
+    if (res.status === 200) {
       handleSuccess("Save Changes Successfully!");
-      setStateChange(!stateChange);
-
     } else {
       handleError("Internal Server Error!");
     }
-  };
+  } catch (error) {
+    handleError("Internal Server Error!");
+  }
+};
   let handleIsActiveChange = (e) => {
     setIsActive(event.target.checked);
   };
-  const getMenuList = async () => {
-    let data = {
-      business_id: 123,
-      key: keyMenu,
-    };
-    setLoading(true);
-    let res = await getMenuApi(data);
-    if (res.status == 200) {
-      setJsonValue(res.data.data?.menu);
-      setMenuId(res.data.data?.id);
-      setMenuTitle(res.data.data?.menu_title)
-      setIsActive(res.data.data?.is_active || false);
-      setLoading(false);
-    } else {
+  const { data: menuItemsList, isLoading } = fetchJsonMenu({ key: keyMenu });
 
-      handleError("Internal Server Error!");
-    }
-  };
   useEffect(() => {
-    getMenuList();
-  }, [stateChange]);
+    if (menuItemsList?.data) {
+      setJsonValue(menuItemsList.data.menu || "");
+      setMenuTitle(menuItemsList.data.menu_title || "");
+      setIsActive(menuItemsList.data.is_active || false);
+      setMenuId(menuItemsList.data.uuid || null);
+    }
+  }, [menuItemsList]);
 let handleChangeMenuTitle = (e)=> {
   setMenuTitle(e.target.value)
 }

@@ -32,6 +32,7 @@ import TextEditor from "../../../components/TextEditor";
 import SaveIcon from "@mui/icons-material/Save";
 import MultipleSelectChip from "../../../components/MultiSelectChip";
 import {
+  fetchWarrantiesPanel,
   useClearTermImage,
   useCreateProductStep2,
   useDeleteProductAttribute,
@@ -74,6 +75,10 @@ const Step2 = ({
   const [isPublishing, setIsPublishing] = useState(null);
   const [selectedTerms, setSelectedTerms] = React.useState([]);
   const [selectedAttributeId, setSelectedAttributeId] = useState(null);
+
+  const { data: panelWarranties, isLoading: panelIsLoading, isError: panelIsError } = fetchWarrantiesPanel();
+    const warrantiesPolicy = panelWarranties?.data || [];
+
   const validateFields = () => {
     let tempErrors = {};
     const { product_sku, regular_price, sale_price } = simpleProductStep2Data;
@@ -1155,14 +1160,19 @@ const handleSyncVariationImage = (termId) => {
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Autocomplete
                   disablePortal
-                  options={["first"]}
+                  options={warrantiesPolicy}
+                  getOptionLabel={(option) => option.title || ""}
+                  // value={
+                  //         brands.find((b) => b.id === firstStepData.brand_id) ||
+                  //         null
+                  //       }
                   renderInput={(params) => (
                     <TextField {...params} label="Attach Warranty Policy" />
                   )}
                   size="small"
                   fullWidth
                   color="secondary"
-                  disabled
+                  // disabled
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>

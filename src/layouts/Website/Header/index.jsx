@@ -19,6 +19,7 @@ import { getSiteMenuApi } from "../../../utils/apis/APIs";
 import ListButtonMenu from "../../../components/ListButtonMenu";
 
 import NotificationsMenu from "../../../components/Notification";
+import { fetchSiteMenu } from "../../../hook/website/useSiteMenu";
 
 export default function Header() {
   const [userType, setUserType] = React.useState(localStorage.getItem("user_type"));
@@ -70,24 +71,7 @@ export default function Header() {
 
 
 
-
-
-
-
-
-  const [menuItemsList, setMenuItemList] = React.useState([]);
-
-  const getMenuJsonList = async () => {
-    const res = await getSiteMenuApi({ key: "general-menu" });
-
-    if (res.status === 200) {
-      setMenuItemList(res.data.result);
-    }
-  };
-
-  React.useEffect(() => {
-    getMenuJsonList();
-  }, []);
+  const { data: menuItemsList, isLoading } = fetchSiteMenu({key: "general-menu"});
 
   return (
     <>
@@ -198,9 +182,9 @@ export default function Header() {
                 />
               </Link>
               <Box sx={{ display: "flex" }} className="desktop-menu-style">
-                {menuItemsList.is_active == true && (
+                {menuItemsList?.data?.is_active == true && (
                   <List className="menu-items-style-main">
-                    {menuItemsList.menuData.menuItems?.map((list, i) => (
+                    {menuItemsList?.data?.menu?.menuItems?.map((list, i) => (
                       <>
                         <ListItem
                           className={

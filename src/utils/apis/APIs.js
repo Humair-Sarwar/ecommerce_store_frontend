@@ -38,7 +38,7 @@ export const loginApi = async (data)=>{
 export const createUpdateMenuApi = async (data)=>{
     let response;
     try {
-        response = await api.post('/api/site-settings/menu-json', data);
+        response = await api.patch('/api/vendor/menu-json', data);
     } catch (error) {
         return error;
     }
@@ -49,7 +49,7 @@ export const createUpdateMenuApi = async (data)=>{
 export const getMenuApi = async (data)=>{
     let response;
     try {
-         response = await api.get('/api/menu-json', {
+         response = await api.get('/api/vendor/menu-json', {
       params: {
         business_id: data.business_id,
         key: data.key
@@ -66,7 +66,7 @@ export const getMenuApi = async (data)=>{
 export const getSiteMenuApi = async ({key})=>{
     let response;
     try {
-         response = await api.get('/api/site-menu/menu-json', {
+         response = await api.get('/api/website/menu-json', {
       params: {
         key
       }

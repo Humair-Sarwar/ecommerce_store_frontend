@@ -598,3 +598,24 @@ export const useSyncTermImageToVariations = () => {
     },
   });
 };
+
+
+
+const fetchWarrantiesPanelApi = async ({ search }) => {
+  const res = await apiAuth.get("/api/vendor/warranties/panel", {
+    params: {
+      search,
+    },
+  });
+
+  return res.data;
+};
+
+export const fetchWarrantiesPanel = ( search) => {
+  return useQuery({
+    queryKey: ["returns-panel", search],
+    queryFn: () =>
+      fetchWarrantiesPanelApi({ search }),
+    keepPreviousData: true,
+  });
+};

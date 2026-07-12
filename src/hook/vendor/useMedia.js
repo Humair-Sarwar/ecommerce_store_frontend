@@ -15,7 +15,7 @@ const fetchMediaApi = async ({page, per_page}) => {
 // hook
 export const fetchMedia = (page, per_page) => {
   return useQuery({
-    queryKey: ["media", page, per_page],
+    queryKey: ["medias", page, per_page],
     queryFn: () => fetchMediaApi({ page, per_page }),
     keepPreviousData: true,
   });
