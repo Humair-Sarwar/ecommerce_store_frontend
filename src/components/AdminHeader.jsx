@@ -8,7 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 const AdminHeader = ({ handleLeftSidebar }) => {
   const navigation = useNavigate();
   return (
-    <header className="admin-header" style={{ height: "66px" }}>
+    <header className="admin-header" style={{ height: "66px", display: "flex", alignItems: "center", padding: "0 16px" }}>
       <Button
         variant="outlined"
         size="small"
@@ -19,56 +19,104 @@ const AdminHeader = ({ handleLeftSidebar }) => {
       >
         <MenuIcon />
       </Button>
-      <Button
-        component="a"
-        href="/"
-        target="_blank"
-        rel="noopener noreferrer"
-        size="small"
-        startIcon={<TravelExploreIcon sx={{ fontSize: "20px" }} />}
-        sx={{
-          mr: 1,
-          px: 3,
-          py: 1,
-          textTransform: "none",
-          fontWeight: 600,
-          borderRadius: "25px", // Smooth rounded corners
 
-          // Modern Indigo Gradient
-          background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
-          color: "#ffffff",
+      {/* Left-aligned container for Browse Web and POS buttons */}
+      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        {/* Browse Web Button (First) */}
+        <Button
+          component="a"
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          size="small"
+          startIcon={<TravelExploreIcon sx={{ fontSize: "20px" }} />}
+          sx={{
+            px: 3,
+            py: 1,
+            textTransform: "none",
+            fontWeight: 600,
+            borderRadius: "25px", // Smooth rounded corners
 
-          // Glass effect and shadow
-          boxShadow:
-            "0 4px 15px rgba(168, 85, 247, 0.25), inset 0 1px 1px rgba(255,255,255,0.3)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
+            // Modern Indigo Gradient
+            background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+            color: "#ffffff",
 
-          transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", // Bouncy premium feel
-          cursor: "pointer",
-
-          "&:hover": {
-            // Glow effect on hover
+            // Glass effect and shadow
             boxShadow:
-              "0 8px 25px rgba(168, 85, 247, 0.4), inset 0 1px 1px rgba(255,255,255,0.4)",
-            transform: "scale(1.05) translateY(-2px)",
-            background: "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
-          },
+              "0 4px 15px rgba(168, 85, 247, 0.25), inset 0 1px 1px rgba(255,255,255,0.3)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
 
-          "&:active": {
-            transform: "scale(0.98)",
-          },
+            transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", // Bouncy premium feel
+            cursor: "pointer",
 
-          // Subtle icon animation
-          "& .MuiButton-startIcon": {
-            transition: "transform 0.4s ease",
-          },
-          "&:hover .MuiButton-startIcon": {
-            transform: "translateX(-2px) scale(1.1)",
-          },
-        }}
-      >
-        Browse Web
-      </Button>
+            "&:hover": {
+              // Glow effect on hover
+              boxShadow:
+                "0 8px 25px rgba(168, 85, 247, 0.4), inset 0 1px 1px rgba(255,255,255,0.4)",
+              transform: "scale(1.05) translateY(-2px)",
+              background: "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
+            },
+
+            "&:active": {
+              transform: "scale(0.98)",
+            },
+
+            // Subtle icon animation
+            "& .MuiButton-startIcon": {
+              transition: "transform 0.4s ease",
+            },
+            "&:hover .MuiButton-startIcon": {
+              transform: "translateX(-2px) scale(1.1)",
+            },
+          }}
+        >
+          Browse Web
+        </Button>
+
+        {/* POS Button (Second) - Transparent with Border & Matching Color */}
+        <Button
+          onClick={() => navigation("/pos")}
+          size="small"
+          startIcon={<PointOfSaleIcon sx={{ fontSize: "20px" }} />}
+          sx={{
+            px: 3,
+            py: 1,
+            textTransform: "none",
+            fontWeight: 600,
+            borderRadius: "25px",
+            
+            // Transparent background with indigo/purple border and matching text color
+            background: "transparent",
+            color: "#6366f1",
+            border: "2px solid #6366f1",
+
+            transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            cursor: "pointer",
+
+            "&:hover": {
+              // Light indigo tint on hover with a solid border effect
+              background: "rgba(99, 102, 241, 0.08)",
+              borderColor: "#4f46e5",
+              color: "#4f46e5",
+              transform: "scale(1.05) translateY(-2px)",
+              boxShadow: "0 4px 15px rgba(99, 102, 241, 0.15)",
+            },
+
+            "&:active": {
+              transform: "scale(0.98)",
+            },
+
+            "& .MuiButton-startIcon": {
+              transition: "transform 0.4s ease",
+            },
+            "&:hover .MuiButton-startIcon": {
+              transform: "translateX(-2px) scale(1.1)",
+            },
+          }}
+        >
+          POS Terminal
+        </Button>
+      </div>
     </header>
   );
 };

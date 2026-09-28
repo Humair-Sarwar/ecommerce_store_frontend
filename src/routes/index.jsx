@@ -3,10 +3,11 @@ import WebsiteRoutes from "./WebsiteRoutes";
 import AuthRoutes from "./AuthRoutes";
 import AdminRoutes from "./AdminRoutes";
 import CustomerRoutes from "./CustomerRoutes";
+import POSRoutes from "./POSRoutes";
 
 
 const router = createBrowserRouter(
-    [...WebsiteRoutes, ...AuthRoutes, ...AdminRoutes, ...CustomerRoutes]
+    [...WebsiteRoutes, ...AuthRoutes, ...AdminRoutes, ...CustomerRoutes, ...POSRoutes]
 )
 
 
