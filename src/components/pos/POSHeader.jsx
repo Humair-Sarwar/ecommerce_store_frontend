@@ -15,10 +15,12 @@ import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import POSNavDrawer from "./POSNavDrawer";
+import POSQuickAddProductDrawer from "./POSQuickAddProductDrawer";
 
 const POSHeader = ({ activeMode, setActiveMode, showScanner, setShowScanner }) => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [quickAddProductOpen, setQuickAddProductOpen] = useState(false);
 
   return (
     <>
@@ -205,9 +207,10 @@ const POSHeader = ({ activeMode, setActiveMode, showScanner, setShowScanner }) =
             <NotificationsNoneIcon sx={{ fontSize: "18px" }} />
           </IconButton>
 
-          {/* + Product Button */}
+          {/* + Product Button (Clicks to open Quick Add Product Drawer) */}
           <Button
             variant="contained"
+            onClick={() => setQuickAddProductOpen(true)}
             startIcon={<AddIcon sx={{ fontSize: "15px !important" }} />}
             sx={{
               background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
@@ -282,8 +285,9 @@ const POSHeader = ({ activeMode, setActiveMode, showScanner, setShowScanner }) =
         </Box>
       </Box>
 
-      {/* Render the Separate Navigation Drawer Component */}
+      {/* Render Navigation Drawer & Quick Add Product Drawer */}
       <POSNavDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <POSQuickAddProductDrawer open={quickAddProductOpen} onClose={() => setQuickAddProductOpen(false)} />
     </>
   );
 };

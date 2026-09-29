@@ -19,12 +19,24 @@ import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import POSPendingDrawer from "./POSPendingDrawer";
 import POSInProgressDrawer from "./POSInProgressDrawer";
 import POSCompletedDrawer from "./POSCompletedDrawer";
+import POSCustomerDrawer from "./POSCustomerDrawer";
+import POSOpenOrderModal from "./POSOpenOrderModal";
+import POSQuoteReceiptDrawer from "./POSQuoteReceiptDrawer";
+import POSQuantityModal from "./POSQuantityModal";
+import POSItemEditModal from "./POSItemEditModal";
+import POSProcessPaymentDrawer from "./POSProcessPaymentDrawer";
 
 const POSCartSidebar = ({ cart, updateQuantity, removeFromCart }) => {
   const [activeTab, setActiveTab] = useState("sales");
   const [pendingDrawerOpen, setPendingDrawerOpen] = useState(false);
   const [inProgressDrawerOpen, setInProgressDrawerOpen] = useState(false);
   const [completedDrawerOpen, setCompletedDrawerOpen] = useState(false);
+  const [customerDrawerOpen, setCustomerDrawerOpen] = useState(false);
+  const [openOrderModalOpen, setOpenOrderModalOpen] = useState(false);
+  const [quoteDrawerOpen, setQuoteDrawerOpen] = useState(false);
+  const [processPaymentDrawerOpen, setProcessPaymentDrawerOpen] = useState(false);
+  const [selectedItemForQty, setSelectedItemForQty] = useState(null);
+  const [selectedItemForEdit, setSelectedItemForEdit] = useState(null);
 
   const calculateTotal = () => {
     return cart.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2);
@@ -47,7 +59,6 @@ const POSCartSidebar = ({ cart, updateQuantity, removeFromCart }) => {
           display: "flex",
           flexDirection: "column",
           height: "100vh",
-          // Eye-catching custom scrollbar styling
           "& *::-webkit-scrollbar": {
             width: "6px",
             height: "6px",
@@ -122,7 +133,12 @@ const POSCartSidebar = ({ cart, updateQuantity, removeFromCart }) => {
           </Box>
 
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <IconButton size="small" sx={{ bgcolor: "#dc2626", color: "#ffffff", "&:hover": { bgcolor: "#b91c1c" }, width: "32px", height: "32px", boxShadow: "0 2px 4px rgba(220,38,38,0.2)" }}>
+            {/* Customer Add Button */}
+            <IconButton
+              size="small"
+              onClick={() => setCustomerDrawerOpen(true)}
+              sx={{ bgcolor: "#dc2626", color: "#ffffff", "&:hover": { bgcolor: "#b91c1c" }, width: "32px", height: "32px", boxShadow: "0 2px 4px rgba(220,38,38,0.2)" }}
+            >
               <PersonAddIcon sx={{ fontSize: "16px" }} />
             </IconButton>
 
@@ -199,14 +215,28 @@ const POSCartSidebar = ({ cart, updateQuantity, removeFromCart }) => {
               <Box key={index} sx={{ mb: 1, p: 1.2, border: "1px solid #fecaca", borderRadius: "8px", bgcolor: "#ffffff", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <Typography variant="subtitle2" sx={{ flex: 2.2, fontWeight: 600, fontSize: "12.5px", color: "#1e293b", pr: 1 }}>{item.name}</Typography>
-                  <Typography variant="body2" sx={{ flex: 0.9, textAlign: "center", fontWeight: 600, fontSize: "12px", color: "#dc2626", bgcolor: "#fff5f5", py: 0.5, borderRadius: "4px" }}>{item.qty}</Typography>
+                  <Typography
+                    variant="body2"
+                    onClick={() => setSelectedItemForQty(item)}
+                    sx={{ flex: 0.9, textAlign: "center", fontWeight: 600, fontSize: "12px", color: "#dc2626", bgcolor: "#fff5f5", py: 0.5, borderRadius: "4px", cursor: "pointer", "&:hover": { bgcolor: "#fee2e2" } }}
+                  >
+                    {item.qty}
+                  </Typography>
                   <Typography variant="body2" sx={{ flex: 1, textAlign: "right", fontWeight: 600, fontSize: "12px", color: "#1e293b" }}>£{item.price.toFixed(2)}</Typography>
                   <Typography variant="body2" sx={{ flex: 1, textAlign: "right", fontWeight: 600, fontSize: "12px", color: "#64748b" }}>£0.00</Typography>
                   <Typography variant="body2" sx={{ flex: 1.1, textAlign: "right", fontWeight: 700, fontSize: "12.5px", color: "#dc2626" }}>£{(item.price * item.qty).toFixed(2)}</Typography>
                 </Box>
                 <Typography variant="caption" display="block" color="text.secondary" sx={{ fontSize: "10px", mb: 1.5, fontWeight: 400 }}>{item.vatStatus || "VAT Exempt"}</Typography>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pt: 1, borderTop: "1px solid #f1f5f9" }}>
-                  <Button size="small" variant="outlined" color="error" sx={{ minWidth: "40px", height: "32px", borderColor: "#fecaca", bgcolor: "#fff5f5", borderRadius: "6px" }}><EditNoteIcon sx={{ fontSize: "18px", color: "#dc2626" }} /></Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => setSelectedItemForEdit(item)}
+                    sx={{ minWidth: "40px", height: "32px", borderColor: "#fecaca", bgcolor: "#fff5f5", borderRadius: "6px" }}
+                  >
+                    <EditNoteIcon sx={{ fontSize: "18px", color: "#dc2626" }} />
+                  </Button>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     <Button size="small" variant="outlined" onClick={() => updateQuantity(item.id, item.qty - 1)} sx={{ minWidth: "32px", height: "32px", borderColor: "#cbd5e1", color: "#64748b", borderRadius: "6px", p: 0 }}><RemoveIcon sx={{ fontSize: "14px" }} /></Button>
                     <Box sx={{ minWidth: "40px", height: "32px", bgcolor: "#fff5f5", border: "1px solid #fecaca", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}><Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#0f172a" }}>{item.qty}</Typography></Box>
@@ -222,7 +252,10 @@ const POSCartSidebar = ({ cart, updateQuantity, removeFromCart }) => {
         {/* 5. BOTTOM CHECKOUT FOOTER */}
         <Box sx={{ p: 1, bgcolor: "#ffffff", borderTop: "1px solid #e2e8f0" }}>
           <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-            <Box sx={{ flex: 1, border: "1px solid #cbd5e1", borderRadius: "6px", p: "6px 10px", bgcolor: "#f8fafc", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Box
+              onClick={() => setOpenOrderModalOpen(true)}
+              sx={{ flex: 1, border: "1px solid #cbd5e1", borderRadius: "6px", p: "6px 10px", bgcolor: "#f8fafc", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", "&:hover": { borderColor: "#dc2626" } }}
+            >
               <Typography variant="caption" sx={{ color: "#dc2626", fontWeight: 600, fontSize: "10.5px" }}>Order: 198-0926-20</Typography>
               <SearchIcon sx={{ fontSize: "14px", color: "#dc2626" }} />
             </Box>
@@ -237,16 +270,53 @@ const POSCartSidebar = ({ cart, updateQuantity, removeFromCart }) => {
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button variant="contained" size="small" startIcon={<SaveIcon sx={{ fontSize: "15px !important" }} />} sx={{ bgcolor: "#e2e8f0", color: "#334155", fontSize: "10px", fontWeight: 600, flex: 1, py: 1, textTransform: "none", boxShadow: "none" }}>In-Progress</Button>
             <Button variant="contained" color="error" size="small" startIcon={<DeleteOutlineIcon sx={{ fontSize: "15px !important" }} />} sx={{ fontSize: "10px", fontWeight: 600, flex: 1, py: 1, textTransform: "none", boxShadow: "none" }}>Delete</Button>
-            <Button variant="contained" color="primary" size="small" startIcon={<PrintOutlinedIcon sx={{ fontSize: "15px !important" }} />} sx={{ bgcolor: "#3b82f6", fontSize: "10px", fontWeight: 600, flex: 1, py: 1, textTransform: "none", boxShadow: "none" }}>Quote</Button>
-            <Button variant="contained" color="success" size="small" startIcon={<CreditCardIcon sx={{ fontSize: "15px !important" }} />} sx={{ bgcolor: "#10b981", fontSize: "10px", fontWeight: 600, flex: 1.3, py: 1, textTransform: "none", boxShadow: "none" }}>PROCESS & PAY</Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => setQuoteDrawerOpen(true)}
+              startIcon={<PrintOutlinedIcon sx={{ fontSize: "15px !important" }} />}
+              sx={{ bgcolor: "#3b82f6", fontSize: "10px", fontWeight: 600, flex: 1, py: 1, textTransform: "none", boxShadow: "none", "&:hover": { bgcolor: "#2563eb" } }}
+            >
+              Quote
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              size="small"
+              onClick={() => setProcessPaymentDrawerOpen(true)}
+              startIcon={<CreditCardIcon sx={{ fontSize: "15px !important" }} />}
+              sx={{ bgcolor: "#10b981", fontSize: "10px", fontWeight: 600, flex: 1.3, py: 1, textTransform: "none", boxShadow: "none", "&:hover": { bgcolor: "#059669" } }}
+            >
+              PROCESS & PAY
+            </Button>
           </Box>
         </Box>
       </Box>
 
-      {/* Render all 3 Modals */}
+      {/* Render All Modals & Drawers */}
       <POSPendingDrawer open={pendingDrawerOpen} onClose={() => setPendingDrawerOpen(false)} />
       <POSInProgressDrawer open={inProgressDrawerOpen} onClose={() => setInProgressDrawerOpen(false)} />
       <POSCompletedDrawer open={completedDrawerOpen} onClose={() => setCompletedDrawerOpen(false)} />
+      <POSCustomerDrawer open={customerDrawerOpen} onClose={() => setCustomerDrawerOpen(false)} />
+      <POSOpenOrderModal open={openOrderModalOpen} onClose={() => setOpenOrderModalOpen(false)} />
+      <POSQuoteReceiptDrawer open={quoteDrawerOpen} onClose={() => setQuoteDrawerOpen(false)} cart={cart} subtotal={`£${calculateTotal()}`} />
+      <POSProcessPaymentDrawer open={processPaymentDrawerOpen} onClose={() => setProcessPaymentDrawerOpen(false)} cart={cart} total={calculateTotal()} />
+      {selectedItemForQty && (
+        <POSQuantityModal
+          open={Boolean(selectedItemForQty)}
+          onClose={() => setSelectedItemForQty(null)}
+          item={selectedItemForQty}
+          onSave={updateQuantity}
+        />
+      )}
+      {selectedItemForEdit && (
+        <POSItemEditModal
+          open={Boolean(selectedItemForEdit)}
+          onClose={() => setSelectedItemForEdit(null)}
+          item={selectedItemForEdit}
+        />
+      )}
     </>
   );
 };
