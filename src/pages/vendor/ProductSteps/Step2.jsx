@@ -59,6 +59,67 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import MediaSelectModal from "../../../components/MediaSelectModal";
 
+const modernInputSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "12px",
+    backgroundColor: "#f8fafc",
+    fontSize: "13.5px",
+    fontWeight: 500,
+    color: "#0f172a",
+    transition: "all 0.2s ease",
+    "& fieldset": {
+      borderColor: "#e2e8f0",
+    },
+    "&:hover": {
+      backgroundColor: "#ffffff",
+      "& fieldset": {
+        borderColor: "#cbd5e1",
+      },
+    },
+    "&.Mui-focused": {
+      backgroundColor: "#ffffff",
+      boxShadow: "0 0 0 3px rgba(15, 23, 42, 0.06)",
+      "& fieldset": {
+        borderColor: "#0f172a",
+        borderWidth: "1.5px",
+      },
+    },
+    "&.Mui-disabled": {
+      backgroundColor: "#f1f5f9",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    fontSize: "13px",
+    fontWeight: 500,
+    color: "#64748b",
+    "&.Mui-focused": {
+      color: "#0f172a",
+      fontWeight: 600,
+    },
+  },
+};
+
+const modernNumberInputSx = {
+  ...modernInputSx,
+  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+    display: "none",
+    margin: 0,
+  },
+  "& input[type=number]": {
+    MozAppearance: "textfield",
+  },
+};
+
+const modernCheckboxSx = {
+  color: "#cbd5e1",
+  "&.Mui-checked": {
+    color: "#0f172a",
+  },
+  "&.Mui-disabled": {
+    color: "#cbd5e1",
+  },
+};
+
 const Step2 = ({
   handleBackStep,
   secondStepDataTI,
@@ -76,8 +137,12 @@ const Step2 = ({
   const [selectedTerms, setSelectedTerms] = React.useState([]);
   const [selectedAttributeId, setSelectedAttributeId] = useState(null);
 
-  const { data: panelWarranties, isLoading: panelIsLoading, isError: panelIsError } = fetchWarrantiesPanel();
-    const warrantiesPolicy = panelWarranties?.data || [];
+  const {
+    data: panelWarranties,
+    isLoading: panelIsLoading,
+    isError: panelIsError,
+  } = fetchWarrantiesPanel();
+  const warrantiesPolicy = panelWarranties?.data || [];
 
   const validateFields = () => {
     let tempErrors = {};
@@ -600,67 +665,117 @@ const Step2 = ({
       },
       onError: (err) => {
         handleError(
-            err?.response?.data?.message || "Failed to update image",
-          );
+          err?.response?.data?.message || "Failed to update image",
+        );
       },
     });
   };
 
-
   const clearTermImage = useClearTermImage();
 
-const handleClearTermImage = (termId) => {
-  clearTermImage.mutate(
-    {
-      product_id: productId,
-      term_id: termId,
-    },
-    {
-      onSuccess: (res) => {
-        handleSuccess(res?.message || "Image removed successfully!");
+  const handleClearTermImage = (termId) => {
+    clearTermImage.mutate(
+      {
+        product_id: productId,
+        term_id: termId,
       },
-      onError: (err) => {
-        handleError(
-          err?.response?.data?.message || "Failed to remove image!"
-        );
+      {
+        onSuccess: (res) => {
+          handleSuccess(res?.message || "Image removed successfully!");
+        },
+        onError: (err) => {
+          handleError(
+            err?.response?.data?.message || "Failed to remove image!",
+          );
+        },
       },
-    }
-  );
-};
+    );
+  };
 
+  const syncTermImage = useSyncTermImageToVariations();
 
-const syncTermImage = useSyncTermImageToVariations();
-
-const handleSyncVariationImage = (termId) => {
-  syncTermImage.mutate(
-    {
-      product_id: productId,
-      term_id: termId,
-    },
-    {
-      onSuccess: (res) => {
-        handleSuccess(
-          res?.message || "Image synced to all variations!"
-        );
+  const handleSyncVariationImage = (termId) => {
+    syncTermImage.mutate(
+      {
+        product_id: productId,
+        term_id: termId,
       },
-      onError: (err) => {
-        handleError(
-          err?.response?.data?.message ||
-          "Failed to sync image!"
-        );
+      {
+        onSuccess: (res) => {
+          handleSuccess(res?.message || "Image synced to all variations!");
+        },
+        onError: (err) => {
+          handleError(
+            err?.response?.data?.message || "Failed to sync image!",
+          );
+        },
       },
-    }
-  );
-};
+    );
+  };
 
   return (
     <>
-      <Grid id="variations-top" container spacing={1.3}>
-        <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mb: 2 }}>
+      <Grid id="variations-top" container spacing={2}>
+        {/* Product Type Selector Header */}
+        <Grid size={{ xs: 12 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 1.5,
+              pb: 1.5,
+              mb: 0.5,
+              borderBottom: "1px solid #f1f5f9",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  backgroundColor: "#10b981",
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "#0f172a",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Product Type & Inventory Configuration
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                px: 1.5,
+                py: 0.4,
+                borderRadius: "999px",
+                backgroundColor:
+                  secondStepDataTI?.product_type == 1 ? "#ecfdf5" : "#eef2ff",
+                color:
+                  secondStepDataTI?.product_type == 1 ? "#059669" : "#4f46e5",
+                fontSize: "11.5px",
+                fontWeight: 700,
+              }}
+            >
+              {secondStepDataTI?.product_type == 1
+                ? "Simple Product Mode"
+                : "Variable Product Mode"}
+            </Box>
+          </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mb: 1 }}>
           <FormControl
             fullWidth
             size="small"
             color="secondary"
+            sx={modernInputSx}
             disabled={
               productTypeLoading || selectedAttributesDataFetchShow?.length > 0
             }
@@ -700,14 +815,16 @@ const handleSyncVariationImage = (termId) => {
             <LoaderSpinner />
           ) : (
             <>
-              <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mb: 1 }}>
+              <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mb: 0.5 }}>
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    border: "1px solid rgb(197, 196, 196)",
-                    borderRadius: "10px",
-                    padding: "2px 15px",
+                    flexWrap: "wrap",
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#f8fafc",
+                    borderRadius: "12px",
+                    padding: "4px 18px",
                     height: "100%",
                   }}
                 >
@@ -715,7 +832,9 @@ const handleSyncVariationImage = (termId) => {
                     sx={{
                       mr: 5,
                       "& .MuiFormControlLabel-label": {
-                        fontSize: "14px",
+                        fontSize: "13.5px",
+                        fontWeight: 600,
+                        color: "#64748b",
                       },
                     }}
                     control={
@@ -725,6 +844,7 @@ const handleSyncVariationImage = (termId) => {
                         name="is_active_for_buy"
                         checked={true}
                         disabled
+                        sx={modernCheckboxSx}
                         // onChange={handleChange}
                       />
                     }
@@ -733,7 +853,11 @@ const handleSyncVariationImage = (termId) => {
                   <FormControlLabel
                     sx={{
                       mr: 5,
-                      "& .MuiFormControlLabel-label": { fontSize: "14px" },
+                      "& .MuiFormControlLabel-label": {
+                        fontSize: "13.5px",
+                        fontWeight: 600,
+                        color: "#0f172a",
+                      },
                     }}
                     control={
                       <Checkbox
@@ -743,6 +867,10 @@ const handleSyncVariationImage = (termId) => {
                         type="checkbox"
                         checked={Boolean(simpleProductStep2Data.is_on_sale)}
                         onChange={handleInputChange}
+                        sx={{
+                          color: "#cbd5e1",
+                          "&.Mui-checked": { color: "#f97316" },
+                        }}
                       />
                     }
                     label="Is on sale"
@@ -759,14 +887,15 @@ const handleSyncVariationImage = (termId) => {
                   value={simpleProductStep2Data.product_sku || ""}
                   onChange={handleInputChange}
                   required
-                  error={!simpleProductStep2Data.product_sku} // Highlights red if empty
+                  error={!simpleProductStep2Data.product_sku}
                   helperText={
                     !simpleProductStep2Data.product_sku ? "SKU is required" : ""
                   }
+                  sx={modernInputSx}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl fullWidth size="small">
+                <FormControl fullWidth size="small" sx={modernInputSx}>
                   <InputLabel id="product-status-label" color="secondary">
                     Product Status
                   </InputLabel>
@@ -798,13 +927,11 @@ const handleSyncVariationImage = (termId) => {
                   size="small"
                   color="secondary"
                   variant="outlined"
-                  // Keep empty string handling to avoid uncontrolled component warnings
                   value={simpleProductStep2Data.min_stock_alert ?? ""}
                   onChange={(e) => {
                     const val = e.target.value;
                     const numericVal = parseInt(val, 10);
 
-                    // Logic: If empty allow it, otherwise allow 0 but nothing lower
                     const finalValue =
                       val === "" ? "" : Math.max(0, numericVal || 0);
 
@@ -815,19 +942,8 @@ const handleSyncVariationImage = (termId) => {
                       },
                     });
                   }}
-                  // Standard browser constraint
                   inputProps={{ min: 0 }}
-                  sx={{
-                    // Hide arrows for a premium fintech look
-                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                      {
-                        display: "none",
-                        margin: 0,
-                      },
-                    "& input[type=number]": {
-                      MozAppearance: "textfield",
-                    },
-                  }}
+                  sx={modernNumberInputSx}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
@@ -838,11 +954,9 @@ const handleSyncVariationImage = (termId) => {
                   fullWidth
                   size="small"
                   color="secondary"
-                  // Use ?? 0 to handle null values gracefully
                   value={simpleProductStep2Data.regular_price ?? 0}
                   onChange={(e) => {
                     const val = e.target.value;
-                    // Parse to float for price; force minimum of 0
                     const numericVal =
                       val === "" ? "" : Math.max(0, parseFloat(val) || 0);
 
@@ -867,16 +981,7 @@ const handleSyncVariationImage = (termId) => {
                       : errors.regular_price
                   }
                   inputProps={{ min: 0.01, step: "0.01" }}
-                  sx={{
-                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                      {
-                        display: "none",
-                        margin: 0,
-                      },
-                    "& input[type=number]": {
-                      MozAppearance: "textfield",
-                    },
-                  }}
+                  sx={modernNumberInputSx}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
@@ -898,8 +1003,6 @@ const handleSyncVariationImage = (termId) => {
                     if (val === "") {
                       finalValue = "";
                     } else {
-                      // 1. Minimum 0 logic
-                      // 2. Maximum logic: Cannot be more than Regular Price
                       finalValue = Math.min(
                         regularPrice,
                         Math.max(0, numericVal || 0),
@@ -914,7 +1017,6 @@ const handleSyncVariationImage = (termId) => {
                     });
                   }}
                   required
-                  // Visual error if 0 or greater than regular price
                   error={
                     !!errors.sale_price ||
                     simpleProductStep2Data.sale_price <= 0
@@ -925,52 +1027,11 @@ const handleSyncVariationImage = (termId) => {
                       : errors.sale_price
                   }
                   inputProps={{ min: 0, step: "0.01" }}
-                  sx={{
-                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                      {
-                        display: "none",
-                        margin: 0,
-                      },
-                    "& input[type=number]": {
-                      MozAppearance: "textfield",
-                    },
-                  }}
+                  sx={modernNumberInputSx}
                 />
               </Grid>
-              {/* <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label" color="secondary">
-                  IMEI/Serial No
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={secondStepDataTI?.product_type}
-                  label="Age"
-                  onChange={handleChange}
-                  color="secondary"
-                >
-                  <MenuItem value={11} sx={{ fontSize: "14px" }}>
-                    IMEI No
-                  </MenuItem>
-                  <MenuItem value={22} sx={{ fontSize: "14px" }}>
-                    Serial No
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid> */}
-              {/* <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-              <TextField
-                id="outlined-basic"
-                label="IMEI/Serial No"
-                fullWidth
-                size="small"
-                color="secondary"
-                variant="outlined"
-              />
-            </Grid> */}
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl fullWidth size="small">
+                <FormControl fullWidth size="small" sx={modernInputSx}>
                   <InputLabel id="product-status-label" color="secondary">
                     Release Year
                   </InputLabel>
@@ -1035,7 +1096,7 @@ const handleSyncVariationImage = (termId) => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl fullWidth size="small">
+                <FormControl fullWidth size="small" sx={modernInputSx}>
                   <InputLabel id="product-status-label" color="secondary">
                     Network
                   </InputLabel>
@@ -1106,7 +1167,7 @@ const handleSyncVariationImage = (termId) => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl fullWidth size="small">
+                <FormControl fullWidth size="small" sx={modernInputSx}>
                   <InputLabel id="sim-label" color="secondary">
                     SIM
                   </InputLabel>
@@ -1132,7 +1193,7 @@ const handleSyncVariationImage = (termId) => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                <FormControl fullWidth size="small">
+                <FormControl fullWidth size="small" sx={modernInputSx}>
                   <InputLabel id="product-status-label" color="secondary">
                     Carrier Option
                   </InputLabel>
@@ -1162,17 +1223,16 @@ const handleSyncVariationImage = (termId) => {
                   disablePortal
                   options={warrantiesPolicy}
                   getOptionLabel={(option) => option.title || ""}
-                  // value={
-                  //         brands.find((b) => b.id === firstStepData.brand_id) ||
-                  //         null
-                  //       }
                   renderInput={(params) => (
-                    <TextField {...params} label="Attach Warranty Policy" />
+                    <TextField
+                      {...params}
+                      label="Attach Warranty Policy"
+                      sx={modernInputSx}
+                    />
                   )}
                   size="small"
                   fullWidth
                   color="secondary"
-                  // disabled
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -1180,7 +1240,11 @@ const handleSyncVariationImage = (termId) => {
                   disablePortal
                   options={["first"]}
                   renderInput={(params) => (
-                    <TextField {...params} label="Attach Return Policy" />
+                    <TextField
+                      {...params}
+                      label="Attach Return Policy"
+                      sx={modernInputSx}
+                    />
                   )}
                   size="small"
                   fullWidth
@@ -1189,60 +1253,26 @@ const handleSyncVariationImage = (termId) => {
                 />
               </Grid>
 
-              {/* <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-              <TextField
-                id="outlined-basic"
-                label="Weight(kg)"
-                fullWidth
-                size="small"
-                color="secondary"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-              <TextField
-                id="outlined-basic"
-                label="Length(cm)"
-                fullWidth
-                size="small"
-                color="secondary"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-              <TextField
-                id="outlined-basic"
-                label="Width(cm)"
-                fullWidth
-                size="small"
-                color="secondary"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-              <TextField
-                id="outlined-basic"
-                label="Height(cm)"
-                fullWidth
-                size="small"
-                color="secondary"
-                variant="outlined"
-              />
-            </Grid> */}
-
-              <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mt: 1 }}>
+              <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mt: 0.5 }}>
                 <Button
                   className="custom-secondary-btn-admin-side"
                   disabled={true}
                   sx={{
+                    borderRadius: "12px !important",
+                    px: "18px !important",
+                    py: "8px !important",
+                    fontSize: "13px !important",
+                    fontWeight: "600 !important",
+                    textTransform: "none !important",
                     "&.Mui-disabled": {
-                      backgroundColor: "#e0e0e0 !important",
-                      color: "#9e9e9e !important",
+                      backgroundColor: "#f1f5f9 !important",
+                      color: "#94a3b8 !important",
+                      border: "1px solid #e2e8f0 !important",
                     },
                     mr: 1,
                   }}
                 >
-                  <HelpIcon sx={{ mr: 1 }} />
+                  <HelpIcon sx={{ mr: 1, fontSize: 18 }} />
                   Add Question/Options Or Description
                 </Button>
               </Grid>
@@ -1269,6 +1299,7 @@ const handleSyncVariationImage = (termId) => {
                       <TextField
                         {...params}
                         label="Select Attribute"
+                        sx={modernInputSx}
                         InputProps={{
                           ...params.InputProps,
                           endAdornment: (
@@ -1300,12 +1331,23 @@ const handleSyncVariationImage = (termId) => {
                   <Button
                     onClick={handleSaveAttTerms}
                     className="custom-primary-btn-admin-side"
+                    fullWidth
                     sx={{
-                      "&.Mui-disabled": {
-                        backgroundColor: "#e0e0e0 !important",
-                        color: "#9e9e9e !important",
+                      backgroundColor: "#0f172a !important",
+                      backgroundImage: "none !important",
+                      color: "#ffffff !important",
+                      borderRadius: "12px !important",
+                      height: "40px !important",
+                      fontSize: "13px !important",
+                      fontWeight: "600 !important",
+                      textTransform: "none !important",
+                      "&:hover": {
+                        backgroundColor: "#1e293b !important",
                       },
-                      mr: 1,
+                      "&.Mui-disabled": {
+                        backgroundColor: "#e2e8f0 !important",
+                        color: "#94a3b8 !important",
+                      },
                     }}
                     disabled={
                       saveTerms?.isPending ||
@@ -1322,23 +1364,21 @@ const handleSyncVariationImage = (termId) => {
             {selectedTermsAttDataLoading ? (
               ""
             ) : selectedAttributesDataFetchShow?.length > 0 ? (
-              <Grid item size={{ xs: 12, sm: 12, md: 12 }} sx={{ my: 2 }}>
+              <Grid item size={{ xs: 12, sm: 12, md: 12 }} sx={{ my: 1 }}>
                 <Box
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    p: "16px 24px",
-                    background: "rgba(255, 255, 255, 0.8)",
-                    backdropFilter: "blur(10px)",
+                    p: { xs: 2, md: 3 },
+                    backgroundColor: "#f8fafc",
                     borderRadius: "20px",
-                    border: "1px solid #e5e5e7",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                    transition: "all 0.3s ease",
-                    boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-                    gap: 3,
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "0 4px 20px -4px rgba(15, 23, 42, 0.04)",
+                    transition: "all 0.25s ease",
+                    gap: 2.5,
                     "&:hover": {
-                      borderColor: "#0071e3",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+                      borderColor: "#cbd5e1",
+                      boxShadow: "0 8px 24px -4px rgba(15, 23, 42, 0.07)",
                     },
                   }}
                 >
@@ -1353,20 +1393,29 @@ const handleSyncVariationImage = (termId) => {
                           key={keyAtt}
                           sx={{
                             display: "flex",
-                            flexDirection: { xs: "column", md: "row" }, // Mobile pe stack, Desktop pe row
+                            flexDirection: { xs: "column", md: "row" },
                             alignItems: "center",
                             gap: 2,
+                            p: 1.75,
+                            backgroundColor: "#ffffff",
+                            borderRadius: "16px",
+                            border: "1px solid #eef2f6",
                           }}
                         >
                           {/* 1. Category Label Section */}
-                          <Box sx={{ minWidth: "120px" }}>
+                          <Box sx={{ minWidth: "130px" }}>
                             <Typography
                               sx={{
                                 fontSize: "12px",
                                 fontWeight: 700,
-                                color: "#86868b",
+                                color: "#0f172a",
                                 textTransform: "uppercase",
-                                letterSpacing: "0.1em",
+                                letterSpacing: "0.06em",
+                                px: 1.5,
+                                py: 0.6,
+                                borderRadius: "8px",
+                                backgroundColor: "#f1f5f9",
+                                display: "inline-block",
                               }}
                             >
                               {attributes?.attribute_name}
@@ -1379,14 +1428,15 @@ const handleSyncVariationImage = (termId) => {
                               flexGrow: 1,
                               display: "flex",
                               alignItems: "center",
-                              gap: 2,
+                              gap: 1.5,
+                              width: "100%",
                             }}
                           >
                             <Typography
                               sx={{
-                                fontSize: "14px",
+                                fontSize: "13px",
                                 fontWeight: 600,
-                                color: "#1d1d1f",
+                                color: "#64748b",
                                 whiteSpace: "nowrap",
                               }}
                             >
@@ -1397,9 +1447,10 @@ const handleSyncVariationImage = (termId) => {
                                 display: "flex",
                                 flexWrap: "wrap",
                                 gap: 1,
-                                border: "1px dashed black",
-                                p: "5px",
-                                borderRadius: "10px",
+                                border: "1px dashed #cbd5e1",
+                                backgroundColor: "#f8fafc",
+                                p: "8px 10px",
+                                borderRadius: "12px",
                                 width: "100%",
                               }}
                             >
@@ -1407,29 +1458,37 @@ const handleSyncVariationImage = (termId) => {
                                 <Box
                                   key={k}
                                   sx={{
-                                    px: 1,
+                                    px: 1.25,
                                     py: 0.6,
                                     borderRadius: "10px",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: 1,
-                                    bgcolor: "#f5f5f7",
+                                    bgcolor: "#ffffff",
                                     fontSize: "13px",
-                                    fontWeight: 500,
-                                    color: "#1d1d1f",
-                                    border: "1px solid #d2d2d7",
-                                    "&:hover": { bgcolor: "#e8e8ed" },
+                                    fontWeight: 600,
+                                    color: "#0f172a",
+                                    border: "1px solid #e2e8f0",
+                                    boxShadow: "0 1px 3px rgba(15,23,42,0.03)",
+                                    "&:hover": {
+                                      bgcolor: "#f1f5f9",
+                                      borderColor: "#cbd5e1",
+                                    },
                                   }}
                                 >
                                   {variationsDataProducts?.length > 0 ? (
                                     <MediaSelectModal
-                                                    termImageP={term}
-                                                    handleClearTermImage={handleClearTermImage}
-                                                    handleSaveTermImg={handleSaveTermImage}
-                                                    isSelectedTermsS={true}
-                                                    handleSyncVariationImage={handleSyncVariationImage}
-                                                    syncTermImage={syncTermImage}
-                                                  />
+                                      termImageP={term}
+                                      handleClearTermImage={
+                                        handleClearTermImage
+                                      }
+                                      handleSaveTermImg={handleSaveTermImage}
+                                      isSelectedTermsS={true}
+                                      handleSyncVariationImage={
+                                        handleSyncVariationImage
+                                      }
+                                      syncTermImage={syncTermImage}
+                                    />
                                   ) : (
                                     ""
                                   )}
@@ -1448,11 +1507,12 @@ const handleSyncVariationImage = (termId) => {
                                       sx={{
                                         cursor: "pointer",
                                         fontSize: "16px",
-                                        color:
-                                          (removeTermWithVariations?.isPending ||
-                                            removeTermWithVariations?.isLoading ||
-                                            selectedTermsAttDataLoading) &&
-                                          "#ccc !important",
+                                        color: "#ef4444",
+                                        ...(removeTermWithVariations?.isPending ||
+                                        removeTermWithVariations?.isLoading ||
+                                        selectedTermsAttDataLoading
+                                          ? { color: "#cbd5e1 !important" }
+                                          : {}),
                                       }}
                                     />
                                   ) : (
@@ -1473,7 +1533,7 @@ const handleSyncVariationImage = (termId) => {
                                           (deleteTerm?.isPending ||
                                             deleteTerm?.isLoading ||
                                             selectedTermsAttDataLoading) &&
-                                          "#ccc !important",
+                                          "#cbd5e1 !important",
                                       }}
                                     />
                                   )}
@@ -1486,7 +1546,7 @@ const handleSyncVariationImage = (termId) => {
                             sx={{
                               display: "flex",
                               alignItems: "center",
-                              gap: 1.5,
+                              gap: 1.25,
                               ml: { md: "auto" },
                               width: { xs: "100%", md: "auto" },
                               justifyContent: {
@@ -1523,14 +1583,7 @@ const handleSyncVariationImage = (termId) => {
                               }
                               sx={{
                                 width: "110px",
-                                "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                                  {
-                                    display: "none",
-                                    margin: 0,
-                                  },
-                                "& input[type=number]": {
-                                  MozAppearance: "textfield",
-                                },
+                                ...modernNumberInputSx,
                               }}
                             />
 
@@ -1552,15 +1605,16 @@ const handleSyncVariationImage = (termId) => {
                                   selectedTermsAttDataLoading
                                 }
                                 disableElevation
-                                startIcon={<SaveIcon sx={{ fontSize: 18 }} />}
+                                startIcon={<SaveIcon sx={{ fontSize: 17 }} />}
                                 sx={{
-                                  bgcolor: "#1d1d1f",
+                                  bgcolor: "#0f172a",
                                   borderRadius: "12px",
                                   textTransform: "none",
                                   fontWeight: 600,
-                                  height: "38px",
-                                  px: 3,
-                                  "&:hover": { bgcolor: "#000" },
+                                  fontSize: "13px",
+                                  height: "40px",
+                                  px: 2.5,
+                                  "&:hover": { bgcolor: "#1e293b" },
                                 }}
                               >
                                 {updateSort?.isPending || updateSort?.isLoading
@@ -1580,17 +1634,18 @@ const handleSyncVariationImage = (termId) => {
                                     selectedTermsAttDataLoading
                                   }
                                   sx={{
-                                    bgcolor: "rgba(255, 59, 48, 0.1)",
-                                    color: "#ff3b30",
+                                    bgcolor: "#fef2f2",
+                                    color: "#ef4444",
+                                    border: "1px solid #fee2e2",
                                     borderRadius: "12px",
-                                    height: "38px",
-                                    width: "38px",
+                                    height: "40px",
+                                    width: "40px",
                                     "&:hover": {
-                                      bgcolor: "rgba(255, 59, 48, 0.2)",
+                                      bgcolor: "#fee2e2",
                                     },
                                   }}
                                 >
-                                  <DeleteIcon />
+                                  <DeleteIcon sx={{ fontSize: 19 }} />
                                 </IconButton>
                               ) : (
                                 ""
@@ -1611,16 +1666,30 @@ const handleSyncVariationImage = (termId) => {
               <Button
                 disabled={
                   selectedAttributesDataFetchShow?.length == 0 ||
-                  variationsDataProducts?.length > 0 || generateVariations?.isLoading || generateVariations?.isPending
+                  variationsDataProducts?.length > 0 ||
+                  generateVariations?.isLoading ||
+                  generateVariations?.isPending
                 }
                 className="custom-secondary-btn-admin-side"
                 onClick={
                   handleGenerateVariations || generateVariations?.isPending
                 }
                 sx={{
+                  backgroundColor: "#0f172a !important",
+                  backgroundImage: "none !important",
+                  color: "#ffffff !important",
+                  borderRadius: "999px !important",
+                  px: "24px !important",
+                  py: "9px !important",
+                  fontSize: "13px !important",
+                  fontWeight: "600 !important",
+                  textTransform: "none !important",
+                  "&:hover": {
+                    backgroundColor: "#1e293b !important",
+                  },
                   "&.Mui-disabled": {
-                    backgroundColor: "#e0e0e0 !important",
-                    color: "#9e9e9e !important",
+                    backgroundColor: "#e2e8f0 !important",
+                    color: "#94a3b8 !important",
                   },
                 }}
               >
@@ -1628,39 +1697,76 @@ const handleSyncVariationImage = (termId) => {
               </Button>
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-              <Divider sx={{ my: 4 }} />
+              <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
             </Grid>
-            {/* Map through the variations data */}
+
+            {/* Map through the variations data inside modern cards */}
             {variations?.map((variation, index) => (
-              <React.Fragment key={variation.id || index}>
-                {/* Header Section for each Variation */}
-                <Grid
-                  size={{ xs: 12, sm: 6, md: 12 }}
-                  sx={{ mt: index !== 0 ? 4 : 0 }}
+              <Grid
+                key={variation.id || index}
+                size={{ xs: 12 }}
+                sx={{ mt: index !== 0 ? 2 : 0 }}
+              >
+                <Box
+                  sx={{
+                    borderRadius: "20px",
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 6px 24px -6px rgba(15, 23, 42, 0.05)",
+                    overflow: "hidden",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      borderColor: "#cbd5e1",
+                    },
+                  }}
                 >
+                  {/* Top Header Bar of Variation Card */}
                   <Box
                     sx={{
                       display: "flex",
+                      flexWrap: "wrap",
                       alignItems: "center",
-                      border: "1px solid rgb(197, 196, 196)",
-                      borderRadius: "10px",
-                      padding: "2px 15px",
-                      height: "100%",
-                      backgroundColor: "#f9f9f9",
+                      justifyContent: "space-between",
+                      gap: 1.5,
+                      px: 2.5,
+                      py: 1.5,
+                      backgroundColor: "#f8fafc",
+                      borderBottom: "1px solid #eef2f6",
                     }}
                   >
                     {/* Render individual variation terms (e.g., Ice Blue, 128GB) */}
-                    <Box sx={{ display: "flex", gap: 1, mr: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.1,
+                          py: 0.35,
+                          borderRadius: "8px",
+                          backgroundColor: "#0f172a",
+                          color: "#ffffff",
+                          fontSize: "11.5px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        #{index + 1}
+                      </Box>
                       {variation.variation_terms?.map((term) => (
                         <Box
                           key={term.term_id}
                           sx={{
-                            border: "1px dotted #acacacff",
-                            borderRadius: "5px",
-                            padding: "2px 8px",
-                            fontWeight: "600",
-                            fontSize: "13px",
-                            backgroundColor: "#fff",
+                            border: "1px solid #a7f3d0",
+                            borderRadius: "8px",
+                            padding: "3px 10px",
+                            fontWeight: 600,
+                            fontSize: "12.5px",
+                            color: "#059669",
+                            backgroundColor: "#ecfdf5",
                           }}
                         >
                           {term.term_title}
@@ -1668,667 +1774,735 @@ const handleSyncVariationImage = (termId) => {
                       ))}
                     </Box>
 
-                    <FormControlLabel
-                      disabled
-                      sx={{
-                        mr: 5,
-                        "& .MuiFormControlLabel-label": { fontSize: "14px" },
-                      }}
-                      control={
-                        <Checkbox
-                          size="small"
-                          color="secondary"
-                          checked={true}
-                        />
-                      }
-                      label="Raw Material"
-                    />
-                    <FormControlLabel
-                      sx={{
-                        mr: 5,
-                        "& .MuiFormControlLabel-label": { fontSize: "14px" },
-                      }}
-                      control={
-                        <Checkbox
-                          size="small"
-                          color="secondary"
-                          // Convert integer (1/0) from state to boolean (true/false)
-                          checked={variation.is_on_sale === 1}
-                          onChange={(e) => {
-                            // Convert boolean back to integer for your Laravel backend
-                            const newValue = e.target.checked ? 1 : 0;
-                            handleVariationChange(
-                              index,
-                              "is_on_sale",
-                              newValue,
-                            );
-                          }}
-                        />
-                      }
-                      label="Is on sale"
-                    />
-                  </Box>
-                </Grid>
-
-                {/* Variation Title Input */}
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <TextField
-                    label="Variation Title"
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                    key={variation.id}
-                    error={!!errorsVar[`${index}-title`]}
-                    helperText={errorsVar[`${index}-title`]}
-                    value={variation.title || ""}
-                    onChange={(e) =>
-                      handleVariationChange(index, "title", e.target.value)
-                    }
-                  />
-                </Grid>
-
-                {/* SKU and Stock Info */}
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <MediaSelectModal
-                    isVariationSelectImg={true}
-                    variationImage={
-                      variation.image_path ||
-                      variation?.variation_image?.media_path
-                    }
-                    setImageData={(imagePayload) => {
-                      handleVariationChange(
-                        index,
-                        "image_id",
-                        imagePayload.image_id,
-                      );
-                      handleVariationChange(
-                        index,
-                        "image_path",
-                        imagePayload.image_path,
-                      );
-                    }}
-                    onClear={() => {
-                      handleVariationChange(index, "image_id", null);
-                      handleVariationChange(index, "image_path", null);
-                      handleVariationChange(index, "variation_image", null);
-                    }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <TextField
-                    label="SKU"
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                    // Use the error state we created earlier
-                    error={!!errorsVar[`${index}-product_sku`]}
-                    helperText={errorsVar[`${index}-product_sku`]}
-                    // Change defaultValue to value for controlled state
-                    value={variation.product_sku || ""}
-                    // Update state on every change
-                    onChange={(e) =>
-                      handleVariationChange(
-                        index,
-                        "product_sku",
-                        e.target.value,
-                      )
-                    }
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel color="secondary">Product Status</InputLabel>
-                    <Select
-                      // value use karein taake state se sync rahe
-                      value={variation.product_status_stock === 1 ? 11 : 22}
-                      label="Product Status"
-                      color="secondary"
-                      onChange={(e) => {
-                        // Agar value 11 hai (In Stock) toh state mein 1 save karein, warna 0
-                        const updatedStatus = e.target.value === 11 ? 1 : 0;
-                        handleVariationChange(
-                          index,
-                          "product_status_stock",
-                          updatedStatus,
-                        );
-                      }}
-                    >
-                      <MenuItem value={11} sx={{ fontSize: "14px" }}>
-                        In Stock
-                      </MenuItem>
-                      <MenuItem value={22} sx={{ fontSize: "14px" }}>
-                        Out of Stock
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                {/* Prices Section */}
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <TextField
-                    label="Min Stock Alert"
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                    type="number"
-                    // Use 0 as fallback for the variation state
-                    value={variation.min_stock_alert || 0}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      // Allow 0, but prevent anything lower
-                      const finalValue =
-                        val === "" ? "" : Math.max(0, parseInt(val, 10) || 0);
-
-                      handleVariationChange(
-                        index,
-                        "min_stock_alert",
-                        finalValue,
-                      );
-                    }}
-                    // Accessibility hint
-                    inputProps={{ min: 0 }}
-                    sx={{
-                      // Remove the up/down arrows (spinners)
-                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                        {
-                          display: "none",
-                          margin: 0,
-                        },
-                      "& input[type=number]": {
-                        MozAppearance: "textfield",
-                      },
-                    }}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <TextField
-                    label="Regular Price"
-                    fullWidth
-                    size="small"
-                    type="number"
-                    value={variation.regular_price || 0}
-                    // Error state if price is 0
-                    error={variation.regular_price <= 0}
-                    helperText={
-                      variation.regular_price <= 0 ? "Price cannot be zero" : ""
-                    }
-                    onChange={(e) => {
-                      const rawVal = e.target.value;
-                      // Allow empty string to be 0, otherwise ensure minimum of 0
-                      const val =
-                        rawVal === ""
-                          ? 0
-                          : Math.max(0, parseFloat(rawVal) || 0);
-
-                      // Update Regular Price
-                      handleVariationChange(index, "regular_price", val);
-                      // Sync Sale Price automatically
-                      handleVariationChange(index, "sale_price", val);
-                    }}
-                    inputProps={{ min: 0, step: "0.01" }}
-                    sx={{
-                      // Hide the up/down arrows
-                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                        {
-                          display: "none",
-                          margin: 0,
-                        },
-                      "& input[type=number]": {
-                        MozAppearance: "textfield",
-                      },
-                    }}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <TextField
-                    label="Sale Price"
-                    fullWidth
-                    size="small"
-                    type="number"
-                    value={variation.sale_price || 0}
-                    // Error UI logic
-                    error={
-                      variation.sale_price <= 0 ||
-                      variation.sale_price > variation.regular_price
-                    }
-                    helperText={
-                      variation.sale_price <= 0
-                        ? "Sale price required"
-                        : variation.sale_price > variation.regular_price
-                          ? "Cannot exceed regular price"
-                          : ""
-                    }
-                    onChange={(e) => {
-                      const rawVal = e.target.value;
-                      const numericVal = parseFloat(rawVal) || 0;
-                      const regPrice = parseFloat(variation.regular_price) || 0;
-
-                      // Logic: Clamp between 0 and Regular Price
-                      const finalVal =
-                        rawVal === ""
-                          ? 0
-                          : Math.min(regPrice, Math.max(0, numericVal));
-
-                      handleVariationChange(index, "sale_price", finalVal);
-                    }}
-                    inputProps={{ min: 0, step: "0.01" }}
-                    sx={{
-                      // Hide the up/down arrows
-                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                        {
-                          display: "none",
-                          margin: 0,
-                        },
-                      "& input[type=number]": {
-                        MozAppearance: "textfield",
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel
-                      id={`release-year-label-${index}`}
-                      color="secondary"
-                    >
-                      Release Year
-                    </InputLabel>
-                    <Select
-                      labelId={`release-year-label-${index}`}
-                      id={`release_year_${index}`}
-                      // Variations array se value uthayein
-                      value={variation.release_year || 0}
-                      label="Release Year"
-                      color="secondary"
-                      // Handle change for specific variation index
-                      onChange={(e) =>
-                        handleVariationChange(
-                          index,
-                          "release_year",
-                          e.target.value,
-                        )
-                      }
-                    >
-                      <MenuItem value={0} sx={{ fontSize: "14px" }}>
-                        N/A
-                      </MenuItem>
-                      <MenuItem value={15} sx={{ fontSize: "14px" }}>
-                        2026
-                      </MenuItem>
-                      <MenuItem value={14} sx={{ fontSize: "14px" }}>
-                        2025
-                      </MenuItem>
-                      <MenuItem value={13} sx={{ fontSize: "14px" }}>
-                        2024
-                      </MenuItem>
-                      <MenuItem value={12} sx={{ fontSize: "14px" }}>
-                        2023
-                      </MenuItem>
-                      <MenuItem value={11} sx={{ fontSize: "14px" }}>
-                        2022
-                      </MenuItem>
-                      <MenuItem value={10} sx={{ fontSize: "14px" }}>
-                        2021
-                      </MenuItem>
-                      <MenuItem value={9} sx={{ fontSize: "14px" }}>
-                        2020
-                      </MenuItem>
-                      <MenuItem value={8} sx={{ fontSize: "14px" }}>
-                        2019
-                      </MenuItem>
-                      <MenuItem value={7} sx={{ fontSize: "14px" }}>
-                        2018
-                      </MenuItem>
-                      <MenuItem value={6} sx={{ fontSize: "14px" }}>
-                        2017
-                      </MenuItem>
-                      <MenuItem value={5} sx={{ fontSize: "14px" }}>
-                        2016
-                      </MenuItem>
-                      <MenuItem value={4} sx={{ fontSize: "14px" }}>
-                        2015
-                      </MenuItem>
-                      <MenuItem value={3} sx={{ fontSize: "14px" }}>
-                        2014
-                      </MenuItem>
-                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
-                        2013
-                      </MenuItem>
-                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
-                        2012
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel id={`network-label-${index}`} color="secondary">
-                      Network
-                    </InputLabel>
-                    <Select
-                      labelId={`network-label-${index}`}
-                      id={`network_${index}`}
-                      name="network"
-                      // Local state se value lein
-                      value={variation.network ?? 0}
-                      label="Network"
-                      color="secondary"
-                      // handleVariationChange use karein index ke saath
-                      onChange={(e) =>
-                        handleVariationChange(index, "network", e.target.value)
-                      }
-                    >
-                      <MenuItem value={0} sx={{ fontSize: "14px" }}>
-                        N/A
-                      </MenuItem>
-                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
-                        2G
-                      </MenuItem>
-                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
-                        3G
-                      </MenuItem>
-                      <MenuItem value={3} sx={{ fontSize: "14px" }}>
-                        4G
-                      </MenuItem>
-                      <MenuItem value={4} sx={{ fontSize: "14px" }}>
-                        5G
-                      </MenuItem>
-                      <MenuItem value={5} sx={{ fontSize: "14px" }}>
-                        GPS
-                      </MenuItem>
-                      <MenuItem value={6} sx={{ fontSize: "14px" }}>
-                        Cellular
-                      </MenuItem>
-                      <MenuItem value={7} sx={{ fontSize: "14px" }}>
-                        Unlocked
-                      </MenuItem>
-                      <MenuItem value={8} sx={{ fontSize: "14px" }}>
-                        Wi-Fi
-                      </MenuItem>
-                      <MenuItem value={9} sx={{ fontSize: "14px" }}>
-                        Wi-Fi + Cellular
-                      </MenuItem>
-                      <MenuItem value={10} sx={{ fontSize: "14px" }}>
-                        EE
-                      </MenuItem>
-                      <MenuItem value={11} sx={{ fontSize: "14px" }}>
-                        Giffgaff
-                      </MenuItem>
-                      <MenuItem value={12} sx={{ fontSize: "14px" }}>
-                        O2
-                      </MenuItem>
-                      <MenuItem value={13} sx={{ fontSize: "14px" }}>
-                        Tesco
-                      </MenuItem>
-                      <MenuItem value={14} sx={{ fontSize: "14px" }}>
-                        Three
-                      </MenuItem>
-                      <MenuItem value={15} sx={{ fontSize: "14px" }}>
-                        Virgin
-                      </MenuItem>
-                      <MenuItem value={16} sx={{ fontSize: "14px" }}>
-                        Vodafone
-                      </MenuItem>
-                      <MenuItem value={17} sx={{ fontSize: "14px" }}>
-                        Other
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel id={`sim-label-${index}`} color="secondary">
-                      SIM
-                    </InputLabel>
-                    <Select
-                      labelId={`sim-label-${index}`}
-                      id={`sim-${index}`}
-                      value={variation.SIM ?? 0}
-                      label="SIM"
-                      color="secondary"
-                      onChange={(e) =>
-                        handleVariationChange(index, "SIM", e.target.value)
-                      }
-                    >
-                      <MenuItem value={0} sx={{ fontSize: "14px" }}>
-                        N/A
-                      </MenuItem>
-                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
-                        Single SIM
-                      </MenuItem>
-                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
-                        Dual SIM
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel
-                      id={`carrier-option-label-${index}`}
-                      color="secondary"
-                    >
-                      Carrier Option
-                    </InputLabel>
-                    <Select
-                      labelId={`carrier-option-label-${index}`}
-                      id={`carrier_option_${index}`}
-                      value={variation.carrier_option ?? 0}
-                      label="Carrier Option"
-                      color="secondary"
-                      onChange={(e) =>
-                        handleVariationChange(
-                          index,
-                          "carrier_option",
-                          e.target.value,
-                        )
-                      }
-                    >
-                      <MenuItem value={0} sx={{ fontSize: "14px" }}>
-                        N/A
-                      </MenuItem>
-                      <MenuItem value={1} sx={{ fontSize: "14px" }}>
-                        Locked
-                      </MenuItem>
-                      <MenuItem value={2} sx={{ fontSize: "14px" }}>
-                        Unlocked
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <Autocomplete
-                    disablePortal
-                    options={["first"]}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Attach Warranty Policy" />
-                    )}
-                    size="small"
-                    fullWidth
-                    color="secondary"
-                    disabled
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <Autocomplete
-                    disablePortal
-                    options={["first"]}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Attach Return Policy" />
-                    )}
-                    size="small"
-                    fullWidth
-                    color="secondary"
-                    disabled
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <TextField
-                    id={`meta_title_${index}`}
-                    name="meta_title"
-                    value={variation.meta_title || ""}
-                    onChange={(e) =>
-                      handleVariationChange(index, "meta_title", e.target.value)
-                    }
-                    label="Meta Title"
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                    placeholder="Write meta title..."
-                    helperText={`${(variation.meta_title || "").length}/60 characters`}
-                    error={(variation.meta_title || "").length > 60}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <TextField
-                    id={`meta_description_${index}`}
-                    name="meta_description"
-                    value={variation.meta_description || ""}
-                    onChange={(e) =>
-                      handleVariationChange(
-                        index,
-                        "meta_description",
-                        e.target.value,
-                      )
-                    }
-                    label="Meta Description"
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                    placeholder="Write meta description..."
-                    // SEO best practice: 160 characters limit
-                    helperText={`${(variation.meta_description || "").length}/160 characters`}
-                    error={(variation.meta_description || "").length > 160}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <TextField
-                    id={`keywords_${index}`}
-                    name="keywords"
-                    value={variation.keywords || ""}
-                    onChange={(e) =>
-                      handleVariationChange(index, "keywords", e.target.value)
-                    }
-                    label="Keywords"
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                    placeholder="e.g. iPhone 17, 128GB, Unlocked, Space Gray"
-                    helperText="Separate keywords with commas"
-                  />
-                </Grid>
-
-                {/* Description Editor for each variation */}
-                <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ mb: 2 }}>
-                  <Box component={"h3"} sx={{ fontSize: "12px", mb: 1, mt: 2 }}>
-                    Variation Description:
-                  </Box>
-                  <TextEditor
-                    label="Description"
-                    // Ensure the editor displays the current state value
-                    value={variation.description || ""}
-                    // Capture content changes and update the variations state
-                    onChange={(content) => {
-                      handleVariationChange(
-                        index,
-                        "description",
-                        content, // Typically the HTML string from the editor
-                      );
-                    }}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Button
-                      className="custom-secondary-btn-admin-side"
-                      disabled={true}
-                      sx={{
-                        "&.Mui-disabled": {
-                          backgroundColor: "#e0e0e0 !important",
-                          color: "#9e9e9e !important",
-                        },
-                        mr: 1,
-                      }}
-                    >
-                      <HelpIcon sx={{ mr: 1 }} />
-                      Add Question/Options Or Description
-                    </Button>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <FormControlLabel
+                        disabled
                         sx={{
-                          mr: 5,
-                          "& .MuiFormControlLabel-label": { fontSize: "14px" },
+                          mr: 1,
+                          "& .MuiFormControlLabel-label": {
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#64748b",
+                          },
                         }}
                         control={
                           <Checkbox
                             size="small"
                             color="secondary"
-                            checked={variation.is_default === 1}
+                            checked={true}
+                            sx={modernCheckboxSx}
+                          />
+                        }
+                        label="Raw Material"
+                      />
+                      <FormControlLabel
+                        sx={{
+                          mr: 0,
+                          "& .MuiFormControlLabel-label": {
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#0f172a",
+                          },
+                        }}
+                        control={
+                          <Checkbox
+                            size="small"
+                            color="secondary"
+                            checked={variation.is_on_sale === 1}
                             onChange={(e) => {
                               const newValue = e.target.checked ? 1 : 0;
                               handleVariationChange(
                                 index,
-                                "is_default",
+                                "is_on_sale",
                                 newValue,
                               );
                             }}
+                            sx={{
+                              color: "#cbd5e1",
+                              "&.Mui-checked": { color: "#f97316" },
+                            }}
                           />
                         }
-                        label="Default"
+                        label="Is on sale"
                       />
-                      <Button
-                        className="custom-secondary-btn-admin-side"
-                        onClick={() => handleUpdate(variation)}
-                        disabled={updateVariation.isPending}
-                        sx={{
-                          "&.Mui-disabled": {
-                            backgroundColor: "#e0e0e0 !important",
-                            color: "#9e9e9e !important",
-                          },
-                        }}
-                      >
-                        {updateVariation.isPending ? (
-                          <>
-                            <CircularProgress
-                              size={20}
-                              color="inherit"
-                              sx={{ mr: 1 }}
-                            />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <SaveIcon sx={{ mr: 1 }} />
-                            Save
-                          </>
-                        )}
-                      </Button>
                     </Box>
                   </Box>
-                </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <Divider sx={{ my: 2, borderColor: "#e0e0e0" }} />
-                </Grid>
-              </React.Fragment>
+                  {/* Variation Card Body */}
+                  <Box sx={{ p: { xs: 2, md: 2.75 } }}>
+                    <Grid container spacing={2}>
+                      {/* Variation Title Input */}
+                      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                        <TextField
+                          label="Variation Title"
+                          fullWidth
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          key={variation.id}
+                          error={!!errorsVar[`${index}-title`]}
+                          helperText={errorsVar[`${index}-title`]}
+                          value={variation.title || ""}
+                          onChange={(e) =>
+                            handleVariationChange(
+                              index,
+                              "title",
+                              e.target.value,
+                            )
+                          }
+                          sx={modernInputSx}
+                        />
+                      </Grid>
+
+                      {/* SKU and Stock Info */}
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <MediaSelectModal
+                          isVariationSelectImg={true}
+                          variationImage={
+                            variation.image_path ||
+                            variation?.variation_image?.media_path
+                          }
+                          setImageData={(imagePayload) => {
+                            handleVariationChange(
+                              index,
+                              "image_id",
+                              imagePayload.image_id,
+                            );
+                            handleVariationChange(
+                              index,
+                              "image_path",
+                              imagePayload.image_path,
+                            );
+                          }}
+                          onClear={() => {
+                            handleVariationChange(index, "image_id", null);
+                            handleVariationChange(index, "image_path", null);
+                            handleVariationChange(
+                              index,
+                              "variation_image",
+                              null,
+                            );
+                          }}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <TextField
+                          label="SKU"
+                          fullWidth
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          error={!!errorsVar[`${index}-product_sku`]}
+                          helperText={errorsVar[`${index}-product_sku`]}
+                          value={variation.product_sku || ""}
+                          onChange={(e) =>
+                            handleVariationChange(
+                              index,
+                              "product_sku",
+                              e.target.value,
+                            )
+                          }
+                          sx={modernInputSx}
+                        />
+                      </Grid>
+
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <FormControl fullWidth size="small" sx={modernInputSx}>
+                          <InputLabel color="secondary">
+                            Product Status
+                          </InputLabel>
+                          <Select
+                            value={
+                              variation.product_status_stock === 1 ? 11 : 22
+                            }
+                            label="Product Status"
+                            color="secondary"
+                            onChange={(e) => {
+                              const updatedStatus =
+                                e.target.value === 11 ? 1 : 0;
+                              handleVariationChange(
+                                index,
+                                "product_status_stock",
+                                updatedStatus,
+                              );
+                            }}
+                          >
+                            <MenuItem value={11} sx={{ fontSize: "14px" }}>
+                              In Stock
+                            </MenuItem>
+                            <MenuItem value={22} sx={{ fontSize: "14px" }}>
+                              Out of Stock
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      {/* Prices Section */}
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <TextField
+                          label="Min Stock Alert"
+                          fullWidth
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          type="number"
+                          value={variation.min_stock_alert || 0}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const finalValue =
+                              val === ""
+                                ? ""
+                                : Math.max(0, parseInt(val, 10) || 0);
+
+                            handleVariationChange(
+                              index,
+                              "min_stock_alert",
+                              finalValue,
+                            );
+                          }}
+                          inputProps={{ min: 0 }}
+                          sx={modernNumberInputSx}
+                        />
+                      </Grid>
+
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <TextField
+                          label="Regular Price"
+                          fullWidth
+                          size="small"
+                          type="number"
+                          value={variation.regular_price || 0}
+                          error={variation.regular_price <= 0}
+                          helperText={
+                            variation.regular_price <= 0
+                              ? "Price cannot be zero"
+                              : ""
+                          }
+                          onChange={(e) => {
+                            const rawVal = e.target.value;
+                            const val =
+                              rawVal === ""
+                                ? 0
+                                : Math.max(0, parseFloat(rawVal) || 0);
+
+                            handleVariationChange(index, "regular_price", val);
+                            handleVariationChange(index, "sale_price", val);
+                          }}
+                          inputProps={{ min: 0, step: "0.01" }}
+                          sx={modernNumberInputSx}
+                        />
+                      </Grid>
+
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <TextField
+                          label="Sale Price"
+                          fullWidth
+                          size="small"
+                          type="number"
+                          value={variation.sale_price || 0}
+                          error={
+                            variation.sale_price <= 0 ||
+                            variation.sale_price > variation.regular_price
+                          }
+                          helperText={
+                            variation.sale_price <= 0
+                              ? "Sale price required"
+                              : variation.sale_price > variation.regular_price
+                                ? "Cannot exceed regular price"
+                                : ""
+                          }
+                          onChange={(e) => {
+                            const rawVal = e.target.value;
+                            const numericVal = parseFloat(rawVal) || 0;
+                            const regPrice =
+                              parseFloat(variation.regular_price) || 0;
+
+                            const finalVal =
+                              rawVal === ""
+                                ? 0
+                                : Math.min(regPrice, Math.max(0, numericVal));
+
+                            handleVariationChange(
+                              index,
+                              "sale_price",
+                              finalVal,
+                            );
+                          }}
+                          inputProps={{ min: 0, step: "0.01" }}
+                          sx={modernNumberInputSx}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <FormControl fullWidth size="small" sx={modernInputSx}>
+                          <InputLabel
+                            id={`release-year-label-${index}`}
+                            color="secondary"
+                          >
+                            Release Year
+                          </InputLabel>
+                          <Select
+                            labelId={`release-year-label-${index}`}
+                            id={`release_year_${index}`}
+                            value={variation.release_year || 0}
+                            label="Release Year"
+                            color="secondary"
+                            onChange={(e) =>
+                              handleVariationChange(
+                                index,
+                                "release_year",
+                                e.target.value,
+                              )
+                            }
+                          >
+                            <MenuItem value={0} sx={{ fontSize: "14px" }}>
+                              N/A
+                            </MenuItem>
+                            <MenuItem value={15} sx={{ fontSize: "14px" }}>
+                              2026
+                            </MenuItem>
+                            <MenuItem value={14} sx={{ fontSize: "14px" }}>
+                              2025
+                            </MenuItem>
+                            <MenuItem value={13} sx={{ fontSize: "14px" }}>
+                              2024
+                            </MenuItem>
+                            <MenuItem value={12} sx={{ fontSize: "14px" }}>
+                              2023
+                            </MenuItem>
+                            <MenuItem value={11} sx={{ fontSize: "14px" }}>
+                              2022
+                            </MenuItem>
+                            <MenuItem value={10} sx={{ fontSize: "14px" }}>
+                              2021
+                            </MenuItem>
+                            <MenuItem value={9} sx={{ fontSize: "14px" }}>
+                              2020
+                            </MenuItem>
+                            <MenuItem value={8} sx={{ fontSize: "14px" }}>
+                              2019
+                            </MenuItem>
+                            <MenuItem value={7} sx={{ fontSize: "14px" }}>
+                              2018
+                            </MenuItem>
+                            <MenuItem value={6} sx={{ fontSize: "14px" }}>
+                              2017
+                            </MenuItem>
+                            <MenuItem value={5} sx={{ fontSize: "14px" }}>
+                              2016
+                            </MenuItem>
+                            <MenuItem value={4} sx={{ fontSize: "14px" }}>
+                              2015
+                            </MenuItem>
+                            <MenuItem value={3} sx={{ fontSize: "14px" }}>
+                              2014
+                            </MenuItem>
+                            <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                              2013
+                            </MenuItem>
+                            <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                              2012
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <FormControl fullWidth size="small" sx={modernInputSx}>
+                          <InputLabel
+                            id={`network-label-${index}`}
+                            color="secondary"
+                          >
+                            Network
+                          </InputLabel>
+                          <Select
+                            labelId={`network-label-${index}`}
+                            id={`network_${index}`}
+                            name="network"
+                            value={variation.network ?? 0}
+                            label="Network"
+                            color="secondary"
+                            onChange={(e) =>
+                              handleVariationChange(
+                                index,
+                                "network",
+                                e.target.value,
+                              )
+                            }
+                          >
+                            <MenuItem value={0} sx={{ fontSize: "14px" }}>
+                              N/A
+                            </MenuItem>
+                            <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                              2G
+                            </MenuItem>
+                            <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                              3G
+                            </MenuItem>
+                            <MenuItem value={3} sx={{ fontSize: "14px" }}>
+                              4G
+                            </MenuItem>
+                            <MenuItem value={4} sx={{ fontSize: "14px" }}>
+                              5G
+                            </MenuItem>
+                            <MenuItem value={5} sx={{ fontSize: "14px" }}>
+                              GPS
+                            </MenuItem>
+                            <MenuItem value={6} sx={{ fontSize: "14px" }}>
+                              Cellular
+                            </MenuItem>
+                            <MenuItem value={7} sx={{ fontSize: "14px" }}>
+                              Unlocked
+                            </MenuItem>
+                            <MenuItem value={8} sx={{ fontSize: "14px" }}>
+                              Wi-Fi
+                            </MenuItem>
+                            <MenuItem value={9} sx={{ fontSize: "14px" }}>
+                              Wi-Fi + Cellular
+                            </MenuItem>
+                            <MenuItem value={10} sx={{ fontSize: "14px" }}>
+                              EE
+                            </MenuItem>
+                            <MenuItem value={11} sx={{ fontSize: "14px" }}>
+                              Giffgaff
+                            </MenuItem>
+                            <MenuItem value={12} sx={{ fontSize: "14px" }}>
+                              O2
+                            </MenuItem>
+                            <MenuItem value={13} sx={{ fontSize: "14px" }}>
+                              Tesco
+                            </MenuItem>
+                            <MenuItem value={14} sx={{ fontSize: "14px" }}>
+                              Three
+                            </MenuItem>
+                            <MenuItem value={15} sx={{ fontSize: "14px" }}>
+                              Virgin
+                            </MenuItem>
+                            <MenuItem value={16} sx={{ fontSize: "14px" }}>
+                              Vodafone
+                            </MenuItem>
+                            <MenuItem value={17} sx={{ fontSize: "14px" }}>
+                              Other
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <FormControl fullWidth size="small" sx={modernInputSx}>
+                          <InputLabel
+                            id={`sim-label-${index}`}
+                            color="secondary"
+                          >
+                            SIM
+                          </InputLabel>
+                          <Select
+                            labelId={`sim-label-${index}`}
+                            id={`sim-${index}`}
+                            value={variation.SIM ?? 0}
+                            label="SIM"
+                            color="secondary"
+                            onChange={(e) =>
+                              handleVariationChange(
+                                index,
+                                "SIM",
+                                e.target.value,
+                              )
+                            }
+                          >
+                            <MenuItem value={0} sx={{ fontSize: "14px" }}>
+                              N/A
+                            </MenuItem>
+                            <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                              Single SIM
+                            </MenuItem>
+                            <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                              Dual SIM
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <FormControl fullWidth size="small" sx={modernInputSx}>
+                          <InputLabel
+                            id={`carrier-option-label-${index}`}
+                            color="secondary"
+                          >
+                            Carrier Option
+                          </InputLabel>
+                          <Select
+                            labelId={`carrier-option-label-${index}`}
+                            id={`carrier_option_${index}`}
+                            value={variation.carrier_option ?? 0}
+                            label="Carrier Option"
+                            color="secondary"
+                            onChange={(e) =>
+                              handleVariationChange(
+                                index,
+                                "carrier_option",
+                                e.target.value,
+                              )
+                            }
+                          >
+                            <MenuItem value={0} sx={{ fontSize: "14px" }}>
+                              N/A
+                            </MenuItem>
+                            <MenuItem value={1} sx={{ fontSize: "14px" }}>
+                              Locked
+                            </MenuItem>
+                            <MenuItem value={2} sx={{ fontSize: "14px" }}>
+                              Unlocked
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <Autocomplete
+                          disablePortal
+                          options={["first"]}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Attach Warranty Policy"
+                              sx={modernInputSx}
+                            />
+                          )}
+                          size="small"
+                          fullWidth
+                          color="secondary"
+                          disabled
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                        <Autocomplete
+                          disablePortal
+                          options={["first"]}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Attach Return Policy"
+                              sx={modernInputSx}
+                            />
+                          )}
+                          size="small"
+                          fullWidth
+                          color="secondary"
+                          disabled
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                        <TextField
+                          id={`meta_title_${index}`}
+                          name="meta_title"
+                          value={variation.meta_title || ""}
+                          onChange={(e) =>
+                            handleVariationChange(
+                              index,
+                              "meta_title",
+                              e.target.value,
+                            )
+                          }
+                          label="Meta Title"
+                          fullWidth
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          placeholder="Write meta title..."
+                          helperText={`${(variation.meta_title || "").length}/60 characters`}
+                          error={(variation.meta_title || "").length > 60}
+                          sx={modernInputSx}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                        <TextField
+                          id={`meta_description_${index}`}
+                          name="meta_description"
+                          value={variation.meta_description || ""}
+                          onChange={(e) =>
+                            handleVariationChange(
+                              index,
+                              "meta_description",
+                              e.target.value,
+                            )
+                          }
+                          label="Meta Description"
+                          fullWidth
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          placeholder="Write meta description..."
+                          helperText={`${(variation.meta_description || "").length}/160 characters`}
+                          error={
+                            (variation.meta_description || "").length > 160
+                          }
+                          sx={modernInputSx}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                        <TextField
+                          id={`keywords_${index}`}
+                          name="keywords"
+                          value={variation.keywords || ""}
+                          onChange={(e) =>
+                            handleVariationChange(
+                              index,
+                              "keywords",
+                              e.target.value,
+                            )
+                          }
+                          label="Keywords"
+                          fullWidth
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          placeholder="e.g. iPhone 17, 128GB, Unlocked, Space Gray"
+                          helperText="Separate keywords with commas"
+                          sx={modernInputSx}
+                        />
+                      </Grid>
+
+                      {/* Description Editor for each variation */}
+                      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                        <Box
+                          component={"h3"}
+                          sx={{
+                            fontSize: "13px",
+                            fontWeight: 700,
+                            color: "#0f172a",
+                            mb: 1,
+                            mt: 0.5,
+                          }}
+                        >
+                          Variation Description:
+                        </Box>
+                        <Box
+                          sx={{
+                            borderRadius: "14px",
+                            overflow: "hidden",
+                            border: "1px solid #e2e8f0",
+                          }}
+                        >
+                          <TextEditor
+                            label="Description"
+                            value={variation.description || ""}
+                            onChange={(content) => {
+                              handleVariationChange(
+                                index,
+                                "description",
+                                content,
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+
+                      {/* Variation Footer Bar */}
+                      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: 1.5,
+                            pt: 1.5,
+                            mt: 0.5,
+                            borderTop: "1px solid #f1f5f9",
+                          }}
+                        >
+                          <Button
+                            className="custom-secondary-btn-admin-side"
+                            disabled={true}
+                            sx={{
+                              borderRadius: "12px !important",
+                              px: "16px !important",
+                              py: "7px !important",
+                              fontSize: "12.5px !important",
+                              fontWeight: "600 !important",
+                              textTransform: "none !important",
+                              "&.Mui-disabled": {
+                                backgroundColor: "#f1f5f9 !important",
+                                color: "#94a3b8 !important",
+                                border: "1px solid #e2e8f0 !important",
+                              },
+                            }}
+                          >
+                            <HelpIcon sx={{ mr: 1, fontSize: 17 }} />
+                            Add Question/Options Or Description
+                          </Button>
+                          <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <FormControlLabel
+                              sx={{
+                                mr: 3,
+                                "& .MuiFormControlLabel-label": {
+                                  fontSize: "13.5px",
+                                  fontWeight: 600,
+                                  color: "#0f172a",
+                                },
+                              }}
+                              control={
+                                <Checkbox
+                                  size="small"
+                                  color="secondary"
+                                  checked={variation.is_default === 1}
+                                  onChange={(e) => {
+                                    const newValue = e.target.checked ? 1 : 0;
+                                    handleVariationChange(
+                                      index,
+                                      "is_default",
+                                      newValue,
+                                    );
+                                  }}
+                                  sx={modernCheckboxSx}
+                                />
+                              }
+                              label="Default"
+                            />
+                            <Button
+                              className="custom-secondary-btn-admin-side"
+                              onClick={() => handleUpdate(variation)}
+                              disabled={updateVariation.isPending}
+                              sx={{
+                                backgroundColor: "#0f172a !important",
+                                backgroundImage: "none !important",
+                                color: "#ffffff !important",
+                                borderRadius: "999px !important",
+                                px: "22px !important",
+                                py: "8px !important",
+                                fontSize: "13px !important",
+                                fontWeight: "600 !important",
+                                textTransform: "none !important",
+                                "&:hover": {
+                                  backgroundColor: "#1e293b !important",
+                                },
+                                "&.Mui-disabled": {
+                                  backgroundColor: "#e2e8f0 !important",
+                                  color: "#94a3b8 !important",
+                                },
+                              }}
+                            >
+                              {updateVariation.isPending ? (
+                                <>
+                                  <CircularProgress
+                                    size={18}
+                                    color="inherit"
+                                    sx={{ mr: 1 }}
+                                  />
+                                  Saving...
+                                </>
+                              ) : (
+                                <>
+                                  <SaveIcon sx={{ mr: 1, fontSize: 17 }} />
+                                  Save
+                                </>
+                              )}
+                            </Button>
+                          </Box>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
+              </Grid>
             ))}
           </>
         )}
@@ -2337,15 +2511,60 @@ const handleSyncVariationImage = (termId) => {
             <Box
               sx={{
                 display: "flex",
+                flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "space-between !important",
+                gap: 2,
                 width: "100%",
                 mt: 1,
+                p: 2,
+                borderRadius: "14px",
+                backgroundColor: "#f8fafc",
+                border: "1px solid #eef2f6",
               }}
             >
-              <Box sx={{ mb: 0, fontSize: "14px" }}>
-                Showing {pagination?.from} - {pagination?.to} of{" "}
-                {pagination?.total}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: "#64748b",
+                }}
+              >
+                <span>Showing</span>
+                <Box
+                  component="span"
+                  sx={{
+                    px: 1.1,
+                    py: 0.3,
+                    borderRadius: "8px",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    color: "#0f172a",
+                    fontWeight: 700,
+                    fontSize: "12.5px",
+                  }}
+                >
+                  {pagination?.from ?? 0}–{pagination?.to ?? 0}
+                </Box>
+                <span>of</span>
+                <Box
+                  component="span"
+                  sx={{
+                    px: 1.1,
+                    py: 0.3,
+                    borderRadius: "8px",
+                    backgroundColor: "#fff7ed",
+                    border: "1px solid #ffedd5",
+                    color: "#f97316",
+                    fontWeight: 700,
+                    fontSize: "12.5px",
+                  }}
+                >
+                  {pagination?.total ?? 0}
+                </Box>
               </Box>
               <Pagination
                 size="small"
@@ -2364,48 +2583,96 @@ const handleSyncVariationImage = (termId) => {
                 }}
                 variant={"outlined"}
                 color={"secondary"}
+                sx={{
+                  "& .MuiPagination-ul": { gap: "6px" },
+                  "& .MuiPaginationItem-root": {
+                    minWidth: "34px",
+                    height: "34px",
+                    borderRadius: "10px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    color: "#475569",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    margin: 0,
+                    "&:hover": {
+                      backgroundColor: "#f1f5f9",
+                      borderColor: "#cbd5e1",
+                      color: "#0f172a",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: "#0f172a !important",
+                      color: "#ffffff !important",
+                      borderColor: "#0f172a !important",
+                      boxShadow: "0 4px 12px rgba(15, 23, 42, 0.2)",
+                    },
+                  },
+                }}
               />
             </Box>
           )}
-          <Divider sx={{ my: 4 }} />
+          <Divider sx={{ my: 2.5, borderColor: "#eef2f6" }} />
         </Grid>
-        <Button
-          className="custom-secondary-btn-admin-side"
-          disabled={true}
-          sx={{
-            "&.Mui-disabled": {
-              backgroundColor: "#e0e0e0 !important",
-              color: "#9e9e9e !important",
-            },
-            mr: 1,
-          }}
-        >
-          <CheckBoxIcon sx={{ mr: 1 }} />
-          Included In the Box
-        </Button>
-        <Button
-          className="custom-secondary-btn-admin-side"
-          disabled={true}
-          sx={{
-            "&.Mui-disabled": {
-              backgroundColor: "#e0e0e0 !important",
-              color: "#9e9e9e !important",
-            },
-            mr: 1,
-          }}
-        >
-          <LocalMallIcon sx={{ mr: 1 }} />
-          Buy It With
-        </Button>
+
+        {/* Add-on Buttons Row */}
+        <Grid size={{ xs: 12 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.25 }}>
+            <Button
+              className="custom-secondary-btn-admin-side"
+              disabled={true}
+              sx={{
+                borderRadius: "12px !important",
+                px: "18px !important",
+                py: "8px !important",
+                fontSize: "13px !important",
+                fontWeight: "600 !important",
+                textTransform: "none !important",
+                "&.Mui-disabled": {
+                  backgroundColor: "#f1f5f9 !important",
+                  color: "#94a3b8 !important",
+                  border: "1px solid #e2e8f0 !important",
+                },
+              }}
+            >
+              <CheckBoxIcon sx={{ mr: 1, fontSize: 18 }} />
+              Included In the Box
+            </Button>
+            <Button
+              className="custom-secondary-btn-admin-side"
+              disabled={true}
+              sx={{
+                borderRadius: "12px !important",
+                px: "18px !important",
+                py: "8px !important",
+                fontSize: "13px !important",
+                fontWeight: "600 !important",
+                textTransform: "none !important",
+                "&.Mui-disabled": {
+                  backgroundColor: "#f1f5f9 !important",
+                  color: "#94a3b8 !important",
+                  border: "1px solid #e2e8f0 !important",
+                },
+              }}
+            >
+              <LocalMallIcon sx={{ mr: 1, fontSize: 18 }} />
+              Buy It With
+            </Button>
+          </Box>
+        </Grid>
+
         <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-          <Divider sx={{ my: 4 }} />
+          <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
         </Grid>
+
+        {/* Bottom Navigation & Publish Bar */}
         <Grid size={{ xs: 12, sm: 6, md: 12 }} sx={{ textAlign: "end" }}>
           <Box
             sx={{
               display: "flex",
+              flexWrap: "wrap",
               justifyContent: "space-between",
               alignItems: "center",
+              gap: 2,
             }}
           >
             <Button
@@ -2413,16 +2680,30 @@ const handleSyncVariationImage = (termId) => {
               className="custom-primary-btn-admin-side"
               disabled={loadingBtn}
               sx={{
-                "&.Mui-disabled": {
-                  backgroundColor: "#e0e0e0 !important",
-                  color: "#9e9e9e !important",
+                backgroundColor: "#ffffff !important",
+                backgroundImage: "none !important",
+                color: "#0f172a !important",
+                border: "1px solid #e2e8f0 !important",
+                borderRadius: "999px !important",
+                px: "22px !important",
+                py: "9px !important",
+                fontSize: "13.5px !important",
+                fontWeight: "600 !important",
+                textTransform: "none !important",
+                boxShadow: "none !important",
+                "&:hover": {
+                  backgroundColor: "#f8fafc !important",
+                  borderColor: "#cbd5e1 !important",
                 },
-                mr: 1,
+                "&.Mui-disabled": {
+                  backgroundColor: "#f1f5f9 !important",
+                  color: "#94a3b8 !important",
+                },
               }}
             >
-              <ArrowBackIcon /> Back
+              <ArrowBackIcon sx={{ mr: 0.75, fontSize: 18 }} /> Back
             </Button>
-            <Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.25 }}>
               <Button
                 onClick={() =>
                   handleSubmitStep2(0, secondStepDataTI?.product_type)
@@ -2439,17 +2720,28 @@ const handleSyncVariationImage = (termId) => {
                   (!isVariationsValid && secondStepDataTI?.product_type == 2)
                 }
                 sx={{
-                  "&.Mui-disabled": {
-                    backgroundColor: "#e0e0e0 !important",
-                    color: "#9e9e9e !important",
+                  backgroundColor: "#0f172a !important",
+                  backgroundImage: "none !important",
+                  color: "#ffffff !important",
+                  borderRadius: "999px !important",
+                  px: "22px !important",
+                  py: "9px !important",
+                  fontSize: "13.5px !important",
+                  fontWeight: "600 !important",
+                  textTransform: "none !important",
+                  "&:hover": {
+                    backgroundColor: "#1e293b !important",
                   },
-                  mr: 1,
+                  "&.Mui-disabled": {
+                    backgroundColor: "#e2e8f0 !important",
+                    color: "#94a3b8 !important",
+                  },
                 }}
               >
                 {loadingBtn && isPublishing === 0 ? (
-                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                  <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
                 ) : (
-                  <DraftsIcon sx={{ mr: 1 }} />
+                  <DraftsIcon sx={{ mr: 1, fontSize: 18 }} />
                 )}
                 Draft
               </Button>
@@ -2469,17 +2761,31 @@ const handleSyncVariationImage = (termId) => {
                   (!isVariationsValid && secondStepDataTI?.product_type == 2)
                 }
                 sx={{
-                  "&.Mui-disabled": {
-                    backgroundColor: "#e0e0e0 !important",
-                    color: "#9e9e9e !important",
+                  backgroundColor: "#10b981 !important",
+                  backgroundImage: "none !important",
+                  color: "#ffffff !important",
+                  borderRadius: "999px !important",
+                  px: "24px !important",
+                  py: "9px !important",
+                  fontSize: "13.5px !important",
+                  fontWeight: "600 !important",
+                  textTransform: "none !important",
+                  boxShadow:
+                    "0 6px 16px -3px rgba(16, 185, 129, 0.35) !important",
+                  "&:hover": {
+                    backgroundColor: "#059669 !important",
                   },
-                  mr: 1,
+                  "&.Mui-disabled": {
+                    backgroundColor: "#e2e8f0 !important",
+                    color: "#94a3b8 !important",
+                    boxShadow: "none !important",
+                  },
                 }}
               >
                 {loadingBtn && isPublishing === 1 ? (
-                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                  <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
                 ) : (
-                  <PublishIcon sx={{ mr: 1 }} />
+                  <PublishIcon sx={{ mr: 1, fontSize: 18 }} />
                 )}
                 Publish
               </Button>
@@ -2487,29 +2793,41 @@ const handleSyncVariationImage = (termId) => {
                 // onClick={toggleDrawer(true)}
                 disabled={true}
                 sx={{
+                  borderRadius: "999px !important",
+                  px: "20px !important",
+                  py: "9px !important",
+                  fontSize: "13px !important",
+                  fontWeight: "600 !important",
+                  textTransform: "none !important",
                   "&.Mui-disabled": {
-                    backgroundColor: "#e0e0e0 !important",
-                    color: "#9e9e9e !important",
+                    backgroundColor: "#f1f5f9 !important",
+                    color: "#94a3b8 !important",
+                    border: "1px solid #e2e8f0 !important",
                   },
-                  mr: 1,
                 }}
                 className="custom-secondary-btn-admin-side"
               >
-                <DraftsIcon sx={{ mr: 1 }} /> Draft And Stock
+                <DraftsIcon sx={{ mr: 1, fontSize: 17 }} /> Draft And Stock
               </Button>
               <Button
                 // onClick={toggleDrawer(true)}
-
                 className="custom-secondary-btn-admin-side"
                 disabled={true}
                 sx={{
+                  borderRadius: "999px !important",
+                  px: "20px !important",
+                  py: "9px !important",
+                  fontSize: "13px !important",
+                  fontWeight: "600 !important",
+                  textTransform: "none !important",
                   "&.Mui-disabled": {
-                    backgroundColor: "#e0e0e0 !important",
-                    color: "#9e9e9e !important",
+                    backgroundColor: "#f1f5f9 !important",
+                    color: "#94a3b8 !important",
+                    border: "1px solid #e2e8f0 !important",
                   },
                 }}
               >
-                <PublishIcon sx={{ mr: 1 }} /> Publish And Stock
+                <PublishIcon sx={{ mr: 1, fontSize: 17 }} /> Publish And Stock
               </Button>
             </Box>
           </Box>

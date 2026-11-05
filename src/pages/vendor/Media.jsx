@@ -1,29 +1,24 @@
 import {
   Alert,
   Box,
-  Button,
   Container,
-  Pagination,
   Skeleton,
   Tooltip,
-  useScrollTrigger,
+  Typography,
+  Snackbar,
+  IconButton,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React, { useEffect, useState } from "react";
-import PermMediaIcon from "@mui/icons-material/PermMedia";
-import AddIcon from "@mui/icons-material/Add";
-import { getMediaApi } from "../../utils/apis/APIs";
+import React, { useState } from "react";
+import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import { fetchMedia, useDeleteMedia } from "../../hook/vendor/useMedia";
-import { Snackbar } from "@mui/material";
-import { IconButton } from "@mui/material";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import PaginationSet from "../../components/PaginationSet";
 import UploadMediaModal from "../../components/UploadMediaModal";
 import MediaImageView from "../../components/MediaImageView";
 import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
 import { handleSuccess } from "../../toast";
+
 const Media = () => {
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(15);
@@ -37,7 +32,7 @@ const Media = () => {
     vertical: "top",
     horizontal: "center",
   });
-  const { vertical, horizontal, open } = snackbar;
+  const { vertical, horizontal } = snackbar;
 
   const handleClick = (newState) => () => {
     setSnackbar({ ...newState, open: true });
@@ -56,44 +51,97 @@ const Media = () => {
     });
   };
 
-  console.log(media);
   return (
     <Box
       sx={{
         width: "100%",
+        minHeight: "100vh",
+        bgcolor: "#f8fafc",
         py: 3,
         overflowY: "auto",
       }}
       className="pages-admin-target-style"
     >
       <Container sx={{ maxWidth: "100% !important" }}>
+        {/* Header */}
         <Box
-          component={"h2"}
           sx={{
             display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
             alignItems: "center",
-            fontSize: "17px",
+            gap: 2,
             mb: 3,
           }}
         >
-          <PermMediaIcon sx={{ mr: 1 }} color="secondary" /> Media
-        </Box>
-        <Box sx={{ textAlign: "end", mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: "14px",
+                bgcolor: "#0f172a",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)",
+              }}
+            >
+              <CollectionsOutlinedIcon sx={{ fontSize: 22 }} />
+            </Box>
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography
+                  sx={{
+                    fontSize: "20px",
+                    fontWeight: 800,
+                    color: "#0f172a",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Media Library
+                </Typography>
+                {pagination?.total !== undefined && (
+                  <Box
+                    sx={{
+                      px: 1.1,
+                      py: 0.25,
+                      borderRadius: "999px",
+                      bgcolor: "#ecfdf5",
+                      border: "1px solid #a7f3d0",
+                      color: "#059669",
+                      fontSize: "11.5px",
+                      fontWeight: 800,
+                    }}
+                  >
+                    {pagination.total}
+                  </Box>
+                )}
+              </Box>
+              <Typography sx={{ fontSize: "12.5px", color: "#64748b", fontWeight: 500, mt: 0.25 }}>
+                Manage uploaded product photos, brand logos, and category banners
+              </Typography>
+            </Box>
+          </Box>
+
           <UploadMediaModal />
         </Box>
+
         <Box
           sx={{
-            borderRadius: "15px",
-            boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+            borderRadius: "24px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
             overflowX: "auto",
-            p: 2,
+            p: 3,
             backgroundColor: "white",
           }}
         >
-          <Grid container spacing={1}>
+          <Grid container spacing={1.5}>
             {isLoading ? (
-              Array.from(new Array(22)).map((_, index) => (
-                <Grid item key={index} sx={{ width: "8.33%" }}>
+              Array.from(new Array(24)).map((_, index) => (
+                <Grid item key={index} sx={{ width: { xs: "50%", sm: "25%", md: "12.5%", lg: "8.33%" } }}>
                   <Skeleton
                     variant="rounded"
                     animation="wave"
@@ -101,8 +149,8 @@ const Media = () => {
                       width: "100%",
                       height: 0,
                       pt: "100%",
-                      borderRadius: "10px",
-                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                      borderRadius: "14px",
+                      backgroundColor: "rgba(15, 23, 42, 0.05)",
                     }}
                   />
                 </Grid>
@@ -112,9 +160,10 @@ const Media = () => {
                 <Box
                   sx={{
                     textAlign: "center",
-                    py: 4,
-                    color: "#888",
+                    py: 6,
+                    color: "#64748b",
                     fontSize: "14px",
+                    fontWeight: 600,
                     width: "100%",
                   }}
                 >
@@ -123,18 +172,23 @@ const Media = () => {
               </Grid>
             ) : (
               media.map((list) => (
-                <Grid item key={list.id} sx={{ width: "8.33%" }}>
+                <Grid item key={list.id} sx={{ width: { xs: "50%", sm: "25%", md: "12.5%", lg: "8.33%" } }}>
                   <Box
                     sx={{
                       position: "relative",
                       width: "100%",
                       aspectRatio: "1 / 1",
-                      borderRadius: "10px", // Rounded corners for modern look
+                      borderRadius: "14px",
                       overflow: "hidden",
-                      backgroundColor: "#fff",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      transition: "transform 0.2s",
-                      "&:hover": { transform: "scale(1.02)" }, // Hover effect
+                      backgroundColor: "#f8fafc",
+                      border: "1.5px solid #e2e8f0",
+                      boxShadow: "0 4px 12px rgba(15, 23, 42, 0.04)",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        borderColor: "#0f172a",
+                        boxShadow: "0 10px 20px rgba(15, 23, 42, 0.1)",
+                      },
                     }}
                   >
                     <img
@@ -147,31 +201,32 @@ const Media = () => {
                       alt="media content"
                     />
 
-                    {/* Delete Button (Top Right) */}
                     <ConfirmDeletePopup
                       showMediaDelBtn={true}
                       title={"Image"}
-                      description={
-                        "Are your sure you want to delete this image?"
-                      }
+                      description={"Are your sure you want to delete this image?"}
                       handleDeleteImage={handleDeleteImage}
                       singleImageDelRec={{
                         id: list?.id,
                       }}
                     />
 
-                    {/* Copy Button (Bottom Left) */}
                     <Tooltip describeChild title="Copy URL" arrow>
                       <IconButton
                         size="small"
                         sx={{
                           position: "absolute",
-                          bottom: 4,
-                          left: 4,
-                          backgroundColor: "rgba(255, 255, 255, 0.8)",
-                          color: "#1976d2",
+                          bottom: 6,
+                          left: 6,
+                          width: 26,
+                          height: 26,
+                          borderRadius: "8px",
+                          backgroundColor: "rgba(255, 255, 255, 0.92)",
+                          backdropFilter: "blur(6px)",
+                          color: "#0f172a",
+                          boxShadow: "0 2px 8px rgba(15,23,42,0.12)",
                           "&:hover": {
-                            backgroundColor: "#1976d2",
+                            backgroundColor: "#0f172a",
                             color: "#fff",
                           },
                           padding: "2px",
@@ -185,11 +240,9 @@ const Media = () => {
                           })();
                         }}
                       >
-                        <ContentCopyIcon sx={{ fontSize: "14px" }} />
+                        <ContentCopyIcon sx={{ fontSize: "13px" }} />
                       </IconButton>
                     </Tooltip>
-
-                    {/* Eye/View Button (Bottom Right) */}
 
                     <MediaImageView
                       src={`${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`}
@@ -205,7 +258,9 @@ const Media = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                mt: 2,
+                mt: 3,
+                pt: 1,
+                borderTop: "1px solid #f1f5f9",
               }}
             >
               <PaginationSet
@@ -218,7 +273,7 @@ const Media = () => {
                 onPageChange={(value) => setPage(value)}
                 onPerPageChange={(value) => {
                   setPerPage(value);
-                  setPage(1); // reset page when per_page changes
+                  setPage(1);
                 }}
                 variant="outlined"
                 color="secondary"
@@ -238,7 +293,7 @@ const Media = () => {
           onClose={handleClose}
           severity="success"
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", borderRadius: "12px", bgcolor: "#10b981" }}
         >
           Image URL copied!
         </Alert>

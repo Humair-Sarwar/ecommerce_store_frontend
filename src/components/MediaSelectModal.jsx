@@ -16,10 +16,10 @@ import {
   Avatar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import PublishIcon from "@mui/icons-material/Publish";
+import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
+import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import {
   fetchMedia,
   useDeleteMedia,
@@ -32,27 +32,28 @@ import PaginationSet from "./PaginationSet";
 import MediaImageView from "./MediaImageView";
 import ConfirmDeletePopup from "./ConfirmDeletePopup";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import SyncIcon from "@mui/icons-material/Sync";
 import PhotoIcon from "@mui/icons-material/Photo";
 import ClearIcon from "@mui/icons-material/Clear";
 
 function SimpleDialog(props) {
+  const { open, onClose } = props;
   const uploadSingleMedia = useUploadSingleMedia();
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(15);
-  const { data, isLoading } = fetchMedia(page, per_page);
+  const { data, isLoading } = fetchMedia(page, per_page, {
+    enabled: Boolean(open),
+  });
   const media = data?.data || [];
   const pagination = data?.pagination;
   const deleteMutation = useDeleteMedia();
-  const { open, onClose } = props;
   const [snackbar, setSnackbar] = useState({
     openSnack: false,
     vertical: "top",
     horizontal: "center",
   });
-  const { vertical, horizontal, openSnack } = snackbar;
+  const { vertical, horizontal } = snackbar;
 
   const handleClick = (newState) => () => {
     setSnackbar({ ...newState, openSnack: true });
@@ -76,10 +77,8 @@ function SimpleDialog(props) {
   };
 
   const uploadMutation = useUploadMedia();
-  // const { onCloseSnack, openSnack } = props;
   const [isDragging, setIsDragging] = useState(false);
 
-  // Helper function to process files
   const processFiles = (files) => {
     const newPreviews = files.map((file) => ({
       id: Math.random().toString(36).substr(2, 9),
@@ -96,7 +95,6 @@ function SimpleDialog(props) {
     event.target.value = null;
   };
 
-  // --- Drag & Drop Handlers ---
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -121,12 +119,11 @@ function SimpleDialog(props) {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("image", file); // 👈 backend expects single file
+    formData.append("image", file);
 
     uploadSingleMedia.mutate(formData, {
       onSuccess: () => {
         handleSuccess("Uploaded successfully");
-        //   onClose();
       },
       onError: () => {
         handleError("Upload failed");
@@ -140,7 +137,14 @@ function SimpleDialog(props) {
       open={open}
       fullWidth
       maxWidth="md"
-      PaperProps={{ sx: { borderRadius: "16px" } }}
+      PaperProps={{
+        sx: {
+          borderRadius: "24px",
+          border: "1px solid #f1f5f9",
+          boxShadow: "0 24px 60px rgba(15, 23, 42, 0.16)",
+          overflow: "hidden",
+        },
+      }}
       sx={{ zIndex: "55510 !important" }}
     >
       <Box
@@ -148,36 +152,71 @@ function SimpleDialog(props) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          p: 1,
+          px: 3,
+          py: 2,
+          bgcolor: "#ffffff",
+          borderBottom: "1px solid #f1f5f9",
         }}
       >
-        <DialogTitle sx={{ fontSize: "16px", fontWeight: 600 }}>
-          Select Media
-        </DialogTitle>
-        <IconButton onClick={handleDialogClose} size="small">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box
+            sx={{
+              width: 38,
+              height: 38,
+              borderRadius: "11px",
+              bgcolor: "#0f172a",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 12px rgba(15, 23, 42, 0.15)",
+            }}
+          >
+            <CollectionsOutlinedIcon sx={{ fontSize: 19 }} />
+          </Box>
+          <Box>
+            <DialogTitle sx={{ p: 0, fontSize: "16px", fontWeight: 800, color: "#0f172a" }}>
+              Select Media
+            </DialogTitle>
+            <Typography sx={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
+              Upload a new image or pick from your media library
+            </Typography>
+          </Box>
+        </Box>
+        <IconButton
+          onClick={handleDialogClose}
+          size="small"
+          sx={{
+            width: 34,
+            height: 34,
+            borderRadius: "10px",
+            bgcolor: "#f8fafc",
+            border: "1px solid #e2e8f0",
+            color: "#64748b",
+            "&:hover": { bgcolor: "#0f172a", color: "#ffffff", borderColor: "#0f172a" },
+          }}
+        >
           <CloseIcon fontSize="small" />
         </IconButton>
       </Box>
 
-      <Divider />
-
-      <Box sx={{ p: 3 }}>
-        {/* Dropzone Area with Drag & Drop Logic */}
+      <Box sx={{ p: 3, bgcolor: "#f8fafc" }}>
         <Box
           component="label"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           sx={{
-            border: isDragging ? "2px dashed #1976d2" : "2px dashed #e0e4f0",
-            borderRadius: "12px",
-            backgroundColor: isDragging ? "#e3f2fd" : "#f8faff",
+            border: isDragging ? "2px dashed #10b981" : "2px dashed #cbd5e1",
+            borderRadius: "18px",
+            backgroundColor: isDragging ? "#ecfdf5" : "#ffffff",
             textAlign: "center",
-            py: 4,
+            py: 3,
+            px: 2,
             cursor: "pointer",
             display: "block",
-            transition: "0.3s",
-            "&:hover": { backgroundColor: "#f0f4ff", borderColor: "#cbd2e1" },
+            transition: "all 0.2s ease",
+            "&:hover": { backgroundColor: "#f8fafc", borderColor: "#0f172a" },
           }}
         >
           <input
@@ -188,41 +227,56 @@ function SimpleDialog(props) {
             onChange={handleFileChange}
           />
 
-          <Typography sx={{ color: "#5f6368", fontWeight: 600 }}>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: "14px",
+              bgcolor: "#f1f5f9",
+              color: "#0f172a",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mb: 1,
+            }}
+          >
+            <CloudUploadOutlinedIcon sx={{ fontSize: 22 }} />
+          </Box>
+
+          <Typography sx={{ color: "#0f172a", fontWeight: 700, fontSize: "14px" }}>
             {isDragging ? "Drop images here!" : "Drag & drop images here"}
           </Typography>
 
-          {/* Validation Info Text */}
-          <Typography sx={{ fontSize: "11px", color: "#888", mt: 0.5 }}>
+          <Typography sx={{ fontSize: "11.5px", color: "#64748b", mt: 0.5 }}>
             JPG, JPEG, PNG, WEBP (Max: 2MB per file)
           </Typography>
 
-          <Typography sx={{ my: 1, fontSize: "12px", color: "#aaa" }}>
-            OR
-          </Typography>
-
           <Button
-            variant="outlined"
+            variant="contained"
             component="span"
-            sx={{ textTransform: "none", borderRadius: "8px" }}
+            sx={{
+              mt: 1.5,
+              textTransform: "none",
+              borderRadius: "999px",
+              bgcolor: "#0f172a",
+              color: "#ffffff",
+              fontWeight: 700,
+              fontSize: "12.5px",
+              px: 2.5,
+              py: 0.7,
+              boxShadow: "0 4px 12px rgba(15, 23, 42, 0.15)",
+              "&:hover": { bgcolor: "#1e293b" },
+            }}
           >
-            Select Media
+            Browse Files
           </Button>
         </Box>
-        <Box
-          sx={{
-            // borderRadius: "15px",
-            // boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-            overflowX: "auto",
-            // p: 2,
-            mt: 3,
-            // backgroundColor: "white",
-          }}
-        >
-          <Grid container spacing={1}>
+
+        <Box sx={{ overflowX: "auto", mt: 2.5 }}>
+          <Grid container spacing={1.25}>
             {isLoading ? (
-              Array.from(new Array(22)).map((_, index) => (
-                <Grid item key={index} sx={{ width: "10%" }}>
+              Array.from(new Array(18)).map((_, index) => (
+                <Grid item key={index} sx={{ width: "16.66%" }}>
                   <Skeleton
                     variant="rounded"
                     animation="wave"
@@ -230,8 +284,8 @@ function SimpleDialog(props) {
                       width: "100%",
                       height: 0,
                       pt: "100%",
-                      borderRadius: "10px",
-                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                      borderRadius: "14px",
+                      backgroundColor: "rgba(15, 23, 42, 0.06)",
                     }}
                   />
                 </Grid>
@@ -241,10 +295,14 @@ function SimpleDialog(props) {
                 <Box
                   sx={{
                     textAlign: "center",
-                    py: 4,
-                    color: "#888",
+                    py: 5,
+                    color: "#64748b",
                     fontSize: "14px",
+                    fontWeight: 600,
                     width: "100%",
+                    bgcolor: "#ffffff",
+                    borderRadius: "16px",
+                    border: "1px dashed #e2e8f0",
                   }}
                 >
                   No media available!
@@ -252,7 +310,7 @@ function SimpleDialog(props) {
               </Grid>
             ) : (
               media.map((list) => (
-                <Grid item key={list.id} sx={{ width: "10%" }}>
+                <Grid item key={list.id} sx={{ width: { xs: "33.33%", sm: "20%", md: "16.66%" } }}>
                   <Box
                     onClick={() => {
                       const imagePayload = {
@@ -273,8 +331,8 @@ function SimpleDialog(props) {
                         }
                       }
 
-                      if(props.isSelectedTermsS){
-                        props.handleSaveTermImg(props.termImageP.id, list?.id)
+                      if (props.isSelectedTermsS) {
+                        props.handleSaveTermImg(props.termImageP.id, list?.id);
                       }
 
                       handleDialogClose();
@@ -283,13 +341,18 @@ function SimpleDialog(props) {
                       position: "relative",
                       width: "100%",
                       aspectRatio: "1 / 1",
-                      borderRadius: "10px", // Rounded corners for modern look
+                      borderRadius: "14px",
                       overflow: "hidden",
                       cursor: "pointer",
                       backgroundColor: "#fff",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      transition: "transform 0.2s",
-                      "&:hover": { transform: "scale(1.02)" }, // Hover effect
+                      border: "2px solid #e2e8f0",
+                      boxShadow: "0 4px 12px rgba(15, 23, 42, 0.05)",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        borderColor: "#10b981",
+                        boxShadow: "0 10px 20px rgba(16, 185, 129, 0.15)",
+                      },
                     }}
                   >
                     <img
@@ -302,31 +365,32 @@ function SimpleDialog(props) {
                       alt="media content"
                     />
 
-                    {/* Delete Button (Top Right) */}
                     <ConfirmDeletePopup
                       showMediaDelBtn={true}
                       title={"Image"}
-                      description={
-                        "Are your sure you want to delete this image?"
-                      }
+                      description={"Are your sure you want to delete this image?"}
                       handleDeleteImage={handleDeleteImage}
                       singleImageDelRec={{
                         id: list?.id,
                       }}
                     />
 
-                    {/* Copy Button (Bottom Left) */}
                     <Tooltip describeChild title="Copy URL" arrow>
                       <IconButton
                         size="small"
                         sx={{
                           position: "absolute",
-                          bottom: 4,
-                          left: 4,
-                          backgroundColor: "rgba(255, 255, 255, 0.8)",
-                          color: "#1976d2",
+                          bottom: 6,
+                          left: 6,
+                          width: 26,
+                          height: 26,
+                          borderRadius: "8px",
+                          backgroundColor: "rgba(255, 255, 255, 0.92)",
+                          backdropFilter: "blur(6px)",
+                          color: "#0f172a",
+                          boxShadow: "0 2px 8px rgba(15,23,42,0.12)",
                           "&:hover": {
-                            backgroundColor: "#1976d2",
+                            backgroundColor: "#0f172a",
                             color: "#fff",
                           },
                           padding: "2px",
@@ -341,11 +405,9 @@ function SimpleDialog(props) {
                           })();
                         }}
                       >
-                        <ContentCopyIcon sx={{ fontSize: "14px" }} />
+                        <ContentCopyIcon sx={{ fontSize: "13px" }} />
                       </IconButton>
                     </Tooltip>
-
-                    {/* Eye/View Button (Bottom Right) */}
 
                     <MediaImageView
                       src={`${import.meta.env.VITE_BASE_URL}/storage/${list.media_path}`}
@@ -361,7 +423,11 @@ function SimpleDialog(props) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                mt: 2,
+                mt: 2.5,
+                bgcolor: "#ffffff",
+                borderRadius: "16px",
+                border: "1px solid #e2e8f0",
+                px: 2,
               }}
             >
               <PaginationSet
@@ -374,7 +440,7 @@ function SimpleDialog(props) {
                 onPageChange={(value) => setPage(value)}
                 onPerPageChange={(value) => {
                   setPerPage(value);
-                  setPage(1); // reset page when per_page changes
+                  setPage(1);
                 }}
                 variant="outlined"
                 color="secondary"
@@ -394,7 +460,7 @@ function SimpleDialog(props) {
           onClose={handleCloseSnack}
           severity="success"
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", borderRadius: "12px", bgcolor: "#10b981" }}
         >
           Image URL copied!
         </Alert>
@@ -422,7 +488,7 @@ export default function MediaSelectModal({
   clearTermImage,
   saveTermImage,
   syncTermImage,
-  handleSyncVariationImage
+  handleSyncVariationImage,
 }) {
   const [open, setOpen] = React.useState(false);
   const getImageUrl = (path) => {
@@ -435,22 +501,23 @@ export default function MediaSelectModal({
       {isBrand && (
         <Box
           sx={{
-            border: "1px dotted black",
-
-            borderRadius: "5px",
+            border: "1.5px dashed #cbd5e1",
+            borderRadius: "12px",
             position: "relative",
+            bgcolor: "#f8fafc",
+            transition: "all 0.2s ease",
+            "&:hover": { borderColor: "#0f172a" },
           }}
           className="image-upload-box-target"
         >
           <Box
             onClick={() => setOpen(true)}
             component="label"
-            sx={{ cursor: "pointer" }}
+            sx={{ cursor: "pointer", display: "block", width: "100%", height: "100%" }}
           >
             <img
-              src={
-                imageData.image_id ? imageData.image_path : "/empty-image.jpg"
-              }
+              src={imageData.image_id ? imageData.image_path : "/empty-image.jpg"}
+              style={{ borderRadius: "10px" }}
             />
           </Box>
           {imageData.image_id == "" ? (
@@ -459,12 +526,13 @@ export default function MediaSelectModal({
               sx={{
                 backgroundColor: "white",
                 borderRadius: "50%",
-                fontSize: "18px",
+                fontSize: "20px",
                 cursor: "pointer",
-                color: "#9c27b0",
+                color: "#0f172a",
                 position: "absolute",
-                right: "-5px",
-                bottom: "-5px",
+                right: "-6px",
+                bottom: "-6px",
+                boxShadow: "0 2px 6px rgba(15,23,42,0.15)",
               }}
             />
           ) : (
@@ -473,12 +541,13 @@ export default function MediaSelectModal({
               sx={{
                 backgroundColor: "white",
                 borderRadius: "50%",
-                fontSize: "18px",
+                fontSize: "20px",
                 cursor: "pointer",
-                color: "red",
+                color: "#ef4444",
                 position: "absolute",
-                right: "-5px",
-                bottom: "-5px",
+                right: "-6px",
+                bottom: "-6px",
+                boxShadow: "0 2px 6px rgba(15,23,42,0.15)",
               }}
             />
           )}
@@ -488,22 +557,23 @@ export default function MediaSelectModal({
       {isCategory && (
         <Box
           sx={{
-            border: "1px dotted black",
-
-            borderRadius: "5px",
+            border: "1.5px dashed #cbd5e1",
+            borderRadius: "12px",
             position: "relative",
+            bgcolor: "#f8fafc",
+            transition: "all 0.2s ease",
+            "&:hover": { borderColor: "#0f172a" },
           }}
           className="image-upload-box-target"
         >
           <Box
             onClick={() => setOpen(true)}
             component="label"
-            sx={{ cursor: "pointer" }}
+            sx={{ cursor: "pointer", display: "block", width: "100%", height: "100%" }}
           >
             <img
-              src={
-                imageData.image_id ? imageData.image_path : "/empty-image.jpg"
-              }
+              src={imageData.image_id ? imageData.image_path : "/empty-image.jpg"}
+              style={{ borderRadius: "10px" }}
             />
           </Box>
           {imageData.image_id == "" ? (
@@ -512,12 +582,13 @@ export default function MediaSelectModal({
               sx={{
                 backgroundColor: "white",
                 borderRadius: "50%",
-                fontSize: "18px",
+                fontSize: "20px",
                 cursor: "pointer",
-                color: "#9c27b0",
+                color: "#0f172a",
                 position: "absolute",
-                right: "-5px",
-                bottom: "-5px",
+                right: "-6px",
+                bottom: "-6px",
+                boxShadow: "0 2px 6px rgba(15,23,42,0.15)",
               }}
             />
           ) : (
@@ -526,12 +597,13 @@ export default function MediaSelectModal({
               sx={{
                 backgroundColor: "white",
                 borderRadius: "50%",
-                fontSize: "18px",
+                fontSize: "20px",
                 cursor: "pointer",
-                color: "red",
+                color: "#ef4444",
                 position: "absolute",
-                right: "-5px",
-                bottom: "-5px",
+                right: "-6px",
+                bottom: "-6px",
+                boxShadow: "0 2px 6px rgba(15,23,42,0.15)",
               }}
             />
           )}
@@ -542,18 +614,21 @@ export default function MediaSelectModal({
         <Box
           className="image-upload-box-target-cover-img"
           sx={{
-            border: "1px dotted black",
+            border: "1.5px dashed #cbd5e1",
             cursor: "pointer",
-            borderRadius: "5px",
+            borderRadius: "12px",
             position: "relative",
             ml: 1,
             width: "100% !important",
+            bgcolor: "#f8fafc",
+            transition: "all 0.2s ease",
+            "&:hover": { borderColor: "#0f172a" },
           }}
         >
           <Box
             onClick={() => setOpen(true)}
             component="label"
-            sx={{ cursor: "pointer" }}
+            sx={{ cursor: "pointer", display: "block", width: "100%", height: "100%" }}
           >
             <img
               src={
@@ -561,6 +636,7 @@ export default function MediaSelectModal({
                   ? imageDataCover.image_path
                   : "/empty-image.jpg"
               }
+              style={{ borderRadius: "10px" }}
             />
           </Box>
           {imageDataCover.cover_image_id == "" ? (
@@ -569,12 +645,13 @@ export default function MediaSelectModal({
               sx={{
                 backgroundColor: "white",
                 borderRadius: "50%",
-                fontSize: "18px",
+                fontSize: "20px",
                 cursor: "pointer",
-                color: "#9c27b0",
+                color: "#0f172a",
                 position: "absolute",
-                right: "-5px",
-                bottom: "-5px",
+                right: "-6px",
+                bottom: "-6px",
+                boxShadow: "0 2px 6px rgba(15,23,42,0.15)",
               }}
             />
           ) : (
@@ -585,12 +662,13 @@ export default function MediaSelectModal({
               sx={{
                 backgroundColor: "white",
                 borderRadius: "50%",
-                fontSize: "18px",
+                fontSize: "20px",
                 cursor: "pointer",
-                color: "red",
+                color: "#ef4444",
                 position: "absolute",
-                right: "-5px",
-                bottom: "-5px",
+                right: "-6px",
+                bottom: "-6px",
+                boxShadow: "0 2px 6px rgba(15,23,42,0.15)",
               }}
             />
           )}
@@ -602,7 +680,20 @@ export default function MediaSelectModal({
           onClick={() => setOpen(true)}
           variant="outlined"
           component="span"
-          sx={{ textTransform: "none", borderRadius: "8px" }}
+          sx={{
+            textTransform: "none",
+            borderRadius: "999px",
+            borderColor: "#cbd5e1",
+            color: "#0f172a",
+            fontWeight: 700,
+            fontSize: "12.5px",
+            px: 2.5,
+            "&:hover": {
+              bgcolor: "#0f172a",
+              color: "#ffffff",
+              borderColor: "#0f172a",
+            },
+          }}
         >
           Select Media
         </Button>
@@ -632,21 +723,17 @@ export default function MediaSelectModal({
                       p: 0.4,
                       borderRadius: "50%",
                       cursor: "pointer",
-
-                      // Glassmorphism & Premium Styling
-                      backgroundColor: "rgba(255, 255, 255, 0.85)",
-                      backdropFilter: "blur(8px)", // Apple-style blur
+                      backgroundColor: "rgba(255, 255, 255, 0.9)",
+                      backdropFilter: "blur(8px)",
                       color: "#ef4444",
                       border: "1px solid rgba(239, 68, 68, 0.3)",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-
                       transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                       zIndex: 10,
-
                       "&:hover": {
                         backgroundColor: "#ef4444",
                         color: "#fff",
-                        transform: "scale(1.15) rotate(90deg)", // Sophisticated rotation on hover
+                        transform: "scale(1.15) rotate(90deg)",
                         boxShadow: "0 6px 16px rgba(239, 68, 68, 0.4)",
                       },
                     }}
@@ -659,18 +746,14 @@ export default function MediaSelectModal({
                   sx={{
                     width: 22,
                     height: 22,
-                    // Premium Indigo Gradient
-                    background:
-                      "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
+                    background: "#0f172a",
                     color: "white",
-                    border: "3px solid #fff",
-                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                    border: "2.5px solid #fff",
+                    boxShadow: "0px 4px 12px rgba(15, 23, 42, 0.2)",
                     transition: "all 0.3s ease",
                     "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #4338ca 0%, #312e81 100%)",
-                      transform: "scale(1.1) rotate(5deg)", // Unique hover effect
-                      boxShadow: "0px 6px 15px rgba(99, 102, 241, 0.4)",
+                      background: "#10b981",
+                      transform: "scale(1.1)",
                     },
                   }}
                 >
@@ -684,20 +767,16 @@ export default function MediaSelectModal({
               sx={{
                 width: 41,
                 height: 41,
-                bgcolor: "#f3f4f6", // Soft grey placeholder
-                color: "#9ca3af",
-                border: "1px solid #e5e7eb",
-                // Floating Depth Effect
-                boxShadow:
-                  "0px 20px 25px -5px rgba(0, 0, 0, 0.05), 0px 10px 10px -5px rgba(0, 0, 0, 0.02)",
-                transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                bgcolor: "#f8fafc",
+                color: "#94a3b8",
+                border: "1.5px solid #e2e8f0",
+                boxShadow: "0px 4px 10px rgba(15, 23, 42, 0.05)",
+                transition: "all 0.3s ease",
                 "&:hover": {
-                  borderColor: "#6366f1",
-                  boxShadow: "0px 25px 30px -5px rgba(99, 102, 241, 0.1)",
+                  borderColor: "#0f172a",
                 },
               }}
             >
-              {/* Default Person Icon if no image */}
               <Box
                 component="span"
                 sx={{
@@ -709,7 +788,7 @@ export default function MediaSelectModal({
                   alignItems: "center",
                 }}
               >
-                {!variationImage && <PhotoIcon sx={{ fontSize: 24 }} />}
+                {!variationImage && <PhotoIcon sx={{ fontSize: 22 }} />}
               </Box>
             </Avatar>
           </Badge>
@@ -732,85 +811,73 @@ export default function MediaSelectModal({
             }}
             badgeContent={
               <>
-              {termImageP?.media && <>
-              <SyncIcon
-              onClick={()=>handleSyncVariationImage(termImageP?.id)}
-                  sx={{
-                    position: "absolute",
-                    top: -12,
-                    left: -20,
-                    fontSize: "1.1rem",
-                    p: 0.3,
-                    borderRadius: "50%",
-                    cursor: "pointer",
+                {termImageP?.media && (
+                  <>
+                    <SyncIcon
+                      onClick={() => handleSyncVariationImage(termImageP?.id)}
+                      sx={{
+                        position: "absolute",
+                        top: -12,
+                        left: -20,
+                        fontSize: "1.1rem",
+                        p: 0.3,
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        backgroundColor: "rgba(255, 255, 255, 0.9)",
+                        backdropFilter: "blur(8px)",
+                        color: "#10b981",
+                        border: "1px solid rgba(16, 185, 129, 0.3)",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        zIndex: 10,
+                        "&:hover": {
+                          backgroundColor: "#10b981",
+                          color: "#fff",
+                          transform: "scale(1.15) rotate(90deg)",
+                        },
+                      }}
+                    />
+                    <ClearIcon
+                      onClick={() => handleClearTermImage(termImageP?.id)}
+                      sx={{
+                        position: "absolute",
+                        top: -24,
+                        right: 6,
+                        fontSize: "1.1rem",
+                        p: 0.3,
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        backgroundColor: "rgba(255, 255, 255, 0.9)",
+                        backdropFilter: "blur(8px)",
+                        color: "#ef4444",
+                        border: "1px solid rgba(239, 68, 68, 0.3)",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        zIndex: 10,
+                        "&:hover": {
+                          backgroundColor: "#ef4444",
+                          color: "#fff",
+                          transform: "scale(1.15) rotate(90deg)",
+                        },
+                      }}
+                    />
+                  </>
+                )}
 
-                    // Glassmorphism & Premium Styling
-                    backgroundColor: "rgba(255, 255, 255, 0.85)",
-                    backdropFilter: "blur(8px)", // Apple-style blur
-                    color: "#4cbd35",
-                    border: "1px solid rgba(111, 239, 68, 0.3)",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-
-                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                    zIndex: 10,
-
-                    "&:hover": {
-                      backgroundColor: "#459c2f",
-                      color: "#fff",
-                      transform: "scale(1.15) rotate(90deg)", // Sophisticated rotation on hover
-                      boxShadow: "0 6px 16px rgba(82, 239, 68, 0.4)",
-                    },
-                  }}
-                />
-                <ClearIcon
-                onClick={()=>handleClearTermImage(termImageP?.id)}
-                
-                  sx={{
-                    position: "absolute",
-                    top: -24,
-                    right: 6,
-                    fontSize: "1.1rem",
-                    p: 0.3,
-                    borderRadius: "50%",
-                    cursor: "pointer",
-
-                    // Glassmorphism & Premium Styling
-                    backgroundColor: "rgba(255, 255, 255, 0.85)",
-                    backdropFilter: "blur(8px)", // Apple-style blur
-                    color: "#ef4444",
-                    border: "1px solid rgba(239, 68, 68, 0.3)",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                    
-                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                    zIndex: 10,
-
-                    "&:hover": {
-                      backgroundColor: "#ef4444",
-                      color: "#fff",
-                      transform: "scale(1.15) rotate(90deg)", // Sophisticated rotation on hover
-                      boxShadow: "0 6px 16px rgba(239, 68, 68, 0.4)",
-                    },
-                  }}
-                /></>}
-                
                 <IconButton
-                onClick={() => setOpen(true)}
+                  onClick={() => setOpen(true)}
                   component="label"
                   sx={{
                     width: 20,
                     height: 20,
-                    // Premium Indigo Gradient
-                    background:
-                      "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
+                    background: "#0f172a",
                     color: "white",
-                    border: "3px solid #fff",
-                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                    border: "2.5px solid #fff",
+                    boxShadow: "0px 4px 12px rgba(15, 23, 42, 0.2)",
                     transition: "all 0.3s ease",
                     "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #4338ca 0%, #312e81 100%)",
-                      transform: "scale(1.1) rotate(5deg)", // Unique hover effect
-                      boxShadow: "0px 6px 15px rgba(99, 102, 241, 0.4)",
+                      background: "#10b981",
+                      transform: "scale(1.1)",
                     },
                   }}
                 >
@@ -824,20 +891,16 @@ export default function MediaSelectModal({
               sx={{
                 width: 35,
                 height: 35,
-                bgcolor: "white", // Soft grey placeholder
-                color: "#9ca3af",
-                border: "1px solid #e5e7eb",
-                // Floating Depth Effect
-                boxShadow:
-                  "0px 20px 25px -5px rgba(0, 0, 0, 0.05), 0px 10px 10px -5px rgba(0, 0, 0, 0.02)",
-                transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                bgcolor: "#f8fafc",
+                color: "#94a3b8",
+                border: "1.5px solid #e2e8f0",
+                boxShadow: "0px 4px 10px rgba(15, 23, 42, 0.05)",
+                transition: "all 0.3s ease",
                 "&:hover": {
-                  borderColor: "#6366f1",
-                  boxShadow: "0px 25px 30px -5px rgba(99, 102, 241, 0.1)",
+                  borderColor: "#0f172a",
                 },
               }}
             >
-              {/* Default Person Icon if no image */}
               <Box
                 component="span"
                 sx={{
@@ -849,7 +912,7 @@ export default function MediaSelectModal({
                   alignItems: "center",
                 }}
               >
-                <PhotoIcon sx={{ fontSize: 25 }} />
+                <PhotoIcon sx={{ fontSize: 22 }} />
               </Box>
             </Avatar>
           </Badge>

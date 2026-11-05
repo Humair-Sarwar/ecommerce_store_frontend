@@ -1,12 +1,8 @@
 import {
   Box,
-  Button,
   Container,
-  IconButton,
   InputAdornment,
-  Pagination,
   Skeleton,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -14,20 +10,18 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import Paper from "@mui/material/Paper";
-import SearchIcon from "@mui/icons-material/Search";
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import AddIcon from "@mui/icons-material/Add";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import AssignmentReturnOutlinedIcon from "@mui/icons-material/AssignmentReturnOutlined";
 import { useNavigate } from "react-router";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import QrCode2Icon from '@mui/icons-material/QrCode2';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { fetchReturnPolicy, useDeleteReturn } from "../../../hook/vendor/usePolicies";
-import { handleSuccess } from "../../../toast";
+import {
+  fetchReturnPolicy,
+  useDeleteReturn,
+} from "../../../hook/vendor/usePolicies";
+import { handleError, handleSuccess } from "../../../toast";
 import PaginationSet from "../../../components/PaginationSet";
 import ConfirmDeletePopup from "../../../components/ConfirmDeletePopup";
 import ReturnModal from "./CreateUpdateReturnPolicy";
@@ -35,54 +29,101 @@ import ReturnModal from "./CreateUpdateReturnPolicy";
 const ReturnPolicy = () => {
   const navigation = useNavigate();
   const [search, setSearch] = useState("");
-    const [page, setPage] = useState(1);
-    const [per_page, setPerPage] = useState(15);
-    const { data, isLoading } = fetchReturnPolicy(page, per_page, search);
-    const returnPolicy = data?.data || [];
-    const pagination = data?.pagination;
-    const handleSearchBrand = (e) => {
-      setSearch(e.target.value);
-      setPage(1);
-    };
-    const deleteReturnMutation = useDeleteReturn();
-  
-    const handleDeleteBrand = async (data) => {
-        deleteReturnMutation.mutate(data.id, {
-          onSuccess: (res) => {
-            handleSuccess(res?.message || "Return deleted successfully");
-            setPage(1);
-          },
-          onError: () => {
-            handleError("Failed to delete return");
-          },
-        });
-      };
+  const [page, setPage] = useState(1);
+  const [per_page, setPerPage] = useState(15);
+  const { data, isLoading } = fetchReturnPolicy(page, per_page, search);
+  const returnPolicy = data?.data || [];
+  const pagination = data?.pagination;
+  const handleSearchBrand = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+  const deleteReturnMutation = useDeleteReturn();
+
+  const handleDeleteBrand = async (data) => {
+    deleteReturnMutation.mutate(data.id, {
+      onSuccess: (res) => {
+        handleSuccess(res?.message || "Return deleted successfully");
+        setPage(1);
+      },
+      onError: () => {
+        handleError("Failed to delete return");
+      },
+    });
+  };
   return (
     <Box
       sx={{
-        
-        
         width: "100%",
+        minHeight: "100vh",
+        bgcolor: "#f8fafc",
         py: 3,
         overflowY: "auto",
       }}
-      className='pages-admin-target-style'
+      className="pages-admin-target-style"
     >
       <Container sx={{ maxWidth: "100% !important" }}>
+        {/* Header */}
         <Box
-          component={"h2"}
           sx={{
             display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
             alignItems: "center",
-            fontSize: "17px",
+            gap: 2,
             mb: 3,
           }}
         >
-         
-          Return Policies
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: "14px",
+                bgcolor: "#0f172a",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)",
+              }}
+            >
+              <AssignmentReturnOutlinedIcon sx={{ fontSize: 22 }} />
+            </Box>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  fontWeight: 800,
+                  color: "#0f172a",
+                  lineHeight: 1.2,
+                }}
+              >
+                Return Policies
+              </Typography>
+              <Typography sx={{ fontSize: "12.5px", color: "#64748b", fontWeight: 500, mt: 0.25 }}>
+                Manage product return rules, refund policies, and approval status
+              </Typography>
+            </Box>
+          </Box>
+          <ReturnModal title_heading={"Create"} showCrtReturnBtn={true} />
         </Box>
-          <Box sx={{display: 'flex', mb: 2, justifyContent: 'space-between', alignItems: 'center'}}>
-            <TextField
+
+        {/* Search Bar Card */}
+        <Box
+          sx={{
+            display: "flex",
+            mb: 2.5,
+            p: 2,
+            bgcolor: "#ffffff",
+            borderRadius: "20px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 4px 20px rgba(15, 23, 42, 0.03)",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <TextField
             size="small"
             id="search"
             onChange={handleSearchBrand}
@@ -90,95 +131,65 @@ const ReturnPolicy = () => {
             variant="outlined"
             placeholder="Search Return Policy..."
             InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon sx={{ color: "gray", fontSize: "20px" }} />
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchRoundedIcon sx={{ color: "#94a3b8", fontSize: 20 }} />
                 </InputAdornment>
               ),
             }}
             sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "8px",
-                backgroundColor: "#fff",
-                "&:hover fieldset": {
-                  borderColor: "#9c27b0", // Purple hover effect (optional)
-                },
-              },
-              "& .MuiInputBase-input": {
-                fontSize: "14px",
-              },
+              minWidth: { xs: "100%", sm: 320 },
             }}
           />
-          <ReturnModal title_heading={"Create"} showCrtReturnBtn={true} />
-          </Box>
+        </Box>
+
         <TableContainer
           component={Paper}
           sx={{
-            borderRadius: "15px",
-            boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+            borderRadius: "24px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
             overflowX: "auto",
+            bgcolor: "#ffffff",
           }}
           className="table-scroll-design-set"
         >
-          <Table sx={{ minWidth: 650 }} aria-label="responsive table">
+          <Table sx={{ minWidth: 650 }} aria-label="return policies table">
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#f3f5f9" }}>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
+              <TableRow
+                sx={{
+                  backgroundColor: "#f8fafc",
+                  "& th": {
+                    fontWeight: 700,
+                    fontSize: "11.5px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "#64748b",
+                    padding: "14px 20px",
                     whiteSpace: "nowrap",
-                  }}
-                >
-                  Title
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Status
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                    textAlign: 'center'
-                  }}
-                >
-                  Action
-                </TableCell>
-                
+                    borderBottom: "1px solid #e2e8f0",
+                  },
+                }}
+              >
+                <TableCell>Title</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell sx={{ textAlign: "center" }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {isLoading ? (
                 Array.from(new Array(per_page || 5)).map((_, index) => (
                   <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton variant="text" />
+                    <TableCell sx={{ py: 1.5, px: 2.5 }}>
+                      <Skeleton variant="text" width="60%" />
                     </TableCell>
-
-                    <TableCell>
-                      <Skeleton variant="text" />
+                    <TableCell sx={{ py: 1.5, px: 2.5 }}>
+                      <Skeleton variant="rounded" width={80} height={24} sx={{ borderRadius: "999px" }} />
                     </TableCell>
-
-                    <TableCell align="center">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: 1,
-                        }}
-                      >
-                        <Skeleton variant="circular" width={30} height={30} />
-                        <Skeleton variant="circular" width={30} height={30} />
+                    <TableCell align="center" sx={{ py: 1.5 }}>
+                      <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+                        <Skeleton variant="rounded" width={32} height={32} sx={{ borderRadius: "10px" }} />
+                        <Skeleton variant="rounded" width={32} height={32} sx={{ borderRadius: "10px" }} />
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -187,37 +198,43 @@ const ReturnPolicy = () => {
                 returnPolicy?.map((returnP, key) => (
                   <TableRow
                     key={key}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    sx={{
+                      transition: "background-color 0.15s ease",
+                      "&:hover": { bgcolor: "#f8fafc" },
+                      "& td": { borderBottom: "1px solid #f1f5f9", py: 1.5, px: 2.5 },
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
                   >
                     <TableCell
                       sx={{
-                        fontSize: "12px",
-                        padding: "12px",
+                        fontSize: "13.5px",
+                        fontWeight: 700,
+                        color: "#0f172a",
                         minWidth: "200px",
                       }}
                     >
                       {returnP?.title}
                     </TableCell>
 
-                    <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                    <TableCell>
                       <Box
                         sx={{
                           display: "inline-block",
-                          backgroundColor: returnP?.approved
-                            ? "#e7f9ed"
-                            : "#f9e7e7",
-                          color: returnP?.approved ? "#33d08c" : "#d03333",
-                          borderRadius: "35px",
-                          padding: "2px 10px",
-                          fontWeight: "600",
+                          backgroundColor: returnP?.approved ? "#ecfdf5" : "#fef2f2",
+                          border: `1px solid ${returnP?.approved ? "#a7f3d0" : "#fecaca"}`,
+                          color: returnP?.approved ? "#059669" : "#dc2626",
+                          borderRadius: "999px",
+                          padding: "3px 12px",
+                          fontSize: "12px",
+                          fontWeight: 700,
                         }}
                       >
                         {returnP?.approved ? "Approved" : "Unapproved"}
                       </Box>
                     </TableCell>
 
-                    <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <TableCell align="center">
+                      <Box sx={{ display: "inline-flex", alignItems: "center" }}>
                         <ReturnModal
                           title_heading={"Edit"}
                           showEditBtn={true}
@@ -239,31 +256,33 @@ const ReturnPolicy = () => {
                   </TableRow>
                 ))
               ) : (
-                <TableCell align="center" colSpan={7}>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      py: 4,
-                      color: "#888",
-                      fontSize: "14px",
-                      width: "100%",
-                    }}
-                  >
-                    No return policy available!
-                  </Box>
-                </TableCell>
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        py: 5,
+                        color: "#64748b",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        width: "100%",
+                      }}
+                    >
+                      No return policy available!
+                    </Box>
+                  </TableCell>
+                </TableRow>
               )}
-          
             </TableBody>
           </Table>
-         {returnPolicy.length > 0 && (
+          {returnPolicy.length > 0 && (
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                my: 2,
-                mx: 2,
+                borderTop: "1px solid #f1f5f9",
+                px: 2.5,
               }}
             >
               <PaginationSet
@@ -284,7 +303,6 @@ const ReturnPolicy = () => {
             </Box>
           )}
         </TableContainer>
-        
       </Container>
     </Box>
   );

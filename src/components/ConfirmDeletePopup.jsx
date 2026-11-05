@@ -5,10 +5,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 
 export default function ConfirmDeletePopup({
   title,
@@ -50,26 +50,33 @@ export default function ConfirmDeletePopup({
       {showSltDelBtn && (
         <Box
           onClick={handleClickOpen}
-          sx={{ display: "flex", alignItems: "center", ml: 1 }}
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 1,
+            ml: 1,
+            px: 1.5,
+            py: 0.6,
+            borderRadius: "999px",
+            bgcolor: "#fef2f2",
+            border: "1px solid #fecaca",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              bgcolor: "#fee2e2",
+              borderColor: "#fca5a5",
+            },
+          }}
         >
-          <Tooltip title="Delete" arrow>
-            <IconButton
-              onClick={handleClickOpen}
-              size="small"
-              sx={{
-                color: "#d21925",
-                ml: 1,
-                mr: "3px",
-                bgcolor: "#fde9e3",
-                "&:hover": { bgcolor: "#fbc8bb" },
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
-          <Typography sx={{ fontSize: "10px" }}>
-            ({selectedBrandIds.length}) Delete Selected Brands
+          <DeleteOutlineRoundedIcon sx={{ fontSize: 16, color: "#ef4444" }} />
+          <Typography
+            sx={{
+              fontSize: "12px",
+              fontWeight: 700,
+              color: "#dc2626",
+            }}
+          >
+            Delete Selected ({selectedBrandIds.length})
           </Typography>
         </Box>
       )}
@@ -79,13 +86,22 @@ export default function ConfirmDeletePopup({
             onClick={handleClickOpen}
             size="small"
             sx={{
-              color: "#d21925",
-              ml: 1,
-              bgcolor: "#fde9e3",
-              "&:hover": { bgcolor: "#fbc8bb" },
+              width: 32,
+              height: 32,
+              borderRadius: "10px",
+              color: "#ef4444",
+              ml: 0.75,
+              bgcolor: "#fef2f2",
+              border: "1px solid #fee2e2",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                bgcolor: "#ef4444",
+                color: "#ffffff",
+                borderColor: "#ef4444",
+              },
             }}
           >
-            <DeleteIcon fontSize="small" />
+            <DeleteOutlineRoundedIcon sx={{ fontSize: 17 }} />
           </IconButton>
         </Tooltip>
       )}
@@ -96,18 +112,23 @@ export default function ConfirmDeletePopup({
             onClick={handleClickOpen}
             sx={{
               position: "absolute",
-              top: 4,
-              right: 4,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              color: "#d32f2f",
+              top: 6,
+              right: 6,
+              width: 26,
+              height: 26,
+              borderRadius: "8px",
+              backgroundColor: "rgba(255, 255, 255, 0.92)",
+              backdropFilter: "blur(6px)",
+              color: "#ef4444",
+              boxShadow: "0 2px 8px rgba(15,23,42,0.12)",
               "&:hover": {
-                backgroundColor: "#d32f2f",
+                backgroundColor: "#ef4444",
                 color: "#fff",
               },
               padding: "2px",
             }}
           >
-            <DeleteForeverIcon sx={{ fontSize: "16px" }} />
+            <DeleteForeverRoundedIcon sx={{ fontSize: "15px" }} />
           </IconButton>
         </Tooltip>
       )}
@@ -119,36 +140,68 @@ export default function ConfirmDeletePopup({
         className="confirm-delete-popup-target"
         sx={{ zIndex: "55510 !important" }}
       >
-        <Box sx={{ textAlign: "center" }}>
-          <InfoOutlineIcon
+        <Box sx={{ textAlign: "center", mt: 0.5 }}>
+          <Box
             sx={{
-              backgroundColor: "#f7d6d2",
-              borderRadius: "50%",
-              padding: "5px",
-              fontSize: "50px",
+              width: 56,
+              height: 56,
+              borderRadius: "18px",
+              bgcolor: "#fef2f2",
+              border: "1px solid #fee2e2",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#ef4444",
+              mb: 1,
             }}
-            color="error"
-          />
+          >
+            <WarningAmberRoundedIcon sx={{ fontSize: 28 }} />
+          </Box>
         </Box>
         <DialogTitle
           id="alert-dialog-title"
-          sx={{ textAlign: "center", fontWeight: "600" }}
+          sx={{
+            textAlign: "center",
+            fontWeight: 800,
+            fontSize: "18px",
+            color: "#0f172a",
+            pb: 0.5,
+            pt: 1,
+          }}
         >
           {`Delete ${title}`}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+        <DialogContent sx={{ pb: 2.5 }}>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{
+              textAlign: "center",
+              fontSize: "13.5px",
+              color: "#64748b",
+              fontWeight: 500,
+            }}
+          >
             {description}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
+        <DialogActions sx={{ display: "flex", justifyContent: "center", gap: 1.25, p: 0 }}>
           <Button
             onClick={handleClose}
-            variant="contained"
+            variant="outlined"
             sx={{
-              backgroundColor: "#dcdcdcff",
-              color: "black",
-              textTransform: "capitalize",
+              borderRadius: "999px",
+              py: 1,
+              borderColor: "#e2e8f0",
+              backgroundColor: "#f8fafc",
+              color: "#475569",
+              textTransform: "none",
+              fontWeight: 700,
+              fontSize: "13px",
+              "&:hover": {
+                bgcolor: "#f1f5f9",
+                borderColor: "#cbd5e1",
+                color: "#0f172a",
+              },
             }}
             fullWidth
           >
@@ -159,9 +212,17 @@ export default function ConfirmDeletePopup({
               onClick={() => handleDeleteAllSltBrands()}
               autoFocus
               variant="contained"
-              sx={{ textTransform: "capitalize" }}
+              sx={{
+                borderRadius: "999px",
+                py: 1,
+                bgcolor: "#ef4444",
+                textTransform: "none",
+                fontWeight: 700,
+                fontSize: "13px",
+                boxShadow: "0 6px 16px rgba(239, 68, 68, 0.25)",
+                "&:hover": { bgcolor: "#dc2626" },
+              }}
               fullWidth
-              color="error"
             >
               Delete ({selectedBrandIds.length})
             </Button>
@@ -173,9 +234,17 @@ export default function ConfirmDeletePopup({
               onClick={handleTargetSingleBrandDel}
               autoFocus
               variant="contained"
-              sx={{ textTransform: "capitalize" }}
+              sx={{
+                borderRadius: "999px",
+                py: 1,
+                bgcolor: "#ef4444",
+                textTransform: "none",
+                fontWeight: 700,
+                fontSize: "13px",
+                boxShadow: "0 6px 16px rgba(239, 68, 68, 0.25)",
+                "&:hover": { bgcolor: "#dc2626" },
+              }}
               fullWidth
-              color="error"
             >
               Delete {selectedBrandIds && `(${selectedBrandIds.length})`}
             </Button>
@@ -185,9 +254,17 @@ export default function ConfirmDeletePopup({
               onClick={handleTargetImageDel}
               autoFocus
               variant="contained"
-              sx={{ textTransform: "capitalize" }}
+              sx={{
+                borderRadius: "999px",
+                py: 1,
+                bgcolor: "#ef4444",
+                textTransform: "none",
+                fontWeight: 700,
+                fontSize: "13px",
+                boxShadow: "0 6px 16px rgba(239, 68, 68, 0.25)",
+                "&:hover": { bgcolor: "#dc2626" },
+              }}
               fullWidth
-              color="error"
             >
               Delete
             </Button>

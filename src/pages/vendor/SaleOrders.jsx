@@ -1,353 +1,365 @@
-import { Box, Button, Container, FormControl, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
-import React from 'react'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Paper from "@mui/material/Paper";
 import {
-
-
-
+  Box,
+  Container,
+  FormControl,
+  Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Pagination,
-  Switch,
-
- 
-
- 
-
-
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
-
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { useNavigate } from 'react-router';
-
+import React from "react";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import Paper from "@mui/material/Paper";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { useNavigate } from "react-router";
 
 const SaleOrders = () => {
-const navigate = useNavigate();
-const [searchBy, setSearchBy] = React.useState('');
-      const handleChange = (event) => {
+  const navigate = useNavigate();
+  const [searchBy, setSearchBy] = React.useState("");
+  const handleChange = (event) => {
     setSearchBy(event.target.value);
   };
 
   return (
-     <Box
+    <Box
       sx={{
-        
-        
         width: "100%",
+        minHeight: "100vh",
+        bgcolor: "#f8fafc",
         py: 3,
         overflowY: "auto",
       }}
-      className='pages-admin-target-style'
+      className="pages-admin-target-style"
     >
       <Container sx={{ maxWidth: "100% !important" }}>
+        {/* Page Header */}
         <Box
-          component={"h2"}
           sx={{
             display: "flex",
             alignItems: "center",
-            fontSize: "17px",
+            gap: 1.5,
             mb: 3,
           }}
         >
-          {" "}
-          <ShoppingCartIcon 
-            sx={{ mr: 1, fontSize: "17px" }}
-            color="secondary"
-          />{" "}
-          Sales
-        </Box>
-          <Box sx={{ mb: 3}}>
-             <Grid container spacing={1}>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                     <FormControl sx={{  minWidth: 120, backgroundColor: 'white' }} size="small" fullWidth>
-      <InputLabel id="demo-select-small-label" color='secondary'>Search By</InputLabel>
-      <Select
-        labelId="demo-select-small-label"
-        id="demo-select-small"
-        value={searchBy}
-        label="Age"
-        onChange={handleChange}
-        color='secondary'
-        
-      >
-        
-          <MenuItem value={10} sx={{fontSize: '14px'}}>ID</MenuItem>
-    <MenuItem value={20} sx={{fontSize: '14px'}}>Customer</MenuItem>
-      </Select>
-    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                     <TextField sx={{backgroundColor: 'white'}} id="outlined-basic" label="Search..." fullWidth size='small' color='secondary' variant="outlined" />
-                  </Grid>
-                   <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                     <FormControl sx={{  minWidth: 120, backgroundColor: 'white' }} size="small" fullWidth>
-      <InputLabel id="demo-select-small-label" color='secondary'>Payment Type</InputLabel>
-      <Select
-        labelId="demo-select-small-label"
-        id="demo-select-small"
-        value={searchBy}
-        label="Age"
-        onChange={handleChange}
-        color='secondary'
-        
-      >
-        
-          <MenuItem value={10} sx={{fontSize: '14px'}}>All</MenuItem>
-    <MenuItem value={20} sx={{fontSize: '14px'}}>Cash</MenuItem>
-      <MenuItem value={30} sx={{fontSize: '14px'}}>Card</MenuItem>
-      </Select>
-    </FormControl>
-                  </Grid>
-                   <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                     <FormControl sx={{  minWidth: 120, backgroundColor: 'white' }} size="small" fullWidth>
-      <InputLabel id="demo-select-small-label" color='secondary'>Status</InputLabel>
-      <Select
-        labelId="demo-select-small-label"
-        id="demo-select-small"
-        value={searchBy}
-        label="Age"
-        onChange={handleChange}
-        color='secondary'
-        
-      >
-        
-          <MenuItem value={10} sx={{fontSize: '14px'}}>All</MenuItem>
-    <MenuItem value={20} sx={{fontSize: '14px'}}>Cash</MenuItem>
-      <MenuItem value={30} sx={{fontSize: '14px'}}>Card</MenuItem>
-      </Select>
-    </FormControl>
-                  </Grid>
-                  </Grid>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: "14px",
+              bgcolor: "#0f172a",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)",
+            }}
+          >
+            <ShoppingBagOutlinedIcon sx={{ fontSize: 22 }} />
           </Box>
+          <Box>
+            <Typography
+              sx={{
+                fontSize: "20px",
+                fontWeight: 800,
+                color: "#0f172a",
+                lineHeight: 1.2,
+              }}
+            >
+              Sales Orders
+            </Typography>
+            <Typography sx={{ fontSize: "12.5px", color: "#64748b", fontWeight: 500, mt: 0.25 }}>
+              Track customer orders, payment status, and delivery schedules
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Filter Bar Card */}
+        <Box
+          sx={{
+            mb: 3,
+            p: 2.5,
+            bgcolor: "#ffffff",
+            borderRadius: "20px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 4px 20px rgba(15, 23, 42, 0.03)",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <FormControl sx={{ minWidth: 120 }} size="small" fullWidth>
+                <InputLabel id="search-by-label">Search By</InputLabel>
+                <Select
+                  labelId="search-by-label"
+                  id="search-by-select"
+                  value={searchBy}
+                  label="Search By"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10} sx={{ fontSize: "13.5px" }}>
+                    ID
+                  </MenuItem>
+                  <MenuItem value={20} sx={{ fontSize: "13.5px" }}>
+                    Customer
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <TextField
+                id="outlined-basic"
+                label="Search..."
+                fullWidth
+                size="small"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <FormControl sx={{ minWidth: 120 }} size="small" fullWidth>
+                <InputLabel id="payment-type-label">Payment Type</InputLabel>
+                <Select
+                  labelId="payment-type-label"
+                  id="payment-type-select"
+                  value={searchBy}
+                  label="Payment Type"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10} sx={{ fontSize: "13.5px" }}>
+                    All
+                  </MenuItem>
+                  <MenuItem value={20} sx={{ fontSize: "13.5px" }}>
+                    Cash
+                  </MenuItem>
+                  <MenuItem value={30} sx={{ fontSize: "13.5px" }}>
+                    Card
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <FormControl sx={{ minWidth: 120 }} size="small" fullWidth>
+                <InputLabel id="status-label">Status</InputLabel>
+                <Select
+                  labelId="status-label"
+                  id="status-select"
+                  value={searchBy}
+                  label="Status"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10} sx={{ fontSize: "13.5px" }}>
+                    All
+                  </MenuItem>
+                  <MenuItem value={20} sx={{ fontSize: "13.5px" }}>
+                    Cash
+                  </MenuItem>
+                  <MenuItem value={30} sx={{ fontSize: "13.5px" }}>
+                    Card
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Orders Table */}
         <TableContainer
           component={Paper}
           sx={{
-            borderRadius: "15px",
-            boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+            borderRadius: "24px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
             overflowX: "auto",
+            bgcolor: "#ffffff",
           }}
           className="table-scroll-design-set"
         >
-          <Table sx={{ minWidth: 650 }} aria-label="responsive table">
+          <Table sx={{ minWidth: 750 }} aria-label="sales orders table">
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#f3f5f9" }}>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
+              <TableRow
+                sx={{
+                  backgroundColor: "#f8fafc",
+                  "& th": {
+                    fontWeight: 700,
+                    fontSize: "11.5px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "#64748b",
+                    padding: "14px 16px",
                     whiteSpace: "nowrap",
-                  }}
-                >
-                 ID
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Date
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Customer
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Shipping Address	
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Shipping Method	
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Amount
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Status
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Estimated Delivery
-                </TableCell>
-               
-                <TableCell
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "12px",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                    textAlign: 'center'
-                  }}
-                >
-                  Action
-                </TableCell>
+                    borderBottom: "1px solid #e2e8f0",
+                  },
+                }}
+              >
+                <TableCell>ID</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Customer</TableCell>
+                <TableCell>Shipping Address</TableCell>
+                <TableCell>Shipping Method</TableCell>
+                <TableCell>Amount</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Estimated Delivery</TableCell>
+                <TableCell sx={{ textAlign: "center" }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{
+                  transition: "background-color 0.15s ease",
+                  "&:hover": { bgcolor: "#f8fafc" },
+                  "& td, & th": { borderBottom: "1px solid #f1f5f9", py: 1.5 },
+                  "&:last-child td, &:last-child th": { border: 0 },
+                }}
               >
-                <TableCell
-                  component="th"
-                  scope="row"
-                  sx={{ fontSize: "12px", padding: "10px" }}
-                >
+                <TableCell component="th" scope="row">
                   <Box
                     sx={{
                       display: "inline-block",
-                      backgroundColor: "#f3f5f9",
-                      borderRadius: "35px",
-                      padding: "2px 10px",
-                      fontWeight: "600",
-                      color: "red",
+                      backgroundColor: "#f1f5f9",
+                      borderRadius: "8px",
+                      padding: "4px 10px",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                      fontFamily: "monospace",
+                      color: "#0f172a",
                     }}
                   >
-                    15968932
+                    #15968932
                   </Box>
                 </TableCell>
-                <TableCell
-                  sx={{ fontSize: "12px", padding: "12px", minWidth: "200px" }}
-                >
+                <TableCell sx={{ fontSize: "13px", color: "#475569", fontWeight: 500, minWidth: "180px" }}>
                   23, Aug 2025 10:45 PM
                 </TableCell>
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                <TableCell>
                   <Box
                     sx={{
                       display: "inline-block",
-                      backgroundColor: "#dbf0fe",
-                      borderRadius: "35px",
-                      padding: "2px 10px",
-                      fontWeight: "600",
-                      color: "#4e97fd",
+                      backgroundColor: "#eff6ff",
+                      border: "1px solid #bfdbfe",
+                      borderRadius: "999px",
+                      padding: "3px 12px",
+                      fontWeight: 600,
+                      fontSize: "12px",
+                      color: "#2563eb",
                     }}
                   >
-                   humair@gmail.com
+                    humair@gmail.com
                   </Box>
                 </TableCell>
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                <TableCell>
                   <Box
                     sx={{
                       display: "inline-block",
-                      backgroundColor: '#e7f9ed', color: '#33d08c',
-                      borderRadius: "35px",
-                      padding: "2px 10px",
-                      fontWeight: "600",
+                      backgroundColor: "#f1f5f9",
+                      color: "#64748b",
+                      borderRadius: "999px",
+                      padding: "3px 10px",
+                      fontSize: "12px",
+                      fontWeight: 600,
                     }}
                   >
                     N/A
                   </Box>
                 </TableCell>
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
-                 test 1
+                <TableCell sx={{ fontSize: "13px", fontWeight: 600, color: "#0f172a" }}>
+                  test 1
                 </TableCell>
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                <TableCell sx={{ fontSize: "13.5px", fontWeight: 800, color: "#0f172a" }}>
                   £81.00 / Cash
                 </TableCell>
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                <TableCell>
                   <Box
                     sx={{
                       display: "inline-block",
-                      backgroundColor: '#fff8e5', color: '#ffcd4e',
-                      borderRadius: "35px",
-                      padding: "2px 10px",
-                      fontWeight: "600",
-                      whiteSpace: 'nowrap'
+                      backgroundColor: "#ecfdf5",
+                      border: "1px solid #a7f3d0",
+                      color: "#059669",
+                      borderRadius: "999px",
+                      padding: "3px 12px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
                     }}
                   >
                     Accept
                   </Box>
                 </TableCell>
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
+                <TableCell sx={{ fontSize: "13px", color: "#475569", fontWeight: 500 }}>
                   26, Aug 2025 10:45 PM
                 </TableCell>
-                
-                <TableCell sx={{ fontSize: "12px", padding: "12px" }}>
-                   <Box sx={{display: 'flex', alignItems: 'center'}}>
-                  
-                    <Tooltip title="View" arrow onClick={()=>navigate(`/vendor/orders/buy/1`)}>
-                          <IconButton
-                            
-                            size="small"
-                            aria-label="edit"
-                            color="primary"
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
-                        </Tooltip>
-                       
-                       
-                        </Box>
+
+                <TableCell align="center">
+                  <Box sx={{ display: "inline-flex", alignItems: "center" }}>
+                    <Tooltip
+                      title="View Order Details"
+                      arrow
+                      onClick={() => navigate(`/vendor/orders/buy/1`)}
+                    >
+                      <IconButton
+                        size="small"
+                        sx={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: "10px",
+                          bgcolor: "#f8fafc",
+                          border: "1px solid #e2e8f0",
+                          color: "#0f172a",
+                          "&:hover": {
+                            bgcolor: "#0f172a",
+                            color: "#ffffff",
+                            borderColor: "#0f172a",
+                          },
+                        }}
+                      >
+                        <VisibilityOutlinedIcon sx={{ fontSize: 17 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </TableCell>
               </TableRow>
-         
             </TableBody>
           </Table>
-         
         </TableContainer>
-         <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        my: 4,
-                      }}
-                    >
-                      <Pagination
-                        count={3}
-                        page={1}
-                        // onChange={(event, value) => setPage(value)}
-                        variant="outlined"
-                        color="secondary"
-                        sx={{ mt: 2 }}
-                      />
-                    </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            my: 3,
+          }}
+        >
+          <Pagination
+            count={3}
+            page={1}
+            variant="outlined"
+            sx={{
+              "& .MuiPaginationItem-root": {
+                borderRadius: "10px",
+                fontWeight: 700,
+                color: "#475569",
+                borderColor: "#e2e8f0",
+                "&.Mui-selected": {
+                  bgcolor: "#0f172a !important",
+                  color: "#ffffff !important",
+                  borderColor: "#0f172a !important",
+                },
+              },
+            }}
+          />
+        </Box>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default SaleOrders
+export default SaleOrders;

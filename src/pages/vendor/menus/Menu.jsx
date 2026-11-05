@@ -1,15 +1,14 @@
 import { Box, Button, FormControlLabel, TextField } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
-import SaveIcon from "@mui/icons-material/Save";
-
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Editor from "@monaco-editor/react";
-import { useState } from "react";
-
-import { createUpdateMenuApi, getMenuApi } from "../../../utils/apis/APIs";
 import { handleError, handleSuccess } from "../../../toast";
 import LoaderSpinner from "../../../components/LoaderSpinner";
-import { fetchJsonMenu, useSaveMenu } from "../../../hook/vendor/useSiteSettings";
+import {
+  fetchJsonMenu,
+  useSaveMenu,
+} from "../../../hook/vendor/useSiteSettings";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -18,35 +17,36 @@ const GeneralMenu = ({ keyMenu }) => {
   const [menuId, setMenuId] = useState(null);
   const [jsonValue, setJsonValue] = useState(JSON.stringify([], null, 2));
   const [isActive, setIsActive] = useState(false);
-  const [menuTitle, setMenuTitle] = useState('');
+  const [menuTitle, setMenuTitle] = useState("");
 
   const handleEditorChange = (value) => {
     setJsonValue(value);
   };
 
-  const { mutateAsync: saveMenu, isPending } = useSaveMenu();
+  const { mutateAsync: saveMenu } = useSaveMenu();
   const handleSaveChangesMenu = async () => {
-  const data = {
-    menu: jsonValue,
-    key: keyMenu,
-    is_active: isActive,
-    id: menuId,
-    menu_title: menuTitle,
-  };
+    const data = {
+      menu: jsonValue,
+      key: keyMenu,
+      is_active: isActive,
+      id: menuId,
+      menu_title: menuTitle,
+    };
 
-  try {
-    const res = await saveMenu(data);
-    if (res.status === 200) {
-      handleSuccess("Save Changes Successfully!");
-    } else {
+    try {
+      const res = await saveMenu(data);
+      if (res.status === 200) {
+        handleSuccess("Save Changes Successfully!");
+      } else {
+        handleError("Internal Server Error!");
+      }
+    } catch (error) {
       handleError("Internal Server Error!");
     }
-  } catch (error) {
-    handleError("Internal Server Error!");
-  }
-};
+  };
+
   let handleIsActiveChange = (e) => {
-    setIsActive(event.target.checked);
+    setIsActive(e.target.checked);
   };
   const { data: menuItemsList, isLoading } = fetchJsonMenu({ key: keyMenu });
 
@@ -58,23 +58,34 @@ const GeneralMenu = ({ keyMenu }) => {
       setMenuId(menuItemsList.data.uuid || null);
     }
   }, [menuItemsList]);
-let handleChangeMenuTitle = (e)=> {
-  setMenuTitle(e.target.value)
-}
-  return (isLoading ? <LoaderSpinner/> : <Box>
-      
+
+  let handleChangeMenuTitle = (e) => {
+    setMenuTitle(e.target.value);
+  };
+
+  return isLoading ? (
+    <LoaderSpinner />
+  ) : (
+    <Box>
       <TextField
         id="outlined-basic"
         label="Menu Title"
         variant="outlined"
         fullWidth
-        color="secondary"
         size="small"
-        sx={{ mb: 1, mt: 1 }}
+        sx={{ mb: 2, mt: 0.5 }}
         onChange={handleChangeMenuTitle}
         value={menuTitle}
       />
-      <Box sx={{ py: 1, width: "100%" }}>
+      <Box
+        sx={{
+          width: "100%",
+          borderRadius: "16px",
+          overflow: "hidden",
+          border: "1px solid #0f172a",
+          boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)",
+        }}
+      >
         <Editor
           height="420px"
           defaultLanguage="json"
@@ -89,16 +100,30 @@ let handleChangeMenuTitle = (e)=> {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mt: 3,
+          mt: 2.5,
+          p: 2,
+          borderRadius: "16px",
+          bgcolor: "#f8fafc",
+          border: "1px solid #e2e8f0",
         }}
       >
         <FormControlLabel
+          sx={{
+            "& .MuiFormControlLabel-label": {
+              fontSize: "13.5px",
+              fontWeight: 700,
+              color: "#0f172a",
+            },
+          }}
           control={
             <Checkbox
               {...label}
               checked={isActive}
               onChange={handleIsActiveChange}
-              color="secondary"
+              sx={{
+                color: "#cbd5e1",
+                "&.Mui-checked": { color: "#10b981" },
+              }}
             />
           }
           label="Is Active"
@@ -108,7 +133,7 @@ let handleChangeMenuTitle = (e)=> {
           className="custom-secondary-btn-admin-side"
           onClick={handleSaveChangesMenu}
         >
-          <SaveIcon sx={{ mr: 1 }} /> Save Changes
+          <SaveOutlinedIcon sx={{ mr: 0.75, fontSize: 18 }} /> Save Changes
         </Button>
       </Box>
     </Box>

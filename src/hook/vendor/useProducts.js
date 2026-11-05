@@ -1,49 +1,66 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiAuth } from "../../utils/apis/api-client";
 
-export const useFetchProducts = ({
-  page = 1,
-  per_page = 10,
-  search_by_title,
-  search_by_sku,
-  search_product_type,
-  search_product_purpose,
-  search_product_stock_status,
-  search_product_status,
-  search_active_for,
-  search_by_brand
-}) => {
+export const useFetchProducts = (
+  {
+    page = 1,
+    per_page = 10,
+    search_by_title = "",
+    search_by_sku = "",
+    search_product_type = "",
+    search_product_purpose = "",
+    search_product_stock_status = "",
+    search_product_status = "",
+    search_active_for = "",
+    search_by_brand = "",
+  } = {},
+  options = {},
+) => {
+  // Normalize params so empty values produce a consistent cache key & clean query string
   const params = {
-    page, per_page, search_by_title, search_by_sku,
-    search_product_type, search_product_purpose,
-    search_product_stock_status, search_product_status, search_active_for,
-    search_by_brand
+    page,
+    per_page,
+    ...(search_by_title ? { search_by_title } : {}),
+    ...(search_by_sku ? { search_by_sku } : {}),
+    ...(search_product_type !== "" && search_product_type !== undefined
+      ? { search_product_type }
+      : {}),
+    ...(search_product_purpose !== "" && search_product_purpose !== undefined
+      ? { search_product_purpose }
+      : {}),
+    ...(search_product_stock_status !== "" &&
+    search_product_stock_status !== undefined
+      ? { search_product_stock_status }
+      : {}),
+    ...(search_product_status !== "" && search_product_status !== undefined
+      ? { search_product_status }
+      : {}),
+    ...(search_active_for !== "" && search_active_for !== undefined
+      ? { search_active_for }
+      : {}),
+    ...(search_by_brand !== "" && search_by_brand !== undefined
+      ? { search_by_brand }
+      : {}),
   };
-  return useQuery({
-    queryKey: [
-      "products",
-      params
-    ],
 
-    queryFn: async () => {
+  return useQuery({
+    queryKey: ["products", params],
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get("/api/vendor/products", {
-        params: {
-          page,
-          per_page,
-          search_by_title,
-          search_by_sku,
-          search_product_type,
-          search_product_purpose,
-          search_product_stock_status,
-          search_product_status,
-          search_active_for,
-          search_by_brand
-        },
+        params,
+        signal,
       });
       return res.data;
     },
-
-    keepPreviousData: true, // 👈 smooth pagination
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 30, // 30s cache to avoid duplicate refetches
+    gcTime: 1000 * 60 * 5,
+    ...options,
   });
 };
 
@@ -55,10 +72,8 @@ export const useCreateProductStep1 = () => {
       const res = await apiAuth.post("/api/vendor/product/step1", payload);
       return res.data;
     },
-
     onSuccess: () => {
-      // 🔥 refresh products list
-      queryClient.invalidateQueries(["products"]);
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 };
@@ -71,41 +86,52 @@ export const useUpdateProductType = () => {
       const res = await apiAuth.put("/api/vendor/product/type/update", payload);
       return res.data;
     },
-
-    onSuccess: () => {
-      // 🔄 refresh products list if needed
-      queryClient.invalidateQueries(["products"]);
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      if (variables?.product_id) {
+        queryClient.invalidateQueries({
+          queryKey: ["product-type", variables.product_id],
+        });
+      }
     },
   });
 };
 
-export const useFetchProductTypeById = (productId) => {
+export const useFetchProductTypeById = (productId, options = {}) => {
   return useQuery({
     queryKey: ["product-type", productId],
-
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get(
         `/api/vendor/product/type/get/${productId}`,
+        { signal },
       );
       return res.data;
     },
-
-    enabled: !!productId, // 👈 run only when id exists
+    staleTime: 1000 * 30,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(productId) && Boolean(options.enabled)
+        : Boolean(productId),
   });
 };
 
-export const useFetchProductSimpleStep2 = (productId) => {
+export const useFetchProductSimpleStep2 = (productId, options = {}) => {
   return useQuery({
     queryKey: ["product-step2-simple", productId],
-
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get(
         `/api/vendor/product/edit/step2/simple/${productId}`,
+        { signal },
       );
       return res.data;
     },
-
-    enabled: !!productId, // 👈 only run when id exists
+    staleTime: 1000 * 30,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(productId) && Boolean(options.enabled)
+        : Boolean(productId),
   });
 };
 
@@ -120,33 +146,34 @@ export const useCreateProductStep2 = () => {
       );
       return res.data;
     },
-
     onSuccess: (_, variables) => {
-      // 🔄 refresh specific product step2 + products list
-      if (variables?.product_id) {
-        queryClient.invalidateQueries([
-          "product-step2-simple",
-          variables.product_id,
-        ]);
+      const prodId = variables?.product_id || variables?.id;
+      if (prodId) {
+        queryClient.invalidateQueries({
+          queryKey: ["product-step2-simple", prodId],
+        });
       }
-
-      queryClient.invalidateQueries(["products"]);
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 };
 
-export const useFetchProductStep1 = (productId) => {
+export const useFetchProductStep1 = (productId, options = {}) => {
   return useQuery({
     queryKey: ["product-step1", productId],
-
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get(
         `/api/vendor/product/edit/step1/${productId}`,
+        { signal },
       );
       return res.data;
     },
-
-    enabled: !!productId, // 👈 run only if id exists
+    staleTime: 1000 * 30,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(productId) && Boolean(options.enabled)
+        : Boolean(productId),
   });
 };
 
@@ -161,14 +188,14 @@ export const useUpdateProductStep1 = () => {
       );
       return res.data;
     },
-
     onSuccess: (_, variables) => {
-      // 🔄 refetch specific product + list
-      if (variables?.product_id) {
-        queryClient.invalidateQueries(["product-step1", variables.product_id]);
+      const prodId = variables?.product_id || variables?.id;
+      if (prodId) {
+        queryClient.invalidateQueries({
+          queryKey: ["product-step1", prodId],
+        });
       }
-
-      queryClient.invalidateQueries(["products"]);
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 };
@@ -183,16 +210,40 @@ export const useDeleteProduct = () => {
       );
       return res.data;
     },
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: ["products"] });
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: ["products"],
+      });
 
-    onSuccess: () => {
-      // 🔄 refresh product list
-      queryClient.invalidateQueries(["products"]);
+      queryClient.setQueriesData({ queryKey: ["products"] }, (old) => {
+        if (!old || !Array.isArray(old.data)) return old;
+        return {
+          ...old,
+          data: old.data.filter((item) => item.id !== productId),
+          pagination: old.pagination
+            ? {
+                ...old.pagination,
+                total: Math.max(0, (old.pagination.total || 1) - 1),
+              }
+            : old.pagination,
+        };
+      });
+
+      return { previousQueries };
+    },
+    onError: (_err, _productId, context) => {
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 };
-
-
-
 
 export const useUpdateProductPublish = () => {
   const queryClient = useQueryClient();
@@ -201,72 +252,86 @@ export const useUpdateProductPublish = () => {
     mutationFn: async (payload) => {
       const res = await apiAuth.put(
         "/api/vendor/product/publish/update",
-        payload
+        payload,
       );
       return res.data;
     },
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["products"] });
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: ["products"],
+      });
 
-    onSuccess: (_, variables) => {
-      // 🔄 refresh product list + specific product
-      queryClient.invalidateQueries(["products"]);
+      queryClient.setQueriesData({ queryKey: ["products"] }, (old) => {
+        if (!old || !Array.isArray(old.data)) return old;
+        return {
+          ...old,
+          data: old.data.map((item) =>
+            item.id === variables?.id
+              ? { ...item, is_published: variables.is_published }
+              : item,
+          ),
+        };
+      });
 
-      if (variables?.product_id) {
-        queryClient.invalidateQueries([
-          "product-step1",
-          variables.product_id,
-        ]);
+      return { previousQueries };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+    },
+    onSettled: (_, _err, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+
+      const prodId = variables?.product_id || variables?.id;
+      if (prodId) {
+        queryClient.invalidateQueries({
+          queryKey: ["product-step1", prodId],
+        });
       }
     },
   });
 };
 
-
-
-
-
-
-
-
-
-export const useFetchProductAttributesById = (productId) => {
+export const useFetchProductAttributesById = (productId, options = {}) => {
   return useQuery({
     queryKey: ["product-attributes", productId],
-
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get(
-        `/api/vendor/product/attributes/get/${productId}`
+        `/api/vendor/product/attributes/get/${productId}`,
+        { signal },
       );
       return res.data;
     },
-
-    enabled: !!productId, // 👈 run only when id exists
-    // staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(productId) && Boolean(options.enabled)
+        : Boolean(productId),
   });
 };
 
-
-
-
-
-export const useFetchProductTerms = (id) => {
+export const useFetchProductTerms = (id, options = {}) => {
   return useQuery({
     queryKey: ["product-terms", id],
-
-    queryFn: async () => {
-      const res = await apiAuth.get(
-        `/api/vendor/product/terms/get/${id}`
-      );
+    queryFn: async ({ signal }) => {
+      const res = await apiAuth.get(`/api/vendor/product/terms/get/${id}`, {
+        signal,
+      });
       return res.data;
     },
-
-    enabled: !!id, // 👈 only run when id exists
+    staleTime: 1000 * 60 * 2,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(id) && Boolean(options.enabled)
+        : Boolean(id),
   });
 };
-
-
-
-
-
 
 export const useSaveProductAttributeTerms = () => {
   const queryClient = useQueryClient();
@@ -275,43 +340,40 @@ export const useSaveProductAttributeTerms = () => {
     mutationFn: async (payload) => {
       const res = await apiAuth.post(
         "/api/vendor/product/attribute/terms/save",
-        payload
+        payload,
       );
       return res.data;
     },
-
-    onSuccess: () => {
-      // optional: refetch related queries
-      queryClient.invalidateQueries(["product-terms"]);
-      queryClient.invalidateQueries(["product-attributes"]);
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["product-terms"] });
+      queryClient.invalidateQueries({ queryKey: ["product-attributes"] });
+      if (variables?.product_id) {
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", variables.product_id],
+        });
+      }
     },
   });
 };
 
-
-
-
-
-
-
-export const useFetchSelectedProductAttributes = (productId) => {
+export const useFetchSelectedProductAttributes = (productId, options = {}) => {
   return useQuery({
     queryKey: ["selected-product-attributes", productId],
-
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get(
-        `/api/vendor/products/${productId}/attributes`
+        `/api/vendor/products/${productId}/attributes`,
+        { signal },
       );
       return res.data;
     },
-
-    enabled: !!productId, // 👈 only run when id exists
+    staleTime: 1000 * 30,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(productId) && Boolean(options.enabled)
+        : Boolean(productId),
   });
 };
-
-
-
-
 
 export const useDeleteProductAttribute = () => {
   const queryClient = useQueryClient();
@@ -321,61 +383,42 @@ export const useDeleteProductAttribute = () => {
       const res = await apiAuth.delete(
         "/api/vendor/products/attributes/delete",
         {
-          data: payload, // 👈 important (axios delete body)
-        }
+          data: payload,
+        },
       );
       return res.data;
     },
-
     onSuccess: (_, variables) => {
-      // 🔄 refetch selected attributes
       if (variables?.product_id) {
-        queryClient.invalidateQueries([
-          "selected-product-attributes",
-          variables.product_id,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", variables.product_id],
+        });
       }
-
-      queryClient.invalidateQueries(["product-attributes"]);
+      queryClient.invalidateQueries({ queryKey: ["product-attributes"] });
     },
   });
 };
-
-
-
-
 
 export const useDeleteProductTerm = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload) => {
-      const res = await apiAuth.delete(
-        "/api/vendor/products/terms/delete",
-        {
-          data: payload, // 👈 axios delete body
-        }
-      );
+      const res = await apiAuth.delete("/api/vendor/products/terms/delete", {
+        data: payload,
+      });
       return res.data;
     },
-
     onSuccess: (_, variables) => {
-      // 🔄 refetch selected attributes/terms
       if (variables?.product_id) {
-        queryClient.invalidateQueries([
-          "selected-product-attributes",
-          variables.product_id,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", variables.product_id],
+        });
       }
-
-      queryClient.invalidateQueries(["product-terms"]);
+      queryClient.invalidateQueries({ queryKey: ["product-terms"] });
     },
   });
 };
-
-
-
-
 
 export const useUpdateAttributeSortOrder = () => {
   const queryClient = useQueryClient();
@@ -384,62 +427,61 @@ export const useUpdateAttributeSortOrder = () => {
     mutationFn: async (payload) => {
       const res = await apiAuth.patch(
         "/api/vendor/products/attributes/update-sort-order",
-        payload
+        payload,
       );
       return res.data;
     },
-
     onSuccess: (_, variables) => {
-      // 🔄 refetch selected attributes after sorting
       if (variables?.product_id) {
-        queryClient.invalidateQueries([
-          "selected-product-attributes",
-          variables.product_id,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", variables.product_id],
+        });
       }
     },
   });
 };
 
-
-export const useFetchProductVariations = (productId, page) => {
+export const useFetchProductVariations = (productId, page, options = {}) => {
   return useQuery({
     queryKey: ["product-variations", productId, page],
-
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await apiAuth.get(
-        `/api/vendor/products/${productId}/variations`, {
-    params: {
-      page
-    },
-  }
+        `/api/vendor/products/${productId}/variations`,
+        {
+          params: {
+            page,
+          },
+          signal,
+        },
       );
       return res.data;
     },
-
-    enabled: !!productId, // 👈 run only when id exists
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 30,
+    ...options,
+    enabled:
+      options.enabled !== undefined
+        ? Boolean(productId) && Boolean(options.enabled)
+        : Boolean(productId),
   });
 };
-
 
 export const useGenerateVariations = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload) => {
-      const res = await apiAuth.post("/api/vendor/products/generate-variations", payload);
+      const res = await apiAuth.post(
+        "/api/vendor/products/generate-variations",
+        payload,
+      );
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["product-variations"]);
+      queryClient.invalidateQueries({ queryKey: ["product-variations"] });
     },
   });
 };
-
-
-
-
-
 
 export const useRemoveTermAndVariations = () => {
   const queryClient = useQueryClient();
@@ -449,40 +491,27 @@ export const useRemoveTermAndVariations = () => {
       const res = await apiAuth.delete(
         "/api/vendor/products/remove-term-variations",
         {
-          data: payload, // 👈 axios DELETE body
-        }
+          data: payload,
+        },
       );
       return res.data;
     },
-
     onSuccess: (_, variables) => {
       const productId = variables?.product_id;
 
-      // 🔄 refetch everything related
       if (productId) {
-        queryClient.invalidateQueries([
-          "selected-product-attributes",
-          productId,
-        ]);
-
-        queryClient.invalidateQueries([
-          "product-variations",
-          productId,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", productId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["product-variations", productId],
+        });
       }
 
-      queryClient.invalidateQueries(["product-terms"]);
+      queryClient.invalidateQueries({ queryKey: ["product-terms"] });
     },
   });
 };
-
-
-
-
-
-
-
-
 
 export const useUpdateVariation = () => {
   const queryClient = useQueryClient();
@@ -491,11 +520,10 @@ export const useUpdateVariation = () => {
     mutationFn: async ({ id, payload }) => {
       const res = await apiAuth.put(
         `/api/vendor/products/variations/${id}`,
-        payload
+        payload,
       );
       return res.data;
     },
-
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["product-variations"],
@@ -504,11 +532,6 @@ export const useUpdateVariation = () => {
   });
 };
 
-
-
-
-
-
 export const useSaveTermImage = () => {
   const queryClient = useQueryClient();
 
@@ -516,55 +539,42 @@ export const useSaveTermImage = () => {
     mutationFn: async (payload) => {
       const res = await apiAuth.post(
         "/api/vendor/product/term/save-image",
-        payload
+        payload,
       );
       return res.data;
     },
-
-    onSuccess: () => {
-      // optional: refetch related queries
-      queryClient.invalidateQueries(["product-terms"]);
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["product-terms"] });
+      if (variables?.product_id) {
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", variables.product_id],
+        });
+      }
     },
   });
 };
-
-
-
-
-
 
 export const useClearTermImage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload) => {
-      const res = await apiAuth.post(
-        "/api/vendor/clear-term-image",
-        payload
-      );
+      const res = await apiAuth.post("/api/vendor/clear-term-image", payload);
       return res.data;
     },
-
     onSuccess: (_, variables) => {
       const productId = variables?.product_id;
 
-      // 🔄 refetch related data
       if (productId) {
-        queryClient.invalidateQueries([
-          "selected-product-attributes",
-          productId,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", productId],
+        });
       }
 
-      queryClient.invalidateQueries(["product-terms"]);
+      queryClient.invalidateQueries({ queryKey: ["product-terms"] });
     },
   });
 };
-
-
-
-
-
 
 export const useSyncTermImageToVariations = () => {
   const queryClient = useQueryClient();
@@ -573,49 +583,44 @@ export const useSyncTermImageToVariations = () => {
     mutationFn: async (payload) => {
       const res = await apiAuth.post(
         "/api/vendor/sync-term-image-to-variations",
-        payload
+        payload,
       );
       return res.data;
     },
-
     onSuccess: (_, variables) => {
       const productId = variables?.product_id;
 
-      // 🔄 refresh variations + terms
       if (productId) {
-        queryClient.invalidateQueries([
-          "product-variations",
-          productId,
-        ]);
-
-        queryClient.invalidateQueries([
-          "selected-product-attributes",
-          productId,
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: ["product-variations", productId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["selected-product-attributes", productId],
+        });
       }
 
-      queryClient.invalidateQueries(["product-terms"]);
+      queryClient.invalidateQueries({ queryKey: ["product-terms"] });
     },
   });
 };
 
-
-
-const fetchWarrantiesPanelApi = async ({ search }) => {
+const fetchWarrantiesPanelApi = async ({ search, signal }) => {
   const res = await apiAuth.get("/api/vendor/warranties/panel", {
     params: {
-      search,
+      ...(search ? { search } : {}),
     },
+    signal,
   });
 
   return res.data;
 };
 
-export const fetchWarrantiesPanel = ( search) => {
+export const fetchWarrantiesPanel = (search = "", options = {}) => {
   return useQuery({
     queryKey: ["returns-panel", search],
-    queryFn: () =>
-      fetchWarrantiesPanelApi({ search }),
-    keepPreviousData: true,
+    queryFn: ({ signal }) => fetchWarrantiesPanelApi({ search, signal }),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+    ...options,
   });
 };

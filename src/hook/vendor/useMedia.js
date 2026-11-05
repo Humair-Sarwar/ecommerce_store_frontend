@@ -1,30 +1,33 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiAuth } from "../../utils/apis/api-client";
 
 // fetch function
-const fetchMediaApi = async ({page, per_page}) => {
+const fetchMediaApi = async ({ page, per_page, signal }) => {
   const res = await apiAuth.get("/api/vendor/medias", {
     params: {
       page,
-      per_page
+      per_page,
     },
+    signal,
   });
   return res.data;
 };
 
 // hook
-export const fetchMedia = (page, per_page) => {
+export const fetchMedia = (page, per_page, options = {}) => {
   return useQuery({
     queryKey: ["medias", page, per_page],
-    queryFn: () => fetchMediaApi({ page, per_page }),
-    keepPreviousData: true,
+    queryFn: ({ signal }) => fetchMediaApi({ page, per_page, signal }),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60,
+    ...options,
   });
 };
-
-
-
-
-
 
 // ================= UPLOAD MEDIA =================
 const uploadMediaApi = async (formData) => {
@@ -37,23 +40,12 @@ export const useUploadMedia = () => {
 
   return useMutation({
     mutationFn: uploadMediaApi,
-
     onSuccess: () => {
-      // 🔥 auto refresh media list
+      queryClient.invalidateQueries({ queryKey: ["medias"] });
       queryClient.invalidateQueries({ queryKey: ["media"] });
     },
   });
 };
-
-
-
-
-
-
-
-
-
-
 
 // delete api
 const deleteMediaApi = async (id) => {
@@ -68,24 +60,11 @@ export const useDeleteMedia = () => {
   return useMutation({
     mutationFn: deleteMediaApi,
     onSuccess: () => {
-      // 🔥 list refresh
-      queryClient.invalidateQueries(["media"]);
+      queryClient.invalidateQueries({ queryKey: ["medias"] });
+      queryClient.invalidateQueries({ queryKey: ["media"] });
     },
   });
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // API function
 const uploadMediaSingleApi = async (formData) => {
@@ -103,10 +82,9 @@ export const useUploadSingleMedia = () => {
 
   return useMutation({
     mutationFn: uploadMediaSingleApi,
-
     onSuccess: () => {
-      // refresh media list after upload
-      queryClient.invalidateQueries(["media"]);
+      queryClient.invalidateQueries({ queryKey: ["medias"] });
+      queryClient.invalidateQueries({ queryKey: ["media"] });
     },
   });
 };

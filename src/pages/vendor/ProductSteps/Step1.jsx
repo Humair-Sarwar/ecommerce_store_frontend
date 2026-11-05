@@ -41,6 +41,77 @@ import {
 import { handleError, handleSuccess } from "../../../toast";
 import { useNavigate, useParams } from "react-router";
 import LoaderSpinner from "../../../components/LoaderSpinner";
+
+const modernInputSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "12px",
+    backgroundColor: "#f8fafc",
+    fontSize: "13.5px",
+    fontWeight: 500,
+    color: "#0f172a",
+    transition: "all 0.2s ease",
+    "& fieldset": {
+      borderColor: "#e2e8f0",
+    },
+    "&:hover": {
+      backgroundColor: "#ffffff",
+      "& fieldset": {
+        borderColor: "#cbd5e1",
+      },
+    },
+    "&.Mui-focused": {
+      backgroundColor: "#ffffff",
+      boxShadow: "0 0 0 3px rgba(15, 23, 42, 0.06)",
+      "& fieldset": {
+        borderColor: "#0f172a",
+        borderWidth: "1.5px",
+      },
+    },
+    "&.Mui-disabled": {
+      backgroundColor: "#f1f5f9",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    fontSize: "13px",
+    fontWeight: 500,
+    color: "#64748b",
+    "&.Mui-focused": {
+      color: "#0f172a",
+      fontWeight: 600,
+    },
+  },
+};
+
+const modernNumberInputSx = {
+  ...modernInputSx,
+  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+    display: "none",
+    margin: 0,
+  },
+  "& input[type=number]": {
+    MozAppearance: "textfield",
+  },
+};
+
+const modernCheckboxSx = {
+  color: "#cbd5e1",
+  "&.Mui-checked": {
+    color: "#0f172a",
+  },
+  "&.Mui-disabled": {
+    color: "#cbd5e1",
+  },
+};
+
+const sectionTitleBoxSx = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  mb: 2,
+  pb: 1.25,
+  borderBottom: "1px solid #f1f5f9",
+};
+
 const Step1 = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -366,43 +437,152 @@ const Step1 = () => {
       className="pages-admin-target-style"
     >
       <Container sx={{ maxWidth: "100% !important" }}>
+        {/* Modern Page Header */}
         <Box
-          component={"h2"}
           sx={{
             display: "flex",
+            flexWrap: "wrap",
             alignItems: "center",
-            fontSize: "17px",
+            justifyContent: "space-between",
+            gap: 2,
             mb: 3,
           }}
         >
-          {" "}
-          {id ? (
-            <EditIcon sx={{ mr: 1, fontSize: "17px" }} color="secondary" />
-          ) : (
-            <AddIcon sx={{ mr: 1, fontSize: "17px" }} color="secondary" />
-          )}
-          {id ? "Edit" : "Add"} Product{" "}
-          {step2 && productTitle ? `(${productTitle})` : ""}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.75 }}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: "14px",
+                backgroundColor: "#0f172a",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 6px 16px rgba(15, 23, 42, 0.16)",
+              }}
+            >
+              {id ? (
+                <EditIcon sx={{ fontSize: 21 }} />
+              ) : (
+                <AddIcon sx={{ fontSize: 22 }} />
+              )}
+            </Box>
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.25,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Typography
+                  component="h2"
+                  sx={{
+                    fontSize: { xs: "18px", md: "22px" },
+                    fontWeight: 700,
+                    color: "#0f172a",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {id ? "Edit Product" : "Add New Product"}
+                </Typography>
+                {step2 && productTitle ? (
+                  <Box
+                    sx={{
+                      px: 1.25,
+                      py: 0.35,
+                      borderRadius: "999px",
+                      backgroundColor: "#fff7ed",
+                      border: "1px solid #ffedd5",
+                      color: "#f97316",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {productTitle}
+                  </Box>
+                ) : null}
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: "13px",
+                  color: "#64748b",
+                  mt: 0.25,
+                }}
+              >
+                {step2
+                  ? "Configure product type, pricing, variations, and publishing options"
+                  : "Fill in core product information, category, SEO metadata, and media gallery"}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
-        <Steppers step2={step2} />
 
+        {/* Stepper Progress Card */}
         <Box
           sx={{
-            backgroundColor: "white",
-            p: 3,
-            borderRadius: "10px",
-            boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-            mt: 2,
+            backgroundColor: "#ffffff",
+            px: { xs: 2, md: 4 },
+            py: 2.25,
+            borderRadius: "20px",
+            border: "1px solid #eef2f6",
+            boxShadow: "0 4px 20px -4px rgba(15, 23, 42, 0.04)",
+            mb: 2.5,
+          }}
+        >
+          <Steppers step2={step2} />
+        </Box>
+
+        {/* Main Form Surface */}
+        <Box
+          sx={{
+            backgroundColor: "#ffffff",
+            p: { xs: 2.25, md: 3.5 },
+            borderRadius: "24px",
+            border: "1px solid #eef2f6",
+            boxShadow: "0 10px 30px -10px rgba(15, 23, 42, 0.05)",
           }}
         >
           {step2 == false ? (
             isStep1Loading ? (
               <LoaderSpinner />
             ) : (
-              <Grid container spacing={1}>
+              <Grid container spacing={2.25}>
+                {/* Section 1 Header */}
+                <Grid size={{ xs: 12 }}>
+                  <Box sx={sectionTitleBoxSx}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          backgroundColor: "#10b981",
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                          fontWeight: 700,
+                          color: "#0f172a",
+                          letterSpacing: "-0.01em",
+                        }}
+                      >
+                        Basic Information & Classification
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ fontSize: "12px", color: "#94a3b8" }}>
+                      Step 1 of 2
+                    </Typography>
+                  </Box>
+                </Grid>
+
                 <Grid size={{ xs: 12, sm: 6, md: 2 }}>
                   <FormControl
-                    sx={{ minWidth: 120 }}
+                    sx={{ minWidth: 120, ...modernInputSx }}
                     disabled
                     size="small"
                     fullWidth
@@ -432,7 +612,7 @@ const Step1 = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={modernInputSx}>
                     <InputLabel id="product-condition-label" color="secondary">
                       Condition
                     </InputLabel>
@@ -484,6 +664,7 @@ const Step1 = () => {
                     placeholder="Enter product title"
                     error={Boolean(firstStepErrors.title)}
                     helperText={firstStepErrors.title}
+                    sx={modernInputSx}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 2 }}>
@@ -518,17 +699,7 @@ const Step1 = () => {
                     helperText={firstStepErrors.sort_order}
                     // Browser hint to prevent decrementing below 1
                     inputProps={{ min: 1 }}
-                    sx={{
-                      // Hide the up/down arrows (spinners)
-                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                        {
-                          display: "none",
-                          margin: 0,
-                        },
-                      "& input[type=number]": {
-                        MozAppearance: "textfield",
-                      },
-                    }}
+                    sx={modernNumberInputSx}
                   />
                 </Grid>
                 <Grid
@@ -542,17 +713,21 @@ const Step1 = () => {
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      border: "1px solid rgb(197, 196, 196)",
-                      borderRadius: "10px",
-                      padding: "2px 15px",
+                      border: "1px solid #e2e8f0",
+                      backgroundColor: "#f8fafc",
+                      borderRadius: "12px",
+                      padding: "2px 16px",
+                      minHeight: "40px",
                       height: "100%",
                     }}
                   >
                     <FormControlLabel
                       sx={{
-                        mr: 5,
+                        mr: 4,
                         "& .MuiFormControlLabel-label": {
-                          fontSize: "14px",
+                          fontSize: "13.5px",
+                          fontWeight: 600,
+                          color: "#0f172a",
                         },
                       }}
                       control={
@@ -563,15 +738,18 @@ const Step1 = () => {
                           checked={firstStepData.is_web}
                           onChange={handleInputChange}
                           type="checkbox"
+                          sx={modernCheckboxSx}
                         />
                       }
                       label="Web"
                     />
                     <FormControlLabel
                       sx={{
-                        mr: 5,
+                        mr: 4,
                         "& .MuiFormControlLabel-label": {
-                          fontSize: "14px",
+                          fontSize: "13.5px",
+                          fontWeight: 600,
+                          color: "#64748b",
                         },
                       }}
                       disabled
@@ -583,6 +761,7 @@ const Step1 = () => {
                           checked={Boolean(firstStepData.is_pos)}
                           onChange={handleInputChange}
                           type="checkbox"
+                          sx={modernCheckboxSx}
                         />
                       }
                       label="POS"
@@ -590,9 +769,11 @@ const Step1 = () => {
                     {firstStepData.is_pos ? (
                       <FormControlLabel
                         sx={{
-                          mr: 5,
+                          mr: 4,
                           "& .MuiFormControlLabel-label": {
-                            fontSize: "14px",
+                            fontSize: "13.5px",
+                            fontWeight: 600,
+                            color: "#f97316",
                           },
                         }}
                         control={
@@ -603,6 +784,10 @@ const Step1 = () => {
                             checked={Boolean(firstStepData.is_hot)}
                             onChange={handleInputChange}
                             type="checkbox"
+                            sx={{
+                              color: "#cbd5e1",
+                              "&.Mui-checked": { color: "#f97316" },
+                            }}
                           />
                         }
                         label="Hot"
@@ -626,9 +811,10 @@ const Step1 = () => {
                       {firstStepErrors.category_id && (
                         <Typography
                           sx={{
-                            color: "#d32f2f", // MUI error red color
+                            color: "#ef4444",
                             fontSize: "12px",
-                            mt: 1,
+                            fontWeight: 500,
+                            mt: 0.75,
                             ml: 1.5,
                           }}
                         >
@@ -668,6 +854,7 @@ const Step1 = () => {
                             color="secondary"
                             error={Boolean(firstStepErrors.brand_id)}
                             helperText={firstStepErrors.brand_id}
+                            sx={modernInputSx}
                           />
                         )}
                         loading={isLoading}
@@ -679,6 +866,32 @@ const Step1 = () => {
                 )}
                 {firstStepData.is_web ? (
                   <>
+                    <Grid size={{ xs: 12 }} sx={{ mt: 1 }}>
+                      <Box sx={sectionTitleBoxSx}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <Box
+                            sx={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              backgroundColor: "#f97316",
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                              fontWeight: 700,
+                              color: "#0f172a",
+                              letterSpacing: "-0.01em",
+                            }}
+                          >
+                            Fulfillment Time & SEO Metadata
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                       <TextField
                         id="days"
@@ -710,16 +923,7 @@ const Step1 = () => {
                         helperText={firstStepErrors.days}
                         // Browser-level hint to set minimum to 0
                         inputProps={{ min: 0 }}
-                        sx={{
-                          "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                            {
-                              display: "none",
-                              margin: 0,
-                            },
-                          "& input[type=number]": {
-                            MozAppearance: "textfield",
-                          },
-                        }}
+                        sx={modernNumberInputSx}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -759,16 +963,7 @@ const Step1 = () => {
                         error={Boolean(firstStepErrors.hours)}
                         helperText={firstStepErrors.hours}
                         inputProps={{ min: 0, max: 23 }}
-                        sx={{
-                          "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                            {
-                              display: "none",
-                              margin: 0,
-                            },
-                          "& input[type=number]": {
-                            MozAppearance: "textfield",
-                          },
-                        }}
+                        sx={modernNumberInputSx}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -808,16 +1003,7 @@ const Step1 = () => {
                         error={Boolean(firstStepErrors.minutes)}
                         helperText={firstStepErrors.minutes}
                         inputProps={{ min: 0, max: 59 }}
-                        sx={{
-                          "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                            {
-                              display: "none",
-                              margin: 0,
-                            },
-                          "& input[type=number]": {
-                            MozAppearance: "textfield",
-                          },
-                        }}
+                        sx={modernNumberInputSx}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 12 }}>
@@ -832,6 +1018,7 @@ const Step1 = () => {
                         color="secondary"
                         variant="outlined"
                         placeholder="Write meta title..."
+                        sx={modernInputSx}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 12 }}>
@@ -846,6 +1033,7 @@ const Step1 = () => {
                         color="secondary"
                         variant="outlined"
                         placeholder="Write meta description..."
+                        sx={modernInputSx}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 12 }}>
@@ -860,6 +1048,7 @@ const Step1 = () => {
                         color="secondary"
                         variant="outlined"
                         placeholder="Write keywords..."
+                        sx={modernInputSx}
                       />
                     </Grid>
                   </>
@@ -871,9 +1060,11 @@ const Step1 = () => {
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      border: "1px solid rgb(197, 196, 196)",
-                      borderRadius: "10px",
-                      padding: "2px 15px",
+                      flexWrap: "wrap",
+                      border: "1px solid #e2e8f0",
+                      backgroundColor: "#f8fafc",
+                      borderRadius: "12px",
+                      padding: "6px 18px",
                       height: "100%",
                     }}
                   >
@@ -881,7 +1072,9 @@ const Step1 = () => {
                       sx={{
                         mr: 5,
                         "& .MuiFormControlLabel-label": {
-                          fontSize: "14px",
+                          fontSize: "13.5px",
+                          fontWeight: 600,
+                          color: "#0f172a",
                         },
                       }}
                       control={
@@ -892,6 +1085,7 @@ const Step1 = () => {
                           checked={firstStepData.apply_stock_strictly}
                           onChange={handleInputChange}
                           type="checkbox"
+                          sx={modernCheckboxSx}
                         />
                       }
                       label="Apply Stock Strictly"
@@ -900,7 +1094,9 @@ const Step1 = () => {
                       sx={{
                         mr: 5,
                         "& .MuiFormControlLabel-label": {
-                          fontSize: "14px",
+                          fontSize: "13.5px",
+                          fontWeight: 600,
+                          color: "#64748b",
                         },
                       }}
                       disabled
@@ -912,55 +1108,105 @@ const Step1 = () => {
                           checked={firstStepData.get_stock_alert}
                           onChange={handleInputChange}
                           type="checkbox"
+                          sx={modernCheckboxSx}
                         />
                       }
                       label="Get Stock Alert"
                     />
-                    {/* <FormControlLabel
-                    sx={{
-                      mr: 5,
-                      "& .MuiFormControlLabel-label": {
-                        fontSize: "14px",
-                      },
-                    }}
-                    control={
-                      <Checkbox
-                        size="small"
-                        color="secondary"
-                        name="is_active_for_buy"
-                        checked={true}
-                        // onChange={handleChange}
-                      />
-                    }
-                    label="Offer Allowed"
-                  /> */}
                   </Box>
                 </Grid>
-                <Grid size={{ xs: 12, sm: 12, md: 12 }}>
+
+                {/* Product Media Section */}
+                <Grid size={{ xs: 12, sm: 12, md: 12 }} sx={{ mt: 1 }}>
+                  <Box sx={sectionTitleBoxSx}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          backgroundColor: "#0f172a",
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                          fontWeight: 700,
+                          color: "#0f172a",
+                          letterSpacing: "-0.01em",
+                        }}
+                      >
+                        Product Media Gallery
+                      </Typography>
+                    </Box>
+                    {selectedImagesList?.length > 0 && (
+                      <Box
+                        sx={{
+                          px: 1.25,
+                          py: 0.25,
+                          borderRadius: "999px",
+                          backgroundColor: "#ecfdf5",
+                          color: "#059669",
+                          fontSize: "11.5px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {selectedImagesList.length} Selected
+                      </Box>
+                    )}
+                  </Box>
                   <Box
                     component="label"
                     sx={{
-                      border: "2px dashed #e0e4f0",
-                      borderRadius: "12px",
-                      backgroundColor: "#f8faff",
+                      border: "2px dashed #cbd5e1",
+                      borderRadius: "18px",
+                      backgroundColor: "#f8fafc",
                       textAlign: "center",
-                      py: 4,
-                      // cursor: "pointer",
+                      py: 4.5,
+                      px: 2,
                       display: "block",
-                      transition: "0.3s",
+                      transition: "all 0.25s ease",
                       "&:hover": {
-                        backgroundColor: "#f0f4ff",
-                        borderColor: "#cbd2e1",
+                        backgroundColor: "#f1f5f9",
+                        borderColor: "#0f172a",
                       },
                     }}
                   >
-                    <Typography sx={{ color: "#5f6368", fontWeight: 600 }}>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: "14px",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #e2e8f0",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#0f172a",
+                        mb: 1.25,
+                        boxShadow: "0 4px 12px rgba(15, 23, 42, 0.06)",
+                      }}
+                    >
+                      <InsertPhotoIcon sx={{ fontSize: 24 }} />
+                    </Box>
+                    <Typography
+                      sx={{
+                        color: "#0f172a",
+                        fontWeight: 700,
+                        fontSize: "14.5px",
+                      }}
+                    >
                       Select Product Images Here!
                     </Typography>
 
                     {/* Validation Info Text */}
                     <Typography
-                      sx={{ fontSize: "11px", color: "#888", mt: 0.5, mb: 2 }}
+                      sx={{
+                        fontSize: "12px",
+                        color: "#64748b",
+                        mt: 0.5,
+                        mb: 2.25,
+                      }}
                     >
                       JPG, JPEG, PNG, WEBP (Max: 2MB per file)
                     </Typography>
@@ -971,18 +1217,20 @@ const Step1 = () => {
                       isProduct={true}
                     />
                   </Box>
-                  <Box sx={{ mt: selectedImagesList?.length > 0 ? 3 : 0 }}>
-                    <Grid container spacing={1.5}>
+                  <Box sx={{ mt: selectedImagesList?.length > 0 ? 2.5 : 0 }}>
+                    <Grid container spacing={1.75}>
                       {selectedImagesList.map((item, index) => (
                         <Grid item key={item.image_id || index}>
                           <Box
                             sx={{
                               position: "relative",
-                              width: "80px",
-                              height: "80px",
-                              border: "1px solid #eee",
-                              borderRadius: "8px",
-                              backgroundColor: "#f8faff",
+                              width: "88px",
+                              height: "88px",
+                              border: "1px solid #e2e8f0",
+                              borderRadius: "14px",
+                              backgroundColor: "#f8fafc",
+                              p: 0.5,
+                              boxShadow: "0 4px 12px rgba(15, 23, 42, 0.05)",
                             }}
                           >
                             <img
@@ -991,7 +1239,7 @@ const Step1 = () => {
                                 width: "100%",
                                 height: "100%",
                                 objectFit: "cover",
-                                borderRadius: "8px",
+                                borderRadius: "10px",
                               }}
                             />
                             <IconButton
@@ -999,16 +1247,17 @@ const Step1 = () => {
                               onClick={() => handleRemoveImage(item.image_id)}
                               sx={{
                                 position: "absolute",
-                                top: -6,
-                                right: -6,
-                                bgcolor: "#d32f2f",
+                                top: -7,
+                                right: -7,
+                                bgcolor: "#ef4444",
                                 color: "white",
-                                width: 18,
-                                height: 18,
-                                "&:hover": { bgcolor: "#b71c1c" },
+                                width: 22,
+                                height: 22,
+                                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
+                                "&:hover": { bgcolor: "#dc2626" },
                               }}
                             >
-                              <CloseIcon sx={{ fontSize: "12px" }} />
+                              <CloseIcon sx={{ fontSize: "13px" }} />
                             </IconButton>
                           </Box>
                         </Grid>
@@ -1016,33 +1265,59 @@ const Step1 = () => {
                     </Grid>
                   </Box>
                 </Grid>
-                <Grid size={{ xs: 12, sm: 12, md: 12 }}>
-                  <Box component={"h3"} sx={{ fontSize: "12px", mb: 1, mt: 2 }}>
+
+                {/* Product Description Section */}
+                <Grid size={{ xs: 12, sm: 12, md: 12 }} sx={{ mt: 1 }}>
+                  <Box
+                    component={"h3"}
+                    sx={{
+                      fontSize: "13.5px",
+                      fontWeight: 700,
+                      color: "#0f172a",
+                      mb: 1.25,
+                      mt: 1,
+                    }}
+                  >
                     Product Description:
                   </Box>
-                  <TextEditor
-                    value={firstStepData.description}
-                    onChange={(content) => {
-                      const baseContent =
-                        content === "<p><br></p>" ? "" : content;
-
-                      setFirstStepData((prev) => ({
-                        ...prev,
-                        description: baseContent,
-                      }));
-
-                      if (firstStepErrors.description) {
-                        setFirstStepErrors((prev) => ({
-                          ...prev,
-                          description: "",
-                        }));
-                      }
+                  <Box
+                    sx={{
+                      borderRadius: "14px",
+                      overflow: "hidden",
+                      border: "1px solid #e2e8f0",
                     }}
-                  />
+                  >
+                    <TextEditor
+                      value={firstStepData.description}
+                      onChange={(content) => {
+                        const baseContent =
+                          content === "<p><br></p>" ? "" : content;
+
+                        setFirstStepData((prev) => ({
+                          ...prev,
+                          description: baseContent,
+                        }));
+
+                        if (firstStepErrors.description) {
+                          setFirstStepErrors((prev) => ({
+                            ...prev,
+                            description: "",
+                          }));
+                        }
+                      }}
+                    />
+                  </Box>
                 </Grid>
+
+                {/* Step 1 Submit Footer */}
                 <Grid
                   size={{ xs: 12, sm: 12, md: 12 }}
-                  sx={{ textAlign: "end", mt: 1 }}
+                  sx={{
+                    textAlign: "end",
+                    mt: 2,
+                    pt: 2.5,
+                    borderTop: "1px solid #f1f5f9",
+                  }}
                 >
                   <Button
                     className="custom-secondary-btn-admin-side"
@@ -1052,16 +1327,33 @@ const Step1 = () => {
                       (!firstStepData.is_web && !firstStepData.is_pos)
                     }
                     sx={{
+                      backgroundColor: "#0f172a !important",
+                      backgroundImage: "none !important",
+                      color: "#ffffff !important",
+                      borderRadius: "999px !important",
+                      px: "28px !important",
+                      py: "10px !important",
+                      fontSize: "13.5px !important",
+                      fontWeight: "600 !important",
+                      textTransform: "none !important",
+                      boxShadow:
+                        "0 6px 16px -3px rgba(15, 23, 42, 0.25) !important",
+                      transition: "all 0.2s ease !important",
+                      "&:hover": {
+                        backgroundColor: "#1e293b !important",
+                        transform: "translateY(-1px)",
+                      },
                       "&.Mui-disabled": {
-                        backgroundColor: "#e0e0e0 !important",
-                        color: "#9e9e9e !important",
+                        backgroundColor: "#e2e8f0 !important",
+                        color: "#94a3b8 !important",
+                        boxShadow: "none !important",
                       },
                     }}
                   >
                     {isSubmitting ? (
                       <>
                         <CircularProgress
-                          size={20}
+                          size={18}
                           color="inherit"
                           sx={{ mr: 1 }}
                         />
@@ -1069,7 +1361,7 @@ const Step1 = () => {
                       </>
                     ) : (
                       <>
-                        <ArrowForwardIcon sx={{ mr: 1 }} />
+                        <ArrowForwardIcon sx={{ mr: 1, fontSize: 18 }} />
                         Next
                       </>
                     )}

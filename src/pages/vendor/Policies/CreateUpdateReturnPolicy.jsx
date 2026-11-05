@@ -5,26 +5,19 @@ import {
   Button,
   Grid,
   IconButton,
-  Switch,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import * as yup from "yup";
-import { styled } from "@mui/material/styles";
-import PropTypes from "prop-types";
-
 import { useFormik } from "formik";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import EditIcon from "@mui/icons-material/Edit";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import AssignmentReturnOutlinedIcon from "@mui/icons-material/AssignmentReturnOutlined";
 import {
-    useCreateReturn,
-  useCreateWarranty,
+  useCreateReturn,
   useUpdateReturn,
-  useUpdateWarranty,
 } from "../../../hook/vendor/usePolicies";
 import { handleError, handleSuccess } from "../../../toast";
 import TextEditor from "../../../components/TextEditor";
@@ -80,13 +73,10 @@ export default function ReturnModal({
           {
             onSuccess: (res) => {
               handleSuccess(res?.message || "Return updated successfully");
-              setOpen(false); // drawer close
-              console.log('oo')
+              setOpen(false);
             },
-
             onError: (error) => {
               const status = error?.response?.status;
-
               if (status === 422) {
                 handleError("Return already exist!");
               } else if (status === 404) {
@@ -101,12 +91,11 @@ export default function ReturnModal({
         createReturnMutation.mutate(payload, {
           onSuccess: () => {
             handleSuccess("Return created successfully");
-            setOpen(false); // modal close
+            setOpen(false);
             action.resetForm();
           },
           onError: (error) => {
             const status = error?.response?.status;
-
             if (status === 422) {
               handleError("Return already exist!");
             } else {
@@ -124,13 +113,19 @@ export default function ReturnModal({
     if (open) {
       setTimeout(() => {
         nameInputRef.current?.focus();
-      }, 100); // Small delay to ensure DOM is ready
+      }, 100);
     }
   }, [open]);
 
   const DrawerList = (
     <Box
-      sx={{ width: 630, p: 2 }}
+      sx={{
+        width: { xs: "100vw", sm: 580 },
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: "#ffffff",
+      }}
       role="presentation"
       className="inner-modal-search-view-set"
     >
@@ -139,87 +134,134 @@ export default function ReturnModal({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 2,
+          px: 3,
+          py: 2.5,
+          borderBottom: "1px solid #f1f5f9",
         }}
       >
-        <Typography sx={{ mb: 1, fontWeight: "600" }}>
-          {title_heading} Return Policy
-        </Typography>
-        <Box sx={{ textAlign: "start" }} onClick={toggleDrawer(false)}>
-          <CloseIcon sx={{ cursor: "pointer" }} />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: "12px",
+              bgcolor: "#0f172a",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 12px rgba(15, 23, 42, 0.15)",
+            }}
+          >
+            <AssignmentReturnOutlinedIcon sx={{ fontSize: 20 }} />
+          </Box>
+          <Box>
+            <Typography sx={{ fontWeight: 800, fontSize: "17px", color: "#0f172a", lineHeight: 1.2 }}>
+              {title_heading} Return Policy
+            </Typography>
+            <Typography sx={{ fontSize: "12px", color: "#64748b", fontWeight: 500, mt: 0.25 }}>
+              Define return window, eligibility, and refund rules
+            </Typography>
+          </Box>
         </Box>
+        <IconButton
+          onClick={toggleDrawer(false)}
+          size="small"
+          sx={{
+            width: 34,
+            height: 34,
+            borderRadius: "10px",
+            bgcolor: "#f8fafc",
+            border: "1px solid #e2e8f0",
+            color: "#64748b",
+            "&:hover": { bgcolor: "#0f172a", color: "#ffffff", borderColor: "#0f172a" },
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 18 }} />
+        </IconButton>
       </Box>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={1}>
-          <Grid size={{ xs: 12 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                border: "1px solid rgb(197, 196, 196)",
-                borderRadius: "10px",
-                padding: "8px",
-              }}
-            >
-              <Grid container spacing={1} sx={{ width: "100%" }}>
-                <Grid size={{ xs: 12 }}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    color="secondary"
-                    label="Title"
-                    variant="outlined"
-                    type="text"
-                    name="title"
-                    value={values.title}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={Boolean(errors.title && touched.title)}
-                    inputRef={nameInputRef} // 👈 this enables auto-focus
-                  />
 
-                  {touched.title && errors.title && (
-                    <Typography
-                      sx={{ fontSize: "12px", color: "red", mt: 0.5 }}
-                    >
-                      {errors.title}
+      <Box sx={{ p: 3, flex: 1, overflowY: "auto" }}>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12 }}>
+              <Box
+                sx={{
+                  width: "100%",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "18px",
+                  p: 2.5,
+                  bgcolor: "#ffffff",
+                  boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
+                }}
+              >
+                <Grid container spacing={2} sx={{ width: "100%" }}>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Policy Title"
+                      variant="outlined"
+                      type="text"
+                      name="title"
+                      value={values.title}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={Boolean(errors.title && touched.title)}
+                      inputRef={nameInputRef}
+                    />
+                    {touched.title && errors.title && (
+                      <Typography sx={{ fontSize: "12px", color: "#ef4444", fontWeight: 600, mt: 0.5 }}>
+                        {errors.title}
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <Typography sx={{ fontSize: "12.5px", fontWeight: 700, color: "#0f172a", mb: 1 }}>
+                      Policy Details
                     </Typography>
-                  )}
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <TextEditor
-                    value={values.description}
-                    onChange={(content) => {
-                      const baseContent =
-                        content === "<p><br></p>" ? "" : content;
-                      setFieldValue("description", baseContent);
-                    }}
-                  />
-                </Grid>
+                    <TextEditor
+                      value={values.description}
+                      onChange={(content) => {
+                        const baseContent =
+                          content === "<p><br></p>" ? "" : content;
+                        setFieldValue("description", baseContent);
+                      }}
+                    />
+                  </Grid>
 
-                <Box sx={{ textAlign: "end", width: "100%" }}>
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="custom-secondary-btn-admin-side"
-                    sx={{
-                      opacity: isLoading ? 0.6 : 1,
-                      cursor: isLoading ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {isLoading
-                      ? "Saving..."
-                      : list?.id
-                        ? "Update"
-                        : "Create Return"}
-                  </Button>
-                </Box>
-              </Grid>
-            </Box>
+                  <Grid size={{ xs: 12 }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.25, mt: 1 }}>
+                      <Button
+                        type="button"
+                        onClick={toggleDrawer(false)}
+                        className="custom-primary-btn-admin-side"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="custom-secondary-btn-admin-side"
+                        sx={{
+                          opacity: isLoading ? 0.6 : 1,
+                          cursor: isLoading ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {isLoading
+                          ? "Saving..."
+                          : list?.id
+                            ? "Update Policy"
+                            : "Create Return"}
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
+        </form>
+      </Box>
     </Box>
   );
 
@@ -230,7 +272,7 @@ export default function ReturnModal({
           onClick={toggleDrawer(true)}
           className="custom-secondary-btn-admin-side"
         >
-          <AddIcon sx={{ mr: 1 }} /> Add Return Policy
+          <AddIcon sx={{ mr: 0.75, fontSize: 18 }} /> Add Return Policy
         </Button>
       )}
       {showEditBtn && (
@@ -239,13 +281,17 @@ export default function ReturnModal({
             onClick={toggleDrawer(true)}
             size="small"
             sx={{
-              color: "#1976d2",
-              ml: 1,
-              bgcolor: "#e3f2fd",
-              "&:hover": { bgcolor: "#bbdefb" },
+              width: 32,
+              height: 32,
+              borderRadius: "10px",
+              color: "#0f172a",
+              ml: 0.75,
+              bgcolor: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              "&:hover": { bgcolor: "#0f172a", color: "#ffffff", borderColor: "#0f172a" },
             }}
           >
-            <EditIcon fontSize="small" />
+            <EditOutlinedIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </Tooltip>
       )}

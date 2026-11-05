@@ -2081,3 +2081,876 @@ a {
 #nprogress .spinner {
   display: none !important;
 }
+
+
+/* ==========================================================================
+   TEKNOVA STORE MODERN SIDEBAR STYLING
+   ========================================================================== */
+.admin-side-style {
+  background-color: #ffffff !important;
+  border-right: 1px solid #f1f5f9 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.admin-side-style .store-selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 12px 18px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f8fafc;
+  flex-shrink: 0;
+}
+
+.admin-side-style .store-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+  flex-shrink: 0;
+}
+
+.admin-side-style .pro-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background-color: #10b981;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-side-style .welcome-user-block {
+  padding: 12px 18px 14px 18px;
+  flex-shrink: 0;
+}
+
+.admin-side-style .welcome-breadcrumb {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+
+.admin-side-style .welcome-heading {
+  font-size: 18.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.admin-side-style .sidebar-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px 6px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.admin-side-style .menu-scrollable-container {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.admin-side-style .menu-scrollable-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.admin-side-style .menu-scrollable-container::-webkit-scrollbar-thumb {
+  background-color: #f1f5f9;
+  border-radius: 10px;
+}
+
+.admin-side-style .menu-scrollable-container::-webkit-scrollbar-thumb:hover {
+  background-color: #e2e8f0;
+}
+
+.admin-side-style .menu-list {
+  padding: 0 12px !important;
+}
+
+.admin-side-style .menu-list .item {
+  padding: 2.5px 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.admin-side-style .menu-list .item a {
+  background-color: transparent !important;
+  color: #475569 !important;
+  padding: 10px 16px !important;
+  width: 100% !important;
+  border-radius: 9999px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+  border: 1px solid transparent !important;
+}
+
+.admin-side-style .menu-list .item a:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.admin-side-style .menu-list .item a .icons-sidebar-menu {
+  margin-right: 12px !important;
+  background-color: transparent !important;
+  height: 20px !important;
+  width: 20px !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  color: #64748b !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: color 0.2s ease !important;
+}
+
+.admin-side-style .menu-list .item a .icons-sidebar-menu svg {
+  font-size: 20px !important;
+}
+
+/* Teknova Active Capsule Pill (Black) */
+.admin-side-style .menu-list .item .active-item {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22) !important;
+}
+
+.admin-side-style .menu-list .item .active-item:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+.admin-side-style .menu-list .item .active-item .icons-sidebar-menu,
+.admin-side-style .menu-list .item .active-item .icons-sidebar-menu svg {
+  color: #ffffff !important;
+}
+
+/* Active Submenu Child */
+.admin-side-style .menu-list .item .active-item-child {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 9999px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15) !important;
+}
+
+.admin-side-style .menu-list .item .active-item-child .icons-sidebar-menu-sub {
+  color: #ffffff !important;
+}
+
+.admin-side-style .menu-list .item .active-item-child:hover {
+  background-color: #334155 !important;
+}
+
+/* Counter Orange Badges */
+.sidebar-counter-badge {
+  background-color: #f97316 !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  padding: 0 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+/* Bottom Profile Card */
+.sidebar-profile-card {
+  padding: 14px 18px !important;
+  border-top: 1px solid #f1f5f9 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: auto !important;
+  background-color: #ffffff !important;
+  flex-shrink: 0 !important;
+}
+
+
+/* ==========================================================================
+   MODERN REFINED SUBMENU (INNER MENU)
+   ========================================================================== */
+.sidebar-submenu-tree {
+  margin-left: 28px !important;
+  padding-left: 14px !important;
+  border-left: 2px solid #e2e8f0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  margin-top: 5px !important;
+  margin-bottom: 8px !important;
+}
+
+.sidebar-submenu-link {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 14px !important;
+  border-radius: 9999px !important;
+  text-decoration: none !important;
+  color: #64748b !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background-color: transparent !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  border: 1px solid transparent !important;
+}
+
+.sidebar-submenu-link:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.sidebar-submenu-link .submenu-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: #cbd5e1 !important;
+  margin-right: 10px !important;
+  flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebar-submenu-link:hover .submenu-dot {
+  background-color: #0f172a !important;
+  transform: scale(1.2) !important;
+}
+
+.sidebar-submenu-link .submenu-text {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.3 !important;
+}
+
+/* Active Submenu Link */
+.sidebar-submenu-link.active-sub-link {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.18) !important;
+}
+
+.sidebar-submenu-link.active-sub-link .submenu-dot {
+  background-color: #10b981 !important;
+  box-shadow: 0 0 0 2.5px rgba(16, 185, 129, 0.3) !important;
+  transform: scale(1.15) !important;
+}
+
+.sidebar-submenu-link.active-sub-link:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+
+/* High-specificity override to left-align submenu text next to the dot */
+.admin-side-style .menu-list .item a.sidebar-submenu-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  padding: 8px 14px !important;
+  border-radius: 9999px !important;
+  text-decoration: none !important;
+  color: #64748b !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  background-color: transparent !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+
+.admin-side-style .menu-list .item a.sidebar-submenu-link .submenu-dot {
+  margin-right: 0 !important;
+}
+
+.admin-side-style .menu-list .item a.sidebar-submenu-link .submenu-text {
+  text-align: left !important;
+}
+
+.admin-side-style .menu-list .item a.sidebar-submenu-link:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.admin-side-style .menu-list .item a.sidebar-submenu-link.active-sub-link {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06) !important;
+}
+
+
+/* ==========================================
+   MODERN ADMIN PANEL & INPUT OVERRIDES
+   ========================================== */
+.pages-admin-target-style {
+  padding: 20px 24px !important;
+}
+
+.pages-admin-target-style .MuiOutlinedInput-notchedOutline {
+  border-color: #e2e8f0 !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.pages-admin-target-style .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #cbd5e1 !important;
+}
+
+.pages-admin-target-style .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #0f172a !important;
+  border-width: 1.5px !important;
+}
+
+.pages-admin-target-style .MuiFormLabel-root {
+  background-color: transparent !important;
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+.pages-admin-target-style .MuiFormLabel-root.Mui-focused {
+  color: #0f172a !important;
+}
+
+.pages-admin-target-style .MuiInputBase-root {
+  border-radius: 12px !important;
+  background-color: #ffffff;
+}
+
+.custom-secondary-btn-admin-side {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+  border-radius: 999px !important;
+  padding: 8px 20px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16) !important;
+  transition: all 0.2s ease !important;
+}
+
+.custom-secondary-btn-admin-side:hover {
+  background-color: #1e293b !important;
+  border-color: #1e293b !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22) !important;
+}
+
+.custom-primary-btn-admin-side {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 999px !important;
+  padding: 8px 20px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.custom-primary-btn-admin-side:hover {
+  background-color: #f8fafc !important;
+  border-color: #0f172a !important;
+  color: #0f172a !important;
+}
+
+.confirm-delete-popup-target .MuiPaper-root {
+  border-radius: 24px !important;
+  padding: 24px !important;
+  max-width: 380px !important;
+  width: 100% !important;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.16) !important;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.search-modal-panel-style-set .MuiDrawer-paper {
+  border-radius: 24px 0 0 24px !important;
+  box-shadow: -12px 0 40px rgba(15, 23, 42, 0.1) !important;
+  border-left: 1px solid #f1f5f9 !important;
+}
+
+
+/* ==========================================================================
+   ADMIN DARK MODE THEME (PERSISTED IN LOCALSTORAGE)
+   ========================================================================== */
+body.admin-dark-mode {
+  background-color: #0b0f19 !important;
+  color: #f8fafc !important;
+}
+
+/* Main Layout & Page Background */
+body.admin-dark-mode .admin-layout-full,
+body.admin-dark-mode .pages-admin-target-style,
+body.admin-dark-mode .admin-layout-full > .MuiBox-root {
+  background-color: #0b0f19 !important;
+  color: #f8fafc !important;
+}
+
+/* Sidebar Dark Mode */
+body.admin-dark-mode .admin-side-style {
+  background-color: #111827 !important;
+  border-right: 1px solid #1e293b !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.admin-dark-mode .admin-side-style .top-header-logo {
+  background-color: #111827 !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+body.admin-dark-mode .admin-side-style .top-header-logo img {
+  filter: brightness(1.15) contrast(1.05);
+}
+
+body.admin-dark-mode .admin-side-style .sidebar-section-heading {
+  color: #64748b !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-scrollable-container::-webkit-scrollbar-thumb {
+  background-color: #1e293b !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a {
+  color: #94a3b8 !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a .icons-sidebar-menu {
+  color: #64748b !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a:hover {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a:hover .icons-sidebar-menu {
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item .active-item {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item .active-item .icons-sidebar-menu,
+body.admin-dark-mode .admin-side-style .menu-list .item .active-item .icons-sidebar-menu svg {
+  color: #10b981 !important;
+}
+
+body.admin-dark-mode .sidebar-submenu-tree {
+  border-left-color: #1e293b !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a.sidebar-submenu-link {
+  color: #94a3b8 !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a.sidebar-submenu-link .submenu-dot {
+  background-color: #475569 !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a.sidebar-submenu-link:hover {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a.sidebar-submenu-link.active-sub-link {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.admin-dark-mode .admin-side-style .menu-list .item a.sidebar-submenu-link.active-sub-link .submenu-dot {
+  background-color: #10b981 !important;
+}
+
+body.admin-dark-mode .sidebar-profile-card {
+  background-color: #111827 !important;
+  border-top: 1px solid #1e293b !important;
+}
+
+body.admin-dark-mode .sidebar-profile-card div {
+  color: #f8fafc !important;
+}
+
+/* Cards, Papers, Tables, Drawers & Modals */
+body.admin-dark-mode .MuiPaper-root,
+body.admin-dark-mode .MuiDrawer-paper,
+body.admin-dark-mode .MuiDialog-paper,
+body.admin-dark-mode .inner-modal-search-view-set {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+  border-color: #1e293b !important;
+}
+
+/* Elevated White Cards & Containers inside Admin Content */
+body.admin-dark-mode .admin-layout-full .MuiContainer-root .MuiBox-root[style*="background-color: white"],
+body.admin-dark-mode .admin-layout-full .MuiContainer-root .MuiBox-root[style*="background-color: rgb(255, 255, 255)"] {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+/* Catch MUI sx white/slate card boxes inside admin layout, drawers, and dialogs */
+body.admin-dark-mode .pages-admin-target-style .MuiContainer-root > .MuiBox-root:not(:first-of-type),
+body.admin-dark-mode .inner-modal-search-view-set > .MuiBox-root,
+body.admin-dark-mode .inner-modal-search-view-set form .MuiBox-root {
+  border-color: #1e293b !important;
+}
+
+/* Table Headers, Sticky Columns, & Rows */
+body.admin-dark-mode .MuiTableHead-root .MuiTableRow-root,
+body.admin-dark-mode .MuiTableHead-root .MuiTableCell-root {
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.admin-dark-mode .MuiTableBody-root .MuiTableRow-root {
+  background-color: #111827 !important;
+}
+
+body.admin-dark-mode .MuiTableBody-root .MuiTableRow-root:hover {
+  background-color: #1e293b !important;
+}
+
+body.admin-dark-mode .MuiTableBody-root .MuiTableCell-root {
+  color: #e2e8f0 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.admin-dark-mode .sticky-left,
+body.admin-dark-mode .sticky-title,
+body.admin-dark-mode .sticky-action {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.admin-dark-mode .MuiTableHead-root .sticky-left,
+body.admin-dark-mode .MuiTableHead-root .sticky-title,
+body.admin-dark-mode .MuiTableHead-root .sticky-action {
+  background-color: #0f172a !important;
+}
+
+body.admin-dark-mode .MuiTableBody-root .MuiTableRow-root:hover .sticky-left,
+body.admin-dark-mode .MuiTableBody-root .MuiTableRow-root:hover .sticky-title,
+body.admin-dark-mode .MuiTableBody-root .MuiTableRow-root:hover .sticky-action {
+  background-color: #1e293b !important;
+}
+
+/* Typography & Headings */
+body.admin-dark-mode .admin-layout-full .MuiTypography-root,
+body.admin-dark-mode .MuiDrawer-paper .MuiTypography-root,
+body.admin-dark-mode .MuiDialog-paper .MuiTypography-root {
+  color: #e2e8f0;
+}
+
+body.admin-dark-mode .admin-layout-full h1,
+body.admin-dark-mode .admin-layout-full h2,
+body.admin-dark-mode .admin-layout-full h3,
+body.admin-dark-mode .admin-layout-full h4,
+body.admin-dark-mode .MuiDialogTitle-root {
+  color: #f8fafc !important;
+}
+
+/* Inputs, Selects, Autocompletes & Labels */
+body.admin-dark-mode .MuiInputBase-root {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .MuiInputBase-input {
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .MuiInputBase-input::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+body.admin-dark-mode .MuiOutlinedInput-notchedOutline,
+body.admin-dark-mode .pages-admin-target-style .MuiOutlinedInput-notchedOutline {
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline,
+body.admin-dark-mode .pages-admin-target-style .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #475569 !important;
+}
+
+body.admin-dark-mode .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline,
+body.admin-dark-mode .pages-admin-target-style .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #10b981 !important;
+}
+
+body.admin-dark-mode .MuiFormLabel-root,
+body.admin-dark-mode .pages-admin-target-style .MuiFormLabel-root {
+  color: #94a3b8 !important;
+}
+
+body.admin-dark-mode .MuiFormLabel-root.Mui-focused,
+body.admin-dark-mode .pages-admin-target-style .MuiFormLabel-root.Mui-focused {
+  color: #10b981 !important;
+}
+
+body.admin-dark-mode .MuiSelect-icon,
+body.admin-dark-mode .MuiAutocomplete-popupIndicator,
+body.admin-dark-mode .MuiAutocomplete-clearIndicator {
+  color: #94a3b8 !important;
+}
+
+body.admin-dark-mode .MuiMenuItem-root {
+  color: #e2e8f0 !important;
+}
+
+body.admin-dark-mode .MuiMenuItem-root:hover,
+body.admin-dark-mode .MuiMenuItem-root.Mui-selected {
+  background-color: #1e293b !important;
+}
+
+/* Pagination */
+body.admin-dark-mode .MuiPaginationItem-root {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .MuiPaginationItem-root:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+body.admin-dark-mode .MuiPaginationItem-root.Mui-selected {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+}
+
+/* Primary & Secondary Admin Buttons in Dark Mode */
+body.admin-dark-mode .custom-secondary-btn-admin-side {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.22) !important;
+}
+
+body.admin-dark-mode .custom-secondary-btn-admin-side:hover {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+}
+
+body.admin-dark-mode .custom-primary-btn-admin-side {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .custom-primary-btn-admin-side:hover {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+}
+
+/* Rich Text Editor (Quill) Dark Mode */
+body.admin-dark-mode .ql-toolbar.ql-snow {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .ql-container.ql-snow {
+  background-color: #0b0f19 !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .ql-snow .ql-stroke {
+  stroke: #cbd5e1 !important;
+}
+
+body.admin-dark-mode .ql-snow .ql-fill {
+  fill: #cbd5e1 !important;
+}
+
+body.admin-dark-mode .ql-snow .ql-picker {
+  color: #cbd5e1 !important;
+}
+
+body.admin-dark-mode .ql-snow .ql-picker-options {
+  background-color: #111827 !important;
+  border-color: #334155 !important;
+}
+
+/* Dividers & Tabs */
+body.admin-dark-mode .MuiDivider-root {
+  border-color: #1e293b !important;
+}
+
+body.admin-dark-mode .MuiTab-root {
+  color: #94a3b8 !important;
+}
+
+body.admin-dark-mode .MuiTab-root.Mui-selected {
+  color: #10b981 !important;
+}
+
+body.admin-dark-mode .MuiTabs-indicator {
+  background-color: #10b981 !important;
+}
+
+
+/* Deep Card & Surface Selectors for Admin Pages & Drawers in Dark Mode */
+body.admin-dark-mode .pages-admin-target-style > .MuiContainer-root > .MuiBox-root:not(:first-of-type),
+body.admin-dark-mode .pages-admin-target-style .MuiGrid-root > .MuiBox-root {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+}
+
+/* Nested Cards / Sub-panels inside Grid Cards (Variation Cards, Search Bars, Order Item Cards, Dropzones) */
+body.admin-dark-mode .pages-admin-target-style .MuiGrid-root > .MuiBox-root .MuiGrid-root > .MuiBox-root,
+body.admin-dark-mode .pages-admin-target-style .MuiCollapse-root .MuiBox-root,
+body.admin-dark-mode .inner-modal-search-view-set form .MuiGrid-root > .MuiBox-root,
+body.admin-dark-mode .MuiDialog-paper .MuiDialogContent-root,
+body.admin-dark-mode .MuiDialog-paper > .MuiBox-root {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+/* Pagination Bar & Table Footers inside Cards */
+body.admin-dark-mode .pages-admin-target-style > .MuiContainer-root > .MuiBox-root > .MuiBox-root,
+body.admin-dark-mode .MuiTableContainer-root > .MuiBox-root {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+/* Labels & Dropzone Containers inside Drawers / Modals / Step 1 */
+body.admin-dark-mode label.MuiBox-root {
+  background-color: #0b0f19 !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode label.MuiBox-root:hover {
+  border-color: #10b981 !important;
+}
+
+
+/* ==========================================================================
+   MODERN LOGIN & SIGNUP PAGE OVERRIDES
+   ========================================================================== */
+.login-singup-page {
+  background-color: #ffffff !important;
+  border-radius: 24px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08) !important;
+}
+
+.login-singup-page .custom-primary-btn {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 12px 24px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18) !important;
+  transition: all 0.2s ease !important;
+}
+
+.login-singup-page .custom-primary-btn:hover {
+  background-color: #1e293b !important;
+  opacity: 1 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24) !important;
+}
+
+.login-singup-page .custom-secondary-btn {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 11px 24px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.login-singup-page .custom-secondary-btn:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  opacity: 1 !important;
+}
+
+/* Dark Mode Support for Login & Signup */
+body.admin-dark-mode .login-singup-page {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.admin-dark-mode .login-singup-page h5,
+body.admin-dark-mode .login-singup-page a {
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .login-singup-page .custom-primary-btn {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.24) !important;
+}
+
+body.admin-dark-mode .login-singup-page .custom-primary-btn:hover {
+  background-color: #059669 !important;
+}
+
+body.admin-dark-mode .login-singup-page .custom-secondary-btn {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+body.admin-dark-mode .login-singup-page .custom-secondary-btn:hover {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #ffffff !important;
+}

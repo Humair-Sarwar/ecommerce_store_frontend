@@ -1,30 +1,35 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiAuth } from "../../utils/apis/api-client";
 
 // fetch Brands function
-const fetchBrandApi = async ({page, per_page, search}) => {
+const fetchBrandApi = async ({ page, per_page, search, signal }) => {
   const res = await apiAuth.get("/api/vendor/brands", {
     params: {
       page,
       per_page,
-      search
+      ...(search ? { search } : {}),
     },
+    signal,
   });
   return res.data;
 };
 
 // hook
-export const fetchBrands = (page, per_page, search) => {
+export const fetchBrands = (page, per_page, search, options = {}) => {
   return useQuery({
-    queryKey: ["brands", page, per_page, search],
-    queryFn: () => fetchBrandApi({ page, per_page, search }),
-    keepPreviousData: true,
+    queryKey: ["brands", page, per_page, search || ""],
+    queryFn: ({ signal }) =>
+      fetchBrandApi({ page, per_page, search, signal }),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 30,
+    ...options,
   });
 };
-
-
-
-
 
 // ================== CREATE BRAND ==================
 const createBrandApi = async (payload) => {
@@ -37,25 +42,12 @@ export const useCreateBrand = () => {
 
   return useMutation({
     mutationFn: createBrandApi,
-
     onSuccess: () => {
-      // 🔥 refetch brands list automatically
       queryClient.invalidateQueries({ queryKey: ["brands"] });
+      queryClient.invalidateQueries({ queryKey: ["brands-panel"] });
     },
   });
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const useUpdateBrand = () => {
   const queryClient = useQueryClient();
@@ -67,20 +59,12 @@ export const useUpdateBrand = () => {
 
       return res.data;
     },
-
     onSuccess: () => {
-      queryClient.invalidateQueries(["brands"]);
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
+      queryClient.invalidateQueries({ queryKey: ["brands-panel"] });
     },
   });
 };
-
-
-
-
-
-
-
-
 
 export const useDeleteBrand = () => {
   const queryClient = useQueryClient();
@@ -90,26 +74,12 @@ export const useDeleteBrand = () => {
       const res = await apiAuth.delete(`/api/vendor/brand/${id}`);
       return res.data;
     },
-
     onSuccess: () => {
-      // refresh brand list
-      queryClient.invalidateQueries(["brands"]);
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
+      queryClient.invalidateQueries({ queryKey: ["brands-panel"] });
     },
   });
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const useUpdateBrandStatus = () => {
   const queryClient = useQueryClient();
@@ -124,23 +94,17 @@ export const useUpdateBrandStatus = () => {
 
       const res = await apiAuth.post(
         "/api/vendor/brand/status/update",
-        formData
+        formData,
       );
 
       return res.data;
     },
-
     onSuccess: () => {
-      queryClient.invalidateQueries(["brands"]);
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
+      queryClient.invalidateQueries({ queryKey: ["brands-panel"] });
     },
   });
 };
-
-
-
-
-
-
 
 export const useDeleteSelectedBrands = () => {
   const queryClient = useQueryClient();
@@ -148,34 +112,27 @@ export const useDeleteSelectedBrands = () => {
   return useMutation({
     mutationFn: async (brand_ids) => {
       const res = await apiAuth.delete("/api/vendor/brands", {
-        data: { brand_ids }, 
+        data: { brand_ids },
       });
 
       return res.data;
     },
-
     onSuccess: () => {
-      queryClient.invalidateQueries(["brands"]);
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
+      queryClient.invalidateQueries({ queryKey: ["brands-panel"] });
     },
   });
 };
 
-
-
-
-
-
-
-
-export const useFetchBrandsPanel = () => {
+export const useFetchBrandsPanel = (options = {}) => {
   return useQuery({
     queryKey: ["brands-panel"],
-
-    queryFn: async () => {
-      const res = await apiAuth.get("/api/vendor/brands/panel");
+    queryFn: async ({ signal }) => {
+      const res = await apiAuth.get("/api/vendor/brands/panel", { signal });
       return res.data;
     },
-
-    staleTime: 1000 * 60 * 5, // ⏱ cache 5 min
+    staleTime: 1000 * 60 * 5, // 5 min cache
+    gcTime: 1000 * 60 * 10,
+    ...options,
   });
 };

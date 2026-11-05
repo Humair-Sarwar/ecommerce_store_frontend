@@ -1,37 +1,26 @@
 import {
   Box,
-  Button,
   Checkbox,
   Container,
-  debounce,
-  IconButton,
-  Pagination,
+  InputAdornment,
   Skeleton,
   Switch,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
-
-import CategoryIcon from "@mui/icons-material/Category";
+import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import BrandModal from "./BrandCreateModal";
-
 import Paper from "@mui/material/Paper";
-import {
-  deleteSelectedBrandsApi,
-  updateBrandActiveApi,
-} from "../../utils/apis/APIs";
-import { handleSuccess } from "../../toast";
+import { handleError, handleSuccess } from "../../toast";
 import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
-import LoaderSpinner from "../../components/LoaderSpinner";
 import PreviewImage from "../../components/PreviewImage";
 import ViewBrandDetails from "./ViewBrandDetails";
 import {
@@ -42,7 +31,38 @@ import {
 } from "../../hook/vendor/useBrand";
 import PaginationSet from "../../components/PaginationSet";
 
-const label = { inputProps: { "aria-label": "Color switch demo" } };
+const label = { inputProps: { "aria-label": "Select all brands" } };
+
+const modernSwitchSx = {
+  width: 40,
+  height: 22,
+  p: 0,
+  "& .MuiSwitch-switchBase": {
+    p: 0,
+    m: "2px",
+    transitionDuration: "250ms",
+    "&.Mui-checked": {
+      transform: "translateX(18px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
+        backgroundColor: "#10b981",
+        opacity: 1,
+        border: 0,
+      },
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    boxSizing: "border-box",
+    width: 18,
+    height: 18,
+    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+  },
+  "& .MuiSwitch-track": {
+    borderRadius: 22 / 2,
+    backgroundColor: "#cbd5e1",
+    opacity: 1,
+  },
+};
 
 const Brands = () => {
   const [selectedBrandIds, setSelectedBrandIds] = useState([]);
@@ -66,15 +86,12 @@ const Brands = () => {
     }
   };
 
-  // derive all full objects once (you need business_id for each)
   const allBrandObjects = brands?.map((b) => ({
     id: b.id,
     business_id: b.business_id,
   }));
 
-  // convenience: set of selected ids for fast membership
   const selectedIdsSet = new Set(selectedBrandIds?.map((b) => b.id));
-
   const allIds = allBrandObjects?.map((b) => b.id);
   const allSelected =
     allIds?.length > 0 && allIds.every((id) => selectedIdsSet.has(id));
@@ -82,7 +99,6 @@ const Brands = () => {
 
   const handleAllSltBrand = (e) => {
     if (e.target.checked) {
-      // select all full objects (avoid duplicates if you ever reuse this)
       setSelectedBrandIds(() => allBrandObjects);
     } else {
       setSelectedBrandIds([]);
@@ -95,7 +111,7 @@ const Brands = () => {
     deleteSelectedMutation.mutate(selectedIds, {
       onSuccess: (res) => {
         handleSuccess(res?.message || "Brands deleted successfully");
-        setSelectedBrandIds([]); // important reset
+        setSelectedBrandIds([]);
       },
       onError: () => {
         handleError("Failed to delete brands");
@@ -143,188 +159,284 @@ const Brands = () => {
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          backgroundColor: "#f0f0f0",
-          minHeight: "100vh",
-          py: 6,
-        }}
-      >
-        <Container sx={{ maxWidth: "100% !important" }}>
-          <Box
-            component={"h2"}
-            sx={{ display: "flex", alignItems: "center", fontSize: "17px" }}
-          >
-            {" "}
-            <LocalOfferIcon
-              sx={{ mr: 1, fontSize: "17px" }}
-              color="secondary"
-            />{" "}
-            Brands
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mb: 3,
-              mt: 3,
-            }}
-          >
-            <Box sx={{ display: "flex" }}>
-              <TextField
-                id="outlined-basic"
-                label="Search brand by name"
-                sx={{ backgroundColor: "white", borderRadius: "5px" }}
-                variant="outlined"
-                size="small"
-                color="secondary"
-                onChange={handleSearchBrand}
-                value={search}
-              />
-
-              {selectedBrandIds?.length > 0 ? (
-                <ConfirmDeletePopup
-                  title={"Brands"}
-                  showSltDelBtn={true}
-                  selectedBrandIds={selectedBrandIds}
-                  handleDeleteAllSltBrands={handleDeleteAllSltBrands}
-                  description={
-                    "Are your sure you want to delete these selected brands?"
-                  }
-                />
-              ) : (
-                ""
-              )}
-            </Box>
-            <BrandModal showCrtBrandBtn={true} title_heading={"Create"} />
-          </Box>
-
-          <TableContainer
-            component={Paper}
-            sx={{
-              borderRadius: "15px",
-              boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-            }}
-          >
-            <Table
-              size="small"
-              sx={{ minWidth: 250 }}
-              aria-label="simple table"
+    <Box
+      sx={{
+        backgroundColor: "#f8fafc",
+        minHeight: "100vh",
+        py: 3,
+      }}
+      className="pages-admin-target-style"
+    >
+      <Container sx={{ maxWidth: "100% !important" }}>
+        {/* Page Header */}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+            mb: 3,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: "14px",
+                bgcolor: "#0f172a",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)",
+              }}
             >
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "#f3f5f9" }}>
-                  <TableCell sx={{ fontWeight: "bold" }}>
-                    <Checkbox
-                      indeterminate={someSelected}
-                      checked={allSelected}
-                      onChange={handleAllSltBrand}
-                      size="small"
-                      {...label}
-                      color="secondary"
-                    />
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Image</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Brand Name</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Slug</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Active</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }} align="center">
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {isLoading ? (
-                  Array.from(new Array(per_page || 5)).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Skeleton
-                          variant="rectangular"
-                          width={20}
-                          height={20}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton variant="rounded" width={40} height={40} />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton variant="text" width="80%" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton variant="text" width="60%" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton
-                          variant="rectangular"
-                          width={34}
-                          height={20}
-                          sx={{ borderRadius: 10 }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: 1,
-                          }}
-                        >
-                          <Skeleton variant="circular" width={30} height={30} />
-                          <Skeleton variant="circular" width={30} height={30} />
-                          <Skeleton variant="circular" width={30} height={30} />
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : brands?.length > 0 ? (
-                  brands?.map((list) => (
-                    <TableRow
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell>
-                        <Checkbox
-                          size="small"
-                          onChange={(e) => handleSelectBrand(e, list)}
-                          checked={selectedBrandIds.some(
-                            (b) => b.id === list?.id,
-                          )}
-                          color="secondary"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <PreviewImage list={list} />
-                      </TableCell>
-                      <TableCell
+              <LocalOfferOutlinedIcon sx={{ fontSize: 22 }} />
+            </Box>
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography
+                  sx={{
+                    fontSize: "20px",
+                    fontWeight: 800,
+                    color: "#0f172a",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Brands
+                </Typography>
+                {pagination?.total !== undefined && (
+                  <Box
+                    sx={{
+                      px: 1.1,
+                      py: 0.25,
+                      borderRadius: "999px",
+                      bgcolor: "#ecfdf5",
+                      border: "1px solid #a7f3d0",
+                      color: "#059669",
+                      fontSize: "11.5px",
+                      fontWeight: 800,
+                    }}
+                  >
+                    {pagination.total}
+                  </Box>
+                )}
+              </Box>
+              <Typography sx={{ fontSize: "12.5px", color: "#64748b", fontWeight: 500, mt: 0.25 }}>
+                Manage product brands, logos, and visibility
+              </Typography>
+            </Box>
+          </Box>
+
+          <BrandModal showCrtBrandBtn={true} title_heading={"Create"} />
+        </Box>
+
+        {/* Search & Bulk Actions Bar */}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            mb: 2.5,
+            p: 2,
+            bgcolor: "#ffffff",
+            borderRadius: "20px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 4px 20px rgba(15, 23, 42, 0.03)",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1, flex: 1 }}>
+            <TextField
+              id="outlined-basic"
+              placeholder="Search brand by name..."
+              variant="outlined"
+              size="small"
+              onChange={handleSearchBrand}
+              value={search}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchRoundedIcon sx={{ color: "#94a3b8", fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                minWidth: { xs: "100%", sm: 300 },
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "12px",
+                  bgcolor: "#f8fafc",
+                },
+              }}
+            />
+
+            {selectedBrandIds?.length > 0 && (
+              <ConfirmDeletePopup
+                title={"Brands"}
+                showSltDelBtn={true}
+                selectedBrandIds={selectedBrandIds}
+                handleDeleteAllSltBrands={handleDeleteAllSltBrands}
+                description={
+                  "Are your sure you want to delete these selected brands?"
+                }
+              />
+            )}
+          </Box>
+        </Box>
+
+        {/* Table Card */}
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: "24px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+            overflow: "hidden",
+            bgcolor: "#ffffff",
+          }}
+        >
+          <Table size="small" sx={{ minWidth: 500 }} aria-label="brands table">
+            <TableHead>
+              <TableRow
+                sx={{
+                  backgroundColor: "#f8fafc",
+                  "& th": {
+                    fontWeight: 700,
+                    fontSize: "11.5px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "#64748b",
+                    py: 1.5,
+                    borderBottom: "1px solid #e2e8f0",
+                  },
+                }}
+              >
+                <TableCell width={52}>
+                  <Checkbox
+                    indeterminate={someSelected}
+                    checked={allSelected}
+                    onChange={handleAllSltBrand}
+                    size="small"
+                    {...label}
+                    sx={{
+                      color: "#cbd5e1",
+                      "&.Mui-checked, &.MuiCheckbox-indeterminate": {
+                        color: "#0f172a",
+                      },
+                    }}
+                  />
+                </TableCell>
+                <TableCell>Image</TableCell>
+                <TableCell>Brand Name</TableCell>
+                <TableCell>Slug</TableCell>
+                <TableCell>Active</TableCell>
+                <TableCell align="center">Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {isLoading ? (
+                Array.from(new Array(per_page || 5)).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Skeleton variant="rounded" width={20} height={20} />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Skeleton variant="rounded" width={40} height={40} sx={{ borderRadius: "10px" }} />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Skeleton variant="text" width="70%" />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Skeleton variant="text" width="50%" />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Skeleton variant="rounded" width={40} height={22} sx={{ borderRadius: 11 }} />
+                    </TableCell>
+                    <TableCell align="center" sx={{ py: 1.5 }}>
+                      <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+                        <Skeleton variant="rounded" width={32} height={32} sx={{ borderRadius: "10px" }} />
+                        <Skeleton variant="rounded" width={32} height={32} sx={{ borderRadius: "10px" }} />
+                        <Skeleton variant="rounded" width={32} height={32} sx={{ borderRadius: "10px" }} />
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : brands?.length > 0 ? (
+                brands?.map((list) => (
+                  <TableRow
+                    key={list?.id}
+                    sx={{
+                      transition: "background-color 0.15s ease",
+                      "&:hover": { bgcolor: "#f8fafc" },
+                      "& td": { borderBottom: "1px solid #f1f5f9", py: 1.25 },
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
+                  >
+                    <TableCell>
+                      <Checkbox
+                        size="small"
+                        onChange={(e) => handleSelectBrand(e, list)}
+                        checked={selectedBrandIds.some((b) => b.id === list?.id)}
                         sx={{
-                          maxWidth: 150,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          color: "#cbd5e1",
+                          "&.Mui-checked": { color: "#0f172a" },
                         }}
-                      >
-                        {list?.title}
-                      </TableCell>
-                      <TableCell
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <PreviewImage list={list} />
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        maxWidth: 200,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontWeight: 700,
+                        fontSize: "13.5px",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {list?.title}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        maxWidth: 180,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Box
+                        component="span"
                         sx={{
-                          maxWidth: 150,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          px: 1.25,
+                          py: 0.4,
+                          borderRadius: "8px",
+                          bgcolor: "#f1f5f9",
+                          color: "#475569",
+                          fontFamily: "monospace",
+                          fontSize: "12px",
+                          fontWeight: 600,
                         }}
                       >
                         {list?.slug}
-                      </TableCell>
-                      <TableCell>
-                        <Switch
-                          size="small"
-                          color="secondary"
-                          onChange={(e) => handleStatusChange(e, list)}
-                          checked={Boolean(list?.status)}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        size="small"
+                        onChange={(e) => handleStatusChange(e, list)}
+                        checked={Boolean(list?.status)}
+                        sx={modernSwitchSx}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: "inline-flex", alignItems: "center" }}>
                         <ViewBrandDetails list={list} />
-
                         <BrandModal
                           showEditBtn={true}
                           title_heading={"Edit"}
@@ -332,9 +444,7 @@ const Brands = () => {
                         />
                         <ConfirmDeletePopup
                           title={"Brand"}
-                          description={
-                            "Are your sure you want to delete this brand?"
-                          }
+                          description={"Are your sure you want to delete this brand?"}
                           showDelBtn={true}
                           handleDeleteBrand={handleDeleteBrand}
                           singleBrandDelRec={{
@@ -342,57 +452,60 @@ const Brands = () => {
                             business_id: list?.business_id,
                           }}
                         />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableCell align="center" colSpan={7}>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell align="center" colSpan={6}>
                     <Box
                       sx={{
                         textAlign: "center",
-                        py: 4,
-                        color: "#888",
+                        py: 5,
+                        color: "#64748b",
                         fontSize: "14px",
+                        fontWeight: 600,
                         width: "100%",
                       }}
                     >
                       No brands available!
                     </Box>
                   </TableCell>
-                )}
-              </TableBody>
-            </Table>
-            {brands.length > 0 && (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  my: 2,
-                  mx: 2,
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          {brands.length > 0 && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderTop: "1px solid #f1f5f9",
+                px: 2.5,
+              }}
+            >
+              <PaginationSet
+                count={pagination?.last_page || 1}
+                page={page}
+                per_page={per_page}
+                from={pagination?.from}
+                to={pagination?.to}
+                total={pagination?.total}
+                onPageChange={(value) => setPage(value)}
+                onPerPageChange={(value) => {
+                  setPerPage(value);
+                  setPage(1);
                 }}
-              >
-                <PaginationSet
-                  count={pagination?.last_page || 1}
-                  page={page}
-                  per_page={per_page}
-                  from={pagination?.from}
-                  to={pagination?.to}
-                  total={pagination?.total}
-                  onPageChange={(value) => setPage(value)}
-                  onPerPageChange={(value) => {
-                    setPerPage(value);
-                    setPage(1); // reset page when per_page changes
-                  }}
-                  variant="outlined"
-                  color="secondary"
-                />
-              </Box>
-            )}
-          </TableContainer>
-        </Container>
-      </Box>
-    </>
+                variant="outlined"
+                color="secondary"
+              />
+            </Box>
+          )}
+        </TableContainer>
+      </Container>
+    </Box>
   );
 };
 

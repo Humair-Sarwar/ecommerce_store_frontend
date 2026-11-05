@@ -1,182 +1,368 @@
-import { Box, Button, Container, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material'
-import React from 'react'
-import ChatIcon from '@mui/icons-material/Chat';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
+import React from "react";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
+import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 
 const SaleOrderDetails = () => {
-    const [activeFor, setActiveFor] = React.useState(10);
-          const handleChange = (event) => {
-        setActiveFor(event.target.value);
-      };
+  const [activeFor, setActiveFor] = React.useState(10);
+  const handleChange = (event) => {
+    setActiveFor(event.target.value);
+  };
   return (
     <Box
       sx={{
-        
-        
         width: "100%",
+        minHeight: "100vh",
+        bgcolor: "#f8fafc",
         py: 3,
         overflowY: "auto",
       }}
-      className='pages-admin-target-style'
+      className="pages-admin-target-style"
     >
       <Container sx={{ maxWidth: "100% !important" }}>
+        {/* Page Header */}
         <Box
-          component={"h2"}
           sx={{
             display: "flex",
             alignItems: "center",
-            fontSize: "17px",
+            gap: 1.5,
             mb: 3,
           }}
         >
-          {" "}
-          
-          Sale Order Details
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: "14px",
+              bgcolor: "#0f172a",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)",
+            }}
+          >
+            <ReceiptLongOutlinedIcon sx={{ fontSize: 22 }} />
+          </Box>
+          <Box>
+            <Typography
+              sx={{
+                fontSize: "20px",
+                fontWeight: 800,
+                color: "#0f172a",
+                lineHeight: 1.2,
+              }}
+            >
+              Sale Order Details
+            </Typography>
+            <Typography sx={{ fontSize: "12.5px", color: "#64748b", fontWeight: 500, mt: 0.25 }}>
+              Review ordered items, fulfillment status, and shipping summary
+            </Typography>
+          </Box>
         </Box>
-         <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px"}}>
-            <Box sx={{padding: '6px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f3f5f9', borderRadius: '10px 10px 0 0'}}>
-                <Typography sx={{whiteSpace: 'nowrap', display: 'flex', fontSize: '13px', alignItems: 'center'}}><Box sx={{fontWeight: '600'}}>Order ID:</Box> 123456</Typography>
-                <Typography sx={{whiteSpace: 'nowrap', display: 'flex', fontSize: '13px', alignItems: 'center'}}><Box sx={{fontWeight: '600'}}>Status:</Box> Pending</Typography>
-                <Typography sx={{whiteSpace: 'nowrap', display: 'flex', fontSize: '13px', alignItems: 'center'}}><Box sx={{fontWeight: '600'}}>Placed on:</Box> 23, Aug 2025 10:38 PM</Typography>
-                <Typography sx={{whiteSpace: 'nowrap', display: 'flex', fontSize: '13px', alignItems: 'center'}}><Box sx={{fontWeight: '600'}}>Customer Detail:</Box> humairsarwar.web@gmail.com</Typography>
-            </Box>
-            <Box sx={{padding: '20px', backgroundColor: 'white', borderRadius: '0 0 10px 10px'}}>
-                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
-                    <FormControl sx={{  minWidth: 120 }} size="small" fullWidth>
-      <InputLabel id="demo-select-small-label" color='secondary'>Order Status</InputLabel>
-      <Select
-        labelId="demo-select-small-label"
-        id="demo-select-small"
-        value={activeFor}
-        label="Age"
-        onChange={handleChange}
-        color='secondary'
-        
-      >
-        
-          <MenuItem value={10} sx={{fontSize: '14px'}}>Accept</MenuItem>
-    <MenuItem value={20} sx={{fontSize: '14px'}}>Reject</MenuItem>
-    <MenuItem value={30} sx={{fontSize: '14px'}}>Cancel</MenuItem>
-      </Select>
-    </FormControl>
-    <Button
-          className="custom-secondary-btn-admin-side"
-          onClick={()=>handleNextStep()}
-          sx={{whiteSpace: 'nowrap', ml: 1}}
+
+        {/* Main Order Card */}
+        <Box
+          sx={{
+            borderRadius: "24px",
+            border: "1px solid #f1f5f9",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+            overflow: "hidden",
+            bgcolor: "#ffffff",
+          }}
         >
-          Save Changes
-        </Button>
+          {/* Top Metadata Strip */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 2,
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "#0f172a",
+              color: "#ffffff",
+            }}
+          >
+            <Typography sx={{ whiteSpace: "nowrap", display: "flex", gap: 0.75, fontSize: "13px", alignItems: "center" }}>
+              <Box component="span" sx={{ color: "#94a3b8", fontWeight: 600 }}>Order ID:</Box>
+              <Box component="span" sx={{ fontWeight: 800, fontFamily: "monospace" }}>#123456</Box>
+            </Typography>
+            <Typography sx={{ whiteSpace: "nowrap", display: "flex", gap: 0.75, fontSize: "13px", alignItems: "center" }}>
+              <Box component="span" sx={{ color: "#94a3b8", fontWeight: 600 }}>Status:</Box>
+              <Box
+                component="span"
+                sx={{
+                  px: 1.25,
+                  py: 0.25,
+                  borderRadius: "999px",
+                  bgcolor: "rgba(249, 115, 22, 0.2)",
+                  color: "#fb923c",
+                  fontWeight: 700,
+                  fontSize: "11.5px",
+                }}
+              >
+                Pending
+              </Box>
+            </Typography>
+            <Typography sx={{ whiteSpace: "nowrap", display: "flex", gap: 0.75, fontSize: "13px", alignItems: "center" }}>
+              <Box component="span" sx={{ color: "#94a3b8", fontWeight: 600 }}>Placed on:</Box>
+              <Box component="span" sx={{ fontWeight: 600 }}>23, Aug 2025 10:38 PM</Box>
+            </Typography>
+            <Typography sx={{ whiteSpace: "nowrap", display: "flex", gap: 0.75, fontSize: "13px", alignItems: "center" }}>
+              <Box component="span" sx={{ color: "#94a3b8", fontWeight: 600 }}>Customer:</Box>
+              <Box component="span" sx={{ fontWeight: 600, color: "#34d399" }}>humairsarwar.web@gmail.com</Box>
+            </Typography>
+          </Box>
+
+          <Box sx={{ p: 3, backgroundColor: "white" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1.5,
+                mb: 2.5,
+              }}
+            >
+              <FormControl sx={{ minWidth: 120 }} size="small" fullWidth>
+                <InputLabel id="order-status-label">Order Status</InputLabel>
+                <Select
+                  labelId="order-status-label"
+                  id="order-status-select"
+                  value={activeFor}
+                  label="Order Status"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10} sx={{ fontSize: "13.5px" }}>
+                    Accept
+                  </MenuItem>
+                  <MenuItem value={20} sx={{ fontSize: "13.5px" }}>
+                    Reject
+                  </MenuItem>
+                  <MenuItem value={30} sx={{ fontSize: "13.5px" }}>
+                    Cancel
+                  </MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                className="custom-secondary-btn-admin-side"
+                onClick={() => handleNextStep()}
+                sx={{ whiteSpace: "nowrap" }}
+              >
+                Save Changes
+              </Button>
+            </Box>
+
+            <Grid container spacing={2}>
+              {[
+                "/Smart-Watches-Products-Eclat-UK.png",
+                "/empty-image.jpg",
+                "/Smart-Watches-Products-Eclat-UK.png",
+                "/Smart-Watches-Products-Eclat-UK.png",
+              ].map((imgSrc, idx) => (
+                <Grid key={idx} size={{ xs: 12, sm: 6, md: 6 }}>
+                  <Box
+                    sx={{
+                      borderRadius: "16px",
+                      backgroundColor: "#f8fafc",
+                      border: "1px solid #e2e8f0",
+                      p: 1.5,
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        borderColor: "#cbd5e1",
+                        bgcolor: "#ffffff",
+                        boxShadow: "0 6px 18px rgba(15, 23, 42, 0.05)",
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.75 }}>
+                        <Box
+                          className="card-order-detail-img-target"
+                          sx={{
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                            border: "1px solid #e2e8f0",
+                            bgcolor: "#ffffff",
+                          }}
+                        >
+                          <img src={imgSrc} alt="" />
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="h5"
+                            sx={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", mb: 0.75 }}
+                          >
+                            New test product with open stock
+                          </Typography>
+                          <Box
+                            component="span"
+                            sx={{
+                              display: "inline-block",
+                              px: 1.25,
+                              py: 0.35,
+                              borderRadius: "999px",
+                              bgcolor: "#ffffff",
+                              border: "1px solid #cbd5e1",
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              color: "#475569",
+                            }}
+                          >
+                            £12.00 × 1
+                          </Box>
+                        </Box>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontSize: "15px", fontWeight: 800, color: "#0f172a" }}
+                        >
+                          £12.00
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: 1.25,
+                mt: 3,
+              }}
+            >
+              <Button
+                className="custom-primary-btn-admin-side"
+                onClick={() => handleNextStep()}
+                sx={{ whiteSpace: "nowrap" }}
+              >
+                <ChatOutlinedIcon sx={{ mr: 1, fontSize: 17 }} /> Contact Client
+              </Button>
+              <Button
+                className="custom-secondary-btn-admin-side"
+                onClick={() => handleNextStep()}
+                sx={{ whiteSpace: "nowrap" }}
+              >
+                <AccessTimeRoundedIcon sx={{ mr: 1, fontSize: 17 }} /> Estimated Delivery: 26, Aug 2025 10:38 PM
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+
+        <Grid container spacing={2.5} sx={{ mt: 0.5 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+            <Box
+              sx={{
+                borderRadius: "20px",
+                border: "1px solid #f1f5f9",
+                boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+                backgroundColor: "white",
+                p: 3,
+                height: "100%",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
+                <LocalShippingOutlinedIcon sx={{ fontSize: 20, color: "#0f172a" }} />
+                <Typography sx={{ fontSize: "15px", fontWeight: 800, color: "#0f172a" }}>
+                  Shipping Method
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: "13px", fontWeight: 600, color: "#475569" }}>
+                test1
+              </Typography>
+              <Divider sx={{ my: 2, borderColor: "#f1f5f9" }} />
+              <Typography sx={{ fontSize: "15px", fontWeight: 800, color: "#0f172a", mb: 1 }}>
+                Shipping Address
+              </Typography>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>
+                Humair
+              </Typography>
+              <Typography sx={{ fontSize: "13px", color: "#64748b", mt: 0.25 }}>
+                07768378472
+              </Typography>
+              <Typography sx={{ fontSize: "13px", color: "#64748b", mt: 0.25 }}>
+                76 Grange Road, Romford, London, United Kingdom, RM37DX
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+            <Box
+              sx={{
+                borderRadius: "20px",
+                border: "1px solid #f1f5f9",
+                boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+                backgroundColor: "white",
+                p: 3,
+                height: "100%",
+              }}
+            >
+              <Typography sx={{ fontSize: "15px", fontWeight: 800, color: "#0f172a", mb: 2 }}>
+                Total Summary
+              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", py: 0.75 }}>
+                <Typography sx={{ fontSize: "13.5px", color: "#64748b", fontWeight: 500 }}>Subtotal:</Typography>
+                <Typography sx={{ fontSize: "13.5px", fontWeight: 700, color: "#0f172a" }}>£3,406.00</Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", py: 0.75 }}>
+                <Typography sx={{ fontSize: "13.5px", color: "#64748b", fontWeight: 500 }}>Shipping Fee (test 1):</Typography>
+                <Typography sx={{ fontSize: "13.5px", fontWeight: 700, color: "#0f172a" }}>£0.00</Typography>
+              </Box>
+              <Divider sx={{ my: 1.5, borderColor: "#f1f5f9" }} />
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", py: 0.75 }}>
+                <Typography sx={{ fontSize: "15px", fontWeight: 800, color: "#0f172a" }}>Total:</Typography>
+                <Typography sx={{ fontSize: "16px", fontWeight: 800, color: "#10b981" }}>£3,406.00</Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pt: 1 }}>
+                <Typography sx={{ fontSize: "13px", color: "#64748b", fontWeight: 500 }}>Payment Method:</Typography>
+                <Box
+                  component="span"
+                  sx={{
+                    px: 1.25,
+                    py: 0.3,
+                    borderRadius: "999px",
+                    bgcolor: "#f1f5f9",
+                    color: "#0f172a",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                  }}
+                >
+                  Cash On Delivery
                 </Box>
-                <Grid container spacing={1}>
-                                  <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-                                    <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px", backgroundColor: '#f3f5f9', border: '1px solid #e0e0e0'}}>
-                                      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1}}>
-                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                                          <Box className='card-order-detail-img-target'><img src="/Smart-Watches-Products-Eclat-UK.png" alt="" /></Box>
-                                          <Box><Typography variant='h5' sx={{fontSize: '14px', mb: 1}}>New test product with open stock</Typography>
-                                          <Button variant='outlined' color='secondary' sx={{borderRadius: '35px'}} size='small'>£12.00 * 1</Button></Box>
-                                        </Box>
-                                        <Box><Typography variant='body2' sx={{fontSize: '15px', fontWeight: '500'}}>£12.00</Typography></Box>
-
-                                      </Box>
-                                    </Box>
-                                  </Grid>
-                                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-                                    <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px", backgroundColor: '#f3f5f9', border: '1px solid #e0e0e0'}}>
-                                      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1}}>
-                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                                          <Box className='card-order-detail-img-target'><img src="/empty-image.jpg" alt="" /></Box>
-                                          <Box><Typography variant='h5' sx={{fontSize: '14px', mb: 1}}>New test product with open stock</Typography>
-                                          <Button variant='outlined' color='secondary' sx={{borderRadius: '35px'}} size='small'>£12.00 * 1</Button></Box>
-                                        </Box>
-                                        <Box><Typography variant='body2' sx={{fontSize: '15px', fontWeight: '500'}}>£12.00</Typography></Box>
-
-                                      </Box>
-                                    </Box>
-                                  </Grid>
-                                  <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-                                    <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px", backgroundColor: '#f3f5f9', border: '1px solid #e0e0e0'}}>
-                                      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1}}>
-                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                                          <Box className='card-order-detail-img-target'><img src="/Smart-Watches-Products-Eclat-UK.png" alt="" /></Box>
-                                          <Box><Typography variant='h5' sx={{fontSize: '14px', mb: 1}}>New test product with open stock</Typography>
-                                          <Button variant='outlined' color='secondary' sx={{borderRadius: '35px'}} size='small'>£12.00 * 1</Button></Box>
-                                        </Box>
-                                        <Box><Typography variant='body2' sx={{fontSize: '15px', fontWeight: '500'}}>£12.00</Typography></Box>
-
-                                      </Box>
-                                    </Box>
-                                  </Grid>
-                                  <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-                                    <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px", backgroundColor: '#f3f5f9', border: '1px solid #e0e0e0'}}>
-                                      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1}}>
-                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                                          <Box className='card-order-detail-img-target'><img src="/Smart-Watches-Products-Eclat-UK.png" alt="" /></Box>
-                                          <Box><Typography variant='h5' sx={{fontSize: '14px', mb: 1}}>New test product with open stock</Typography>
-                                          <Button variant='outlined' color='secondary' sx={{borderRadius: '35px'}} size='small'>£12.00 * 1</Button></Box>
-                                        </Box>
-                                        <Box><Typography variant='body2' sx={{fontSize: '15px', fontWeight: '500'}}>£12.00</Typography></Box>
-
-                                      </Box>
-                                    </Box>
-                                  </Grid>
-                                  </Grid>
-
-                                  <Box sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 2}}>
-                                    <Button
-          className="custom-primary-btn-admin-side"
-          onClick={()=>handleNextStep()}
-          sx={{whiteSpace: 'nowrap', ml: 1}}
-        >
-          <ChatIcon sx={{mr: 1}}/> Contact Client
-        </Button>
-          <Button
-          className="custom-secondary-btn-admin-side"
-          onClick={()=>handleNextStep()}
-          sx={{whiteSpace: 'nowrap', ml: 1}}
-        >
-          <AccessTimeIcon sx={{mr: 1}}/> Estimated Delivery Date & Time: 26, Aug 2025 10:38 PM
-        </Button>
-                                  </Box>
+              </Box>
             </Box>
-            
-         </Box>
-         <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6, md:6 }}>
- <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px", backgroundColor: 'white', mt: 3, p: 2}}>
-                <Typography variant='h4' sx={{fontSize: '15px', fontWeight: '500', marginBottom: '5px'}}>Shipping Method</Typography>
-                <Typography variant='body2' sx={{fontSize: '12px', color: '#717171ff'}}>test1</Typography>
-                <Divider sx={{my: 1}} />
-                <Typography variant='h4' sx={{fontSize: '15px', fontWeight: '500', marginBottom: '5px'}}>Shipping Address</Typography>
-                <Typography variant='body2' sx={{fontSize: '12px', color: '#717171ff'}}>Humair</Typography>
-                <Typography variant='body2' sx={{fontSize: '12px', color: '#717171ff'}}>07768378472</Typography>
-                 <Typography variant='body2' sx={{fontSize: '12px', color: '#717171ff'}}>76 Grange Road, Romford, London, United Kingdom, RM37DX
-
-</Typography>
-                <Divider sx={{my: 1}} />
-            </Box>
-                  </Grid>
-
-
-
-                  <Grid size={{ xs: 12, sm: 6, md:6 }}>
-                      <Box sx={{borderRadius: '10px', boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px", backgroundColor: 'white', mt: 3, p: 2}}>
-                <Typography variant='h4' sx={{fontSize: '15px', fontWeight: '500', marginBottom: '5px'}}>Total Summary
-</Typography>
-                <Typography variant='body2' sx={{fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}><Box>Subtotal :</Box><Box sx={{fontWeight: '600'}}>£3,406.00</Box></Typography>
-                <Typography variant='body2' sx={{fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}><Box>Shipping Fee(test 1) :</Box><Box sx={{fontWeight: '600'}}>£0.00</Box></Typography>
-                <Divider sx={{my: 1}} />
-                <Typography variant='body2' sx={{fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}><Box>Total :</Box><Box sx={{fontWeight: '600'}}>£3,406.00</Box></Typography>
-                <Typography variant='body2' sx={{fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}><Box>Payment Method:</Box><Box sx={{fontWeight: '500'}}>Cash On Delivery</Box></Typography>
-            
-            </Box>
-                  </Grid>
-                  </Grid>
-        
-        
+          </Grid>
+        </Grid>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default SaleOrderDetails
+export default SaleOrderDetails;

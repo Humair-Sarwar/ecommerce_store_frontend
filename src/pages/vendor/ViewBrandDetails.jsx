@@ -10,17 +10,19 @@ import {
   Tooltip,
   Divider,
   Chip,
-  Paper
+  Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiPaper-root": {
-    borderRadius: "20px",
-    padding: theme.spacing(1),
-    boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+    borderRadius: "24px",
+    padding: 0,
+    boxShadow: "0 24px 60px rgba(15, 23, 42, 0.16)",
+    border: "1px solid #f1f5f9",
+    overflow: "hidden",
   },
   "& .MuiDialogContent-root": {
     padding: theme.spacing(3),
@@ -33,26 +35,33 @@ export default function ViewBrandDetails({ list }) {
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // Detail Row Component for consistency
   const DetailRow = ({ label, value, isStatus }) => (
-    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", py: 1.5 }}>
-      <Typography sx={{ fontSize: "14px", fontWeight: "600", color: "#5f6368" }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        py: 1.5,
+      }}
+    >
+      <Typography sx={{ fontSize: "13px", fontWeight: 600, color: "#64748b" }}>
         {label}
       </Typography>
       {isStatus ? (
-        <Chip 
-          label={list?.status ? "Active" : "Inactive"} 
+        <Chip
+          label={list?.status ? "Active" : "Inactive"}
           size="small"
-          sx={{ 
-            fontWeight: 'bold',
-            fontSize: '11px',
-            bgcolor: list?.status ? "#e8f5e9" : "#ffebee",
-            color: list?.status ? "#2e7d32" : "#d32f2f",
-            border: `1px solid ${list?.status ? "#a5d6a7" : "#ef9a9a"}`
-          }} 
+          sx={{
+            fontWeight: 700,
+            fontSize: "11.5px",
+            borderRadius: "999px",
+            bgcolor: list?.status ? "#ecfdf5" : "#fef2f2",
+            color: list?.status ? "#059669" : "#dc2626",
+            border: `1px solid ${list?.status ? "#a7f3d0" : "#fecaca"}`,
+          }}
         />
       ) : (
-        <Typography sx={{ fontSize: "14px", fontWeight: "500", color: "#202124" }}>
+        <Typography sx={{ fontSize: "13.5px", fontWeight: 700, color: "#0f172a" }}>
           {value || "N/A"}
         </Typography>
       )}
@@ -65,62 +74,106 @@ export default function ViewBrandDetails({ list }) {
         <IconButton
           onClick={handleClickOpen}
           size="small"
-          sx={{ 
-            color: "#19d219", 
-            bgcolor: "#e3fde4", 
-            "&:hover": { bgcolor: "#c2fbbb" } 
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "10px",
+            color: "#059669",
+            bgcolor: "#ecfdf5",
+            border: "1px solid #a7f3d0",
+            "&:hover": {
+              bgcolor: "#10b981",
+              color: "#ffffff",
+              borderColor: "#10b981",
+            },
           }}
         >
-          <VisibilityIcon fontSize="small" />
+          <VisibilityOutlinedIcon sx={{ fontSize: 16 }} />
         </IconButton>
       </Tooltip>
 
-      
-
       <BootstrapDialog onClose={handleClose} open={open} fullWidth maxWidth="xs">
-        <DialogTitle
+        <Box
           sx={{
-            m: 0,
-            p: 2,
             display: "flex",
             alignItems: "center",
-            fontSize: "16px",
-            fontWeight: "700",
-            color: "#3c4043"
+            justifyContent: "space-between",
+            px: 3,
+            py: 2,
+            borderBottom: "1px solid #f1f5f9",
+            bgcolor: "#ffffff",
           }}
         >
-          <LocalOfferIcon sx={{ mr: 1.5, color: "#9c27b0" }} /> 
-          Brand Information
-        </DialogTitle>
-        
-        <IconButton
-          onClick={handleClose}
-          sx={{ position: "absolute", right: 16, top: 16, color: "#9aa0a6" }}
-        >
-          <CloseIcon />
-        </IconButton>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+            <Box
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: "10px",
+                bgcolor: "#0f172a",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <LocalOfferOutlinedIcon sx={{ fontSize: 18 }} />
+            </Box>
+            <DialogTitle
+              sx={{
+                m: 0,
+                p: 0,
+                fontSize: "16px",
+                fontWeight: 800,
+                color: "#0f172a",
+              }}
+            >
+              Brand Information
+            </DialogTitle>
+          </Box>
+
+          <IconButton
+            onClick={handleClose}
+            size="small"
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: "10px",
+              bgcolor: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              color: "#64748b",
+              "&:hover": { bgcolor: "#0f172a", color: "#ffffff", borderColor: "#0f172a" },
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
 
         <DialogContent>
-          {/* Image Section */}
           <Paper
             elevation={0}
             sx={{
               width: "100%",
-              height: "180px",
-              borderRadius: "12px",
+              height: "170px",
+              borderRadius: "16px",
               overflow: "hidden",
-              mb: 3,
-              border: "1px solid #f1f3f4",
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: '#f8f9fa'
+              mb: 2.5,
+              border: "1px solid #e2e8f0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: "#f8fafc",
             }}
           >
             <img
-              style={{ width: "100%", height: "100%", objectFit: "contain", padding: '10px' }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                padding: "14px",
+              }}
               src={
-                list?.media 
+                list?.media
                   ? `${import.meta.env.VITE_BASE_URL}/storage/${list.media.media_path}`
                   : "/empty-image.jpg"
               }
@@ -128,17 +181,16 @@ export default function ViewBrandDetails({ list }) {
             />
           </Paper>
 
-          {/* Details List */}
-          <Box sx={{ px: 1 }}>
+          <Box sx={{ px: 0.5 }}>
             <DetailRow label="Brand Name" value={list?.title} />
-            <Divider sx={{ borderStyle: 'dashed' }} />
-            
+            <Divider sx={{ borderStyle: "dashed", borderColor: "#e2e8f0" }} />
+
             <DetailRow label="Slug" value={list?.slug} />
-            <Divider sx={{ borderStyle: 'dashed' }} />
-            
+            <Divider sx={{ borderStyle: "dashed", borderColor: "#e2e8f0" }} />
+
             <DetailRow label="Sort Order" value={list?.sort_order} />
-            <Divider sx={{ borderStyle: 'dashed' }} />
-            
+            <Divider sx={{ borderStyle: "dashed", borderColor: "#e2e8f0" }} />
+
             <DetailRow label="Status" isStatus />
           </Box>
         </DialogContent>
