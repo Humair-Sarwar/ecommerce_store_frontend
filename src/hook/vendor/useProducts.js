@@ -64,6 +64,39 @@ export const useFetchProducts = (
   });
 };
 
+export const useFetchPOSProducts = (
+  { hot_list = "", category = "", category_id = "", search = "" } = {},
+  options = {},
+) => {
+  const params = {
+    ...(hot_list !== "" && hot_list !== undefined && hot_list !== null
+      ? { hot_list }
+      : {}),
+    ...(category !== "" && category !== undefined && category !== null
+      ? { category }
+      : {}),
+    ...(category_id !== "" && category_id !== undefined && category_id !== null
+      ? { category_id }
+      : {}),
+    ...(search ? { search } : {}),
+  };
+
+  return useQuery({
+    queryKey: ["pos-products", params],
+    queryFn: async ({ signal }) => {
+      const res = await apiAuth.get("/api/vendor/pos/products", {
+        params,
+        signal,
+      });
+      return res.data;
+    },
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 5,
+    ...options,
+  });
+};
+
 export const useCreateProductStep1 = () => {
   const queryClient = useQueryClient();
 
@@ -74,6 +107,7 @@ export const useCreateProductStep1 = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
     },
   });
 };
@@ -154,6 +188,7 @@ export const useCreateProductStep2 = () => {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
     },
   });
 };
@@ -196,6 +231,7 @@ export const useUpdateProductStep1 = () => {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
     },
   });
 };
@@ -241,6 +277,7 @@ export const useDeleteProduct = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
     },
   });
 };
@@ -285,6 +322,7 @@ export const useUpdateProductPublish = () => {
     },
     onSettled: (_, _err, variables) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
 
       const prodId = variables?.product_id || variables?.id;
       if (prodId) {
@@ -479,6 +517,7 @@ export const useGenerateVariations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-variations"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
     },
   });
 };
@@ -509,6 +548,7 @@ export const useRemoveTermAndVariations = () => {
       }
 
       queryClient.invalidateQueries({ queryKey: ["product-terms"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-products"] });
     },
   });
 };
@@ -527,6 +567,9 @@ export const useUpdateVariation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["product-variations"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["pos-products"],
       });
     },
   });

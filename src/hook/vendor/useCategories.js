@@ -23,6 +23,21 @@ export const fetchCategories = (page, per_page, search, options = {}) => {
   });
 };
 
+// ================== FETCH POS CATEGORIES ==================
+const fetchPOSCategoriesApi = async ({ signal } = {}) => {
+  const res = await apiAuth.get("/api/vendor/pos/categories", { signal });
+  return res.data;
+};
+
+export const useFetchPOSCategories = (options = {}) => {
+  return useQuery({
+    queryKey: ["pos-categories"],
+    queryFn: ({ signal }) => fetchPOSCategoriesApi({ signal }),
+    staleTime: 1000 * 60 * 5,
+    ...options,
+  });
+};
+
 // ================== CREATE CATEGORY ==================
 const createCategoryApi = async (payload) => {
   const res = await apiAuth.post("/api/vendor/category", payload);
@@ -37,6 +52,7 @@ export const useCreateCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["categories-panel"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-categories"] });
     },
   });
 };
@@ -52,6 +68,7 @@ export const useDeleteCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["categories-panel"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-categories"] });
     },
   });
 };
@@ -88,6 +105,7 @@ export const useUpdateCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["categories-panel"] });
+      queryClient.invalidateQueries({ queryKey: ["pos-categories"] });
     },
   });
 };

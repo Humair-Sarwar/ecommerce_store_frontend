@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Box } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 import POSHeader from "../../components/pos/POSHeader";
 import POSCategories from "../../components/pos/POSCategories";
 import POSProductGrid from "../../components/pos/POSProductGrid";
 import POSCartSidebar from "../../components/pos/POSCartSidebar";
 import POSBarcodeScanner from "../../components/pos/POSBarcodeScanner";
+import { useFetchPOSCategories } from "../../hook/vendor/useCategories";
+import { useFetchPOSProducts } from "../../hook/vendor/useProducts";
 
 const POSTerminal = () => {
+  const [searchParams] = useSearchParams();
   const [activeMode, setActiveMode] = useState("sale");
   const [selectedCategory, setSelectedCategory] = useState("Hot List");
   const [cart, setCart] = useState([]);
@@ -14,140 +18,73 @@ const POSTerminal = () => {
   const [scannerValue, setScannerValue] = useState("");
   const [viewMode, setViewMode] = useState("grid");
 
-  const categories = [
-    "Hot List",
-    "All",
-    "iPhone Box",
-    "Printer Design",
-    "iPhone Model 11",
-    "Test level 1",
-    "Design",
-    "Mobile & Computing 1",
-    "Mobile & Computing 2",
-    "Mobile & Computing 3",
-    "Mobile & Computing 4",
-  ];
+  const hotListParam = searchParams.get("hot_list") || "";
+  const categoryParam = searchParams.get("category") || "";
+  const categoryIdParam = searchParams.get("category_id") || "";
 
-  const products = [
-    {
-      id: 1,
-      name: "iphone with image",
-      condition: "Brand New",
-      brand: "N/A",
-      category: "SMART WATCH",
-      price: 3.0,
-      stock: 7,
-      sku: "328899",
-      image: 'https://donesol-development.s3.eu-west-2.amazonaws.com/f4dc7cbd-89e0-4813-95ae-8428f326982d/store_manager/cover_image_1788428175454.38'
-    },
-    {
-      id: 2,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      variants: ["1 TB", "128 GB"],
-      sku: "532424",
-      image: "https://tradeandrecycle.co.uk/_next/image?url=https%3A%2F%2Fdonesol-development.s3.eu-west-2.amazonaws.com%2Ff4dc7cbd-89e0-4813-95ae-8428f326982d%2Fmedia%2F712c7_1789728569315_md.webp&w=1600&q=75"
-    },
-    {
-      id: 3,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      variants: ["1 TB", "128 GB"],
-      sku: "532424",
-    },
-    {
-      id: 4,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      variants: ["1 TB", "128 GB"],
-      sku: "532424",
-    },
-    {
-      id: 5,
-      name: "iphone with fdaffdsaf image",
-      condition: "Brand New",
-      brand: "N/A",
-      category: "SMART WATCH",
-      price: 3.0,
-      stock: 7,
-      sku: "625435",
-      image: 'https://donesol-development.s3.eu-west-2.amazonaws.com/f4dc7cbd-89e0-4813-95ae-8428f326982d/store_manager/cover_image_1788428175454.38'
-    },
-    {
-      id: 6,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      variants: ["1 TB", "128 GB"],
-      sku: "6425432",
-    },
-    {
-      id: 7,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      variants: ["1 TB", "128 GB"],
-      sku: "532424",
-    },
-    {
-      id: 8,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      variants: ["1 TB", "128 GB"],
-      sku: "532424",
-    },
-    {
-      id: 9,
-      name: "IPHONE USB DIAMOND CABLE",
-      condition: "Brand New",
-      brand: "HOCO",
-      category: "CABLE",
-      price: 7.0,
-      oldPrice: 8.0,
-      discount: "£1.00 off",
-      stock: 187,
-      sku: "534324",
-    },
-  ];
+  const { data: posCategoriesRes } = useFetchPOSCategories();
+
+  const { data: posProductsRes } = useFetchPOSProducts({
+    hot_list: hotListParam,
+    category: categoryParam,
+    category_id: categoryIdParam,
+  });
+
+  const categories = useMemo(() => {
+    const dbCategories = posCategoriesRes?.data || [];
+    return [
+      { id: "hot_list", title: "Hot List", children: [] },
+      { id: "all", title: "All", children: [] },
+      ...dbCategories,
+    ];
+  }, [posCategoriesRes]);
+
+  const products = useMemo(() => {
+    const rawProducts = posProductsRes?.data || [];
+    return rawProducts.map((item) => {
+      const regularPrice = Number(item.regular_price ?? item.oldPrice ?? 0);
+      const salePrice = Number(item.sale_price ?? item.price ?? 0);
+      const effectivePrice =
+        item.price !== undefined && item.price !== null
+          ? Number(item.price)
+          : salePrice > 0
+            ? salePrice
+            : regularPrice;
+      const oldPrice =
+        item.oldPrice !== undefined
+          ? item.oldPrice !== null
+            ? Number(item.oldPrice)
+            : null
+          : regularPrice > effectivePrice
+            ? regularPrice
+            : null;
+
+      return {
+        ...item,
+        id: item.id,
+        name: item.name || item.title || "Untitled Product",
+        condition: item.condition || "Brand New",
+        brand: item.brand || "N/A",
+        category: item.category || "N/A",
+        price: Number.isFinite(effectivePrice) ? effectivePrice : 0,
+        oldPrice: Number.isFinite(oldPrice) && oldPrice > 0 ? oldPrice : null,
+        stock: Number(item.stock ?? 0),
+        sku: item.sku || item.product_sku || "N/A",
+        variants: Array.isArray(item.variants) ? item.variants : [],
+        image: item.image || null,
+        vatStatus: item.vatStatus || "VAT Exempt",
+      };
+    });
+  }, [posProductsRes]);
 
   const addToCart = (product) => {
     const existing = cart.find((item) => item.id === product.id);
     if (existing) {
-      setCart(cart.map((item) => (item.id === product.id ? { ...item, qty: item.qty + 1 } : item)));
+      setCart(
+        cart.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
+        ),
+      );
     } else {
       setCart([...cart, { ...product, qty: 1 }]);
     }
@@ -188,11 +125,15 @@ const POSTerminal = () => {
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           viewMode={viewMode}
-            setViewMode={setViewMode}
+          setViewMode={setViewMode}
         />
 
         {/* 3. Product Grid Component */}
-        <POSProductGrid products={products} addToCart={addToCart} viewMode={viewMode} />
+        <POSProductGrid
+          products={products}
+          addToCart={addToCart}
+          viewMode={viewMode}
+        />
 
         {/* 4. Barcode Scanner Input Container (Toggled via header SCAN button) */}
         {showScanner && (

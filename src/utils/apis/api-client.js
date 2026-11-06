@@ -32,7 +32,7 @@ apiAuth.interceptors.request.use(
   (config) => {
     startProgress();
     const token = localStorage.getItem("token"); // get the latest token
-    if (token) {
+    if (token && token !== "undefined" && token !== "null") {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
@@ -50,6 +50,15 @@ apiAuth.interceptors.response.use(
   },
   (error) => {
     stopProgress();
+    if (error?.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("user_type");
+      window.dispatchEvent(new Event("auth-unauthorized"));
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login");
+      }
+    }
     return Promise.reject(error);
   },
 );

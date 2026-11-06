@@ -210,7 +210,9 @@ const AdminHeader = ({ handleLeftSidebar }) => {
 
         {/* POS Terminal Button */}
         <Button
-          onClick={() => navigation("/pos")}
+          onClick={() =>
+            navigation("/vendor/point-of-sale/?active=buy&hot_list=true")
+          }
           size="small"
           startIcon={
             <PointOfSaleIcon
