@@ -134,6 +134,23 @@ export const getCategoriesFilterBaseApi = async ({category})=>{
 }
 
 
+export const getWebsiteCategoryProductsApi = async ({category, page, per_page})=>{
+    let response;
+    try {
+         response = await api.get('/api/website/category/products', {
+      params: {
+        category,
+        page,
+        per_page
+      }
+    });
+    } catch (error) {
+        return error;
+    }
+    return response;
+}
+
+
 export const addImageApi = async (data)=>{
    
     let response;

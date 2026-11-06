@@ -25,7 +25,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OrderProcessingSection from "../../components/OrderProcessingSection";
 import ResponsiveFilterSelect from "../../components/ResponsiveFilterSelect";
 import SortFilterMenu from "../../components/SortFilterMenu";
-import { getCategoriesFilterBaseApi } from "../../utils/apis/APIs";
+import { getCategoriesFilterBaseApi, getWebsiteCategoryProductsApi } from "../../utils/apis/APIs";
 import { handleError } from "../../toast";
 
 function valuetext(value) {
@@ -68,7 +68,35 @@ const ProductListingPage = () => {
   const navigate = useNavigate();
   const params = useParams();
   const category = params.slug;
+  const pageFromUrl = parseInt(params.page, 10) || 1;
   const [filterCategoryData, setFilterCategoryData] = useState({});
+  const [categoryProducts, setCategoryProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [currentPage, setCurrentPage] = useState(pageFromUrl);
+  const [totalPages, setTotalPages] = useState(1);
+  const perPage = 9;
+
+  const getCategoryProducts = async (page = 1) => {
+    try {
+      setLoadingProducts(true);
+      const res = await getWebsiteCategoryProductsApi({ category, page, per_page: perPage });
+      if (res && res.status === 200) {
+        setCategoryProducts(res.data?.data || res.data?.products || []);
+        setCurrentPage(res.data?.current_page || page);
+        setTotalPages(res.data?.last_page || 1);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+    navigate(`/buy/products/${category}/${value}`);
+    window.scrollTo({ top: 400, behavior: "smooth" });
+  };
 
   const getFilterListingPage = async () => {
     let res = await getCategoriesFilterBaseApi({ category });
@@ -101,9 +129,9 @@ const ProductListingPage = () => {
         <Box sx={{ position: "relative", pt: 6, backgroundColor: "#f0f0f0" }}>
           <img
             src={
-              import.meta.env.VITE_BASE_URL +
-              "/uploads/" +
-              filterCategoryData?.parent_category?.cover_image
+              filterCategoryData?.parent_category?.cover_image?.startsWith('http')
+                ? filterCategoryData?.parent_category?.cover_image
+                : `${import.meta.env.VITE_BASE_URL}${filterCategoryData?.parent_category?.cover_image?.startsWith('/storage/') ? '' : '/storage/'}${filterCategoryData?.parent_category?.cover_image}`
             }
             className="banner-image-style"
             alt=""
@@ -213,11 +241,15 @@ const ProductListingPage = () => {
                     <img
                       src={
                         list?.image
-                          ? import.meta.env.VITE_BASE_URL +
-                            "/uploads/" +
-                            list?.image
+                          ? (list.image.startsWith('http')
+                              ? list.image
+                              : `${import.meta.env.VITE_BASE_URL}${list.image.startsWith('/storage/') ? '' : '/storage/'}${list.image}`)
                           : "/empty-image.jpg"
                       }
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/empty-image.jpg";
+                      }}
                       alt=""
                     />
                     <Typography
@@ -663,522 +695,120 @@ const ProductListingPage = () => {
                 <SortFilterMenu />
               </Box>
               <Grid container spacing={{ sm: 3, xs: 1 }}>
-                <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
-                  <Box className="product-box-style">
-                    <Box className="upper-img-box">
-                      <img
-                        src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
-                        alt=""
-                      />
-                      <MiniBottomCartModal />
-                      <Box className="mobile-view-add-cart-btn">
-                        <svg
-                          role="presentation"
-                          fill="none"
-                          stroke-width="1.5"
-                          focusable="false"
-                          width="16"
-                          height="15"
-                          class="icon icon-quick-buy-cart"
-                          viewBox="0 0 16 15"
-                        >
-                          <path
-                            d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></path>
-                          <circle
-                            cx="5.955"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                          <circle
-                            cx="11.5"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                        </svg>
+                {categoryProducts.length > 0 ? (
+                  categoryProducts.map((prod) => (
+                    <Grid key={prod.id} size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
+                      <Box className="product-box-style">
+                        <Box className="upper-img-box">
+                          <img
+                            src={
+                              prod.image
+                                ? (prod.image.startsWith("http")
+                                    ? prod.image
+                                    : `${import.meta.env.VITE_BASE_URL}${prod.image.startsWith("/storage/") ? "" : "/storage/"}${prod.image}`)
+                                : "/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
+                            }
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/empty-image.jpg";
+                            }}
+                            alt=""
+                          />
+                          <MiniBottomCartModal />
+                          <Box className="mobile-view-add-cart-btn">
+                            <svg
+                              role="presentation"
+                              fill="none"
+                              strokeWidth="1.5"
+                              focusable="false"
+                              width="16"
+                              height="15"
+                              className="icon icon-quick-buy-cart"
+                              viewBox="0 0 16 15"
+                            >
+                              <path
+                                d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <circle
+                                cx="5.955"
+                                cy="12.682"
+                                r=".5"
+                                fill="#252627"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></circle>
+                              <circle
+                                cx="11.5"
+                                cy="12.682"
+                                r=".5"
+                                fill="#252627"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></circle>
+                            </svg>
+                          </Box>
+                          {prod.save_amount ? (
+                            <Box className="badge-style-discount">
+                              Save £{prod.save_amount}
+                            </Box>
+                          ) : null}
+                        </Box>
+                        <Box sx={{ mx: 2, mb: 2 }}>
+                          <Typography
+                            className="brand-text"
+                            sx={{
+                              color: "#909090",
+                              fontSize: "0.75rem",
+                              fontWeight: "500",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {prod.brand || "Brand"}
+                          </Typography>
+                          <Link to={"/product-detail-page"}>
+                            <Typography
+                              className="product-heading"
+                              sx={{ fontWeight: "600", color: "black" }}
+                            >
+                              {prod.title || prod.name}
+                            </Typography>
+                          </Link>
+                          <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                            <Typography
+                              className="price"
+                              sx={{ color: "#F83A3A", mr: 1 }}
+                            >
+                              £{prod.price || "0.00"}
+                            </Typography>
+                            {prod.original_price ? (
+                              <Typography
+                                sx={{
+                                  textDecoration: "line-through",
+                                  color: "rgb(26 26 26 / 70%)",
+                                }}
+                              >
+                                £{prod.original_price}
+                              </Typography>
+                            ) : null}
+                          </Box>
+                        </Box>
                       </Box>
-                      <Box className="badge-style-discount">Save £199.00</Box>
-                    </Box>
-                    <Box sx={{ mx: 2, mb: 2 }}>
-                      <Typography
-                        className="brand-text"
-                        sx={{
-                          color: "#909090",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apple
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid size={12}>
+                    <Box sx={{ textAlign: "center", py: 8 }}>
+                      <Typography sx={{ color: "#64748b", fontSize: "16px", fontWeight: 500 }}>
+                        {loadingProducts ? "Loading products..." : "No products available in this category"}
                       </Typography>
-                      <Link to={"/product-detail-page"}>
-                        <Typography
-                          className="product-heading"
-                          sx={{ fontWeight: "600", color: "black" }}
-                        >
-                          PlayStation 5 Pro Console - Advanced Graphics &
-                          Ultra-High Definition Gaming Console
-                        </Typography>
-                      </Link>
-                      <Box sx={{ display: "flex" }}>
-                        <Typography
-                          className="price"
-                          sx={{ color: "#F83A3A", mr: 1 }}
-                        >
-                          £600.00
-                        </Typography>
-                        <Typography
-                          sx={{
-                            textDecoration: "line-through",
-                            color: "rgb(26 26 26 / 70%)",
-                          }}
-                        >
-                          £799.00
-                        </Typography>
-                      </Box>
                     </Box>
-                  </Box>
-                </Grid>
-
-                <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
-                  <Box className="product-box-style">
-                    <Box className="upper-img-box">
-                      <img
-                        src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
-                        alt=""
-                      />
-                      <MiniBottomCartModal />
-                      <Box className="mobile-view-add-cart-btn">
-                        <svg
-                          role="presentation"
-                          fill="none"
-                          stroke-width="1.5"
-                          focusable="false"
-                          width="16"
-                          height="15"
-                          class="icon icon-quick-buy-cart"
-                          viewBox="0 0 16 15"
-                        >
-                          <path
-                            d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></path>
-                          <circle
-                            cx="5.955"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                          <circle
-                            cx="11.5"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                        </svg>
-                      </Box>
-                      <Box className="badge-style-discount">Save £199.00</Box>
-                    </Box>
-                    <Box sx={{ mx: 2, mb: 2 }}>
-                      <Typography
-                        className="brand-text"
-                        sx={{
-                          color: "#909090",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apple
-                      </Typography>
-                      <Typography
-                        className="product-heading"
-                        sx={{ fontWeight: "600" }}
-                      >
-                        PlayStation 5 Pro Console - Advanced Graphics &
-                        Ultra-High Definition Gaming Console
-                      </Typography>
-                      <Box sx={{ display: "flex" }}>
-                        <Typography
-                          className="price"
-                          sx={{ color: "#F83A3A", mr: 1 }}
-                        >
-                          £600.00
-                        </Typography>
-                        <Typography
-                          sx={{
-                            textDecoration: "line-through",
-                            color: "rgb(26 26 26 / 70%)",
-                          }}
-                        >
-                          £799.00
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-
-                <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
-                  <Box className="product-box-style">
-                    <Box className="upper-img-box">
-                      <img
-                        src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
-                        alt=""
-                      />
-                      <MiniBottomCartModal />
-                      <Box className="mobile-view-add-cart-btn">
-                        <svg
-                          role="presentation"
-                          fill="none"
-                          stroke-width="1.5"
-                          focusable="false"
-                          width="16"
-                          height="15"
-                          class="icon icon-quick-buy-cart"
-                          viewBox="0 0 16 15"
-                        >
-                          <path
-                            d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></path>
-                          <circle
-                            cx="5.955"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                          <circle
-                            cx="11.5"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                        </svg>
-                      </Box>
-                      <Box className="badge-style-discount">Save £199.00</Box>
-                    </Box>
-                    <Box sx={{ mx: 2, mb: 2 }}>
-                      <Typography
-                        className="brand-text"
-                        sx={{
-                          color: "#909090",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apple
-                      </Typography>
-                      <Typography
-                        className="product-heading"
-                        sx={{ fontWeight: "600" }}
-                      >
-                        PlayStation 5 Pro Console - Advanced Graphics &
-                        Ultra-High Definition Gaming Console
-                      </Typography>
-                      <Box sx={{ display: "flex" }}>
-                        <Typography
-                          className="price"
-                          sx={{ color: "#F83A3A", mr: 1 }}
-                        >
-                          £600.00
-                        </Typography>
-                        <Typography
-                          sx={{
-                            textDecoration: "line-through",
-                            color: "rgb(26 26 26 / 70%)",
-                          }}
-                        >
-                          £799.00
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-
-                <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
-                  <Box className="product-box-style">
-                    <Box className="upper-img-box">
-                      <img
-                        src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
-                        alt=""
-                      />
-                      <MiniBottomCartModal />
-                      <Box className="mobile-view-add-cart-btn">
-                        <svg
-                          role="presentation"
-                          fill="none"
-                          stroke-width="1.5"
-                          focusable="false"
-                          width="16"
-                          height="15"
-                          class="icon icon-quick-buy-cart"
-                          viewBox="0 0 16 15"
-                        >
-                          <path
-                            d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></path>
-                          <circle
-                            cx="5.955"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                          <circle
-                            cx="11.5"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                        </svg>
-                      </Box>
-                      <Box className="badge-style-discount">Save £199.00</Box>
-                    </Box>
-                    <Box sx={{ mx: 2, mb: 2 }}>
-                      <Typography
-                        className="brand-text"
-                        sx={{
-                          color: "#909090",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apple
-                      </Typography>
-                      <Typography
-                        className="product-heading"
-                        sx={{ fontWeight: "600" }}
-                      >
-                        PlayStation 5 Pro Console - Advanced Graphics &
-                        Ultra-High Definition Gaming Console
-                      </Typography>
-                      <Box sx={{ display: "flex" }}>
-                        <Typography
-                          className="price"
-                          sx={{ color: "#F83A3A", mr: 1 }}
-                        >
-                          £600.00
-                        </Typography>
-                        <Typography
-                          sx={{
-                            textDecoration: "line-through",
-                            color: "rgb(26 26 26 / 70%)",
-                          }}
-                        >
-                          £799.00
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
-                  <Box className="product-box-style">
-                    <Box className="upper-img-box">
-                      <img
-                        src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
-                        alt=""
-                      />
-                      <MiniBottomCartModal />
-                      <Box className="mobile-view-add-cart-btn">
-                        <svg
-                          role="presentation"
-                          fill="none"
-                          stroke-width="1.5"
-                          focusable="false"
-                          width="16"
-                          height="15"
-                          class="icon icon-quick-buy-cart"
-                          viewBox="0 0 16 15"
-                        >
-                          <path
-                            d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></path>
-                          <circle
-                            cx="5.955"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                          <circle
-                            cx="11.5"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                        </svg>
-                      </Box>
-                      <Box className="badge-style-discount">Save £199.00</Box>
-                    </Box>
-                    <Box sx={{ mx: 2, mb: 2 }}>
-                      <Typography
-                        className="brand-text"
-                        sx={{
-                          color: "#909090",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apple
-                      </Typography>
-                      <Typography
-                        className="product-heading"
-                        sx={{ fontWeight: "600" }}
-                      >
-                        PlayStation 5 Pro Console - Advanced Graphics &
-                        Ultra-High Definition Gaming Console
-                      </Typography>
-                      <Box sx={{ display: "flex" }}>
-                        <Typography
-                          className="price"
-                          sx={{ color: "#F83A3A", mr: 1 }}
-                        >
-                          £600.00
-                        </Typography>
-                        <Typography
-                          sx={{
-                            textDecoration: "line-through",
-                            color: "rgb(26 26 26 / 70%)",
-                          }}
-                        >
-                          £799.00
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 6, sm: 6, md: 6, lg: 4 }}>
-                  <Box className="product-box-style">
-                    <Box className="upper-img-box">
-                      <img
-                        src="/playstation-5-pro-console-advanced-graphics-ultra-high-definition-image-1.png"
-                        alt=""
-                      />
-                      <MiniBottomCartModal />
-                      <Box className="mobile-view-add-cart-btn">
-                        <svg
-                          role="presentation"
-                          fill="none"
-                          stroke-width="1.5"
-                          focusable="false"
-                          width="16"
-                          height="15"
-                          class="icon icon-quick-buy-cart"
-                          viewBox="0 0 16 15"
-                        >
-                          <path
-                            d="M4.5 3.545H15l-2.546 5.728H5.136L3.546 1H1"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></path>
-                          <circle
-                            cx="5.955"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                          <circle
-                            cx="11.5"
-                            cy="12.682"
-                            r=".5"
-                            fill="#252627"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></circle>
-                        </svg>
-                      </Box>
-                      <Box className="badge-style-discount">Save £199.00</Box>
-                    </Box>
-                    <Box sx={{ mx: 2, mb: 2 }}>
-                      <Typography
-                        className="brand-text"
-                        sx={{
-                          color: "#909090",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apple
-                      </Typography>
-                      <Typography
-                        className="product-heading"
-                        sx={{ fontWeight: "600" }}
-                      >
-                        PlayStation 5 Pro Console - Advanced Graphics &
-                        Ultra-High Definition Gaming Console
-                      </Typography>
-                      <Box sx={{ display: "flex" }}>
-                        <Typography
-                          className="price"
-                          sx={{ color: "#F83A3A", mr: 1 }}
-                        >
-                          £600.00
-                        </Typography>
-                        <Typography
-                          sx={{
-                            textDecoration: "line-through",
-                            color: "rgb(26 26 26 / 70%)",
-                          }}
-                        >
-                          £799.00
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
+                  </Grid>
+                )}</Grid>
 
               <Box
                 sx={{
@@ -1188,7 +818,13 @@ const ProductListingPage = () => {
                   my: 4,
                 }}
               >
-                <Pagination count={10} variant="outlined" />
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  shape="rounded"
+                />
               </Box>
             </Box>
           </Box>

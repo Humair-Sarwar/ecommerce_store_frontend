@@ -19,7 +19,8 @@ const WebsiteRoutes = [
        <ScrollToTop/><WebsiteLayout/></>,
         children: [
             {index: true, element: <Home/>},
-            {path: '/buy/products/:slug/1', element: <ProductListingPage/>},
+            {path: '/buy/products/:slug/:page', element: <ProductListingPage/>},
+            {path: '/buy/products/:slug', element: <ProductListingPage/>},
             {path: '/product-detail-page', element: <ProductDetailPage/>},
             {path: '/cart', element: <CartPage/>},
             { path: "cart/checkouts/5a0bc791-941d-43dd-b991-d60677ef390d/information", element: <PrivateRoute1><Information /></PrivateRoute1> },

@@ -121,67 +121,10 @@ export const Home = () => {
       </Box>
 
       {categoriesListResult.length > 0 && (
-        <Box
-          sx={{
-            backgroundColor: "#f4f6f9",
-            py: { xs: 4, md: 6 },
-            px: { xs: 2, sm: 3, md: 4 },
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 2,
-              mb: 3,
-              px: 0.5,
-            }}
-          >
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                  color: "#dc2626",
-                  mb: 0.5,
-                }}
-              >
-                Browse Collections
-              </Typography>
-              <Typography
-                component="h2"
-                sx={{
-                  fontSize: { xs: "24px", md: "32px" },
-                  fontWeight: 700,
-                  color: "#0f172a",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.2,
-                }}
-              >
-                Shop by Category
-              </Typography>
-            </Box>
-            <Typography
-              sx={{
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#64748b",
-              }}
-            >
-              {categoriesListResult.length}{" "}
-              {categoriesListResult.length === 1 ? "Category" : "Categories"}{" "}
-              Available
-            </Typography>
-          </Box>
-
+        <Box sx={{ backgroundColor: "#f0f0f0", py: 5, px: 4 }}>
           <Carousel
             responsive={responsive}
             className="slide-carousol-service-box-set"
-            itemClass="category-carousel-item-pad"
           >
             {categoriesListResult.map((list) => {
               const categorySlug =
@@ -198,130 +141,34 @@ export const Home = () => {
                   key={list?.id || categorySlug}
                   className="box-features-style"
                   onClick={() => navigate(`/buy/products/${categorySlug}/1`)}
-                  sx={{
-                    backgroundColor: "#ffffff",
-                    borderRadius: "20px",
-                    padding: "12px",
-                    marginRight: { xs: "12px", md: "18px" },
-                    marginY: "8px",
-                    cursor: "pointer",
-                    position: "relative",
-                    overflow: "hidden",
-                    border: "1px solid #e2e8f0",
-                    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.04)",
-                    transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    "&:hover": {
-                      transform: "translateY(-6px)",
-                      borderColor: "#cbd5e1",
-                      boxShadow: "0 20px 36px rgba(15, 23, 42, 0.1)",
-                    },
-                    "&:hover .category-card-img": {
-                      transform: "scale(1.07)",
-                    },
-                    "&:hover .arrow-btn-style": {
-                      opacity: 1,
-                      backgroundColor: "#0f172a",
-                      color: "#ffffff",
-                      transform: "translateX(2px)",
-                    },
-                  }}
                 >
-                  <Box
+                  <img
+                    src={
+                      categoryImage
+                        ? `${import.meta.env.VITE_BASE_URL}/storage/${categoryImage}`
+                        : "/empty-image.jpg"
+                    }
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/empty-image.jpg";
+                    }}
+                    alt=""
+                  />
+                  <Typography
                     sx={{
-                      width: "100%",
-                      height: "200px",
-                      borderRadius: "14px",
-                      background:
-                        "linear-gradient(145deg, #f8fafc 0%, #eef2f6 100%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
-                      position: "relative",
+                      mb: 2,
+                      ml: 2,
+                      fontWeight: "600",
+                      textAlign: "start",
+                      zIndex: 2,
+                      position: "absolute",
+                      bottom: "5px",
                     }}
                   >
-                    <Box
-                      component="img"
-                      className="category-card-img"
-                      src={
-                        categoryImage
-                          ? `${import.meta.env.VITE_BASE_URL}/storage/${categoryImage}`
-                          : "/empty-image.jpg"
-                      }
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/empty-image.jpg";
-                      }}
-                      alt={categoryName || "Category"}
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        transition:
-                          "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
-                      }}
-                    />
-                  </Box>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 1.5,
-                      pt: 1.75,
-                      pb: 0.75,
-                      px: 1,
-                    }}
-                  >
-                    <Box sx={{ minWidth: 0, textAlign: "left" }}>
-                      <Typography
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: "15.5px",
-                          color: "#0f172a",
-                          letterSpacing: "-0.01em",
-                          lineHeight: 1.3,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {categoryName}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "11.5px",
-                          fontWeight: 500,
-                          color: "#64748b",
-                          mt: 0.25,
-                        }}
-                      >
-                        Explore products
-                      </Typography>
-                    </Box>
-
-                    <Box
-                      className="arrow-btn-style"
-                      sx={{
-                        position: "static !important",
-                        opacity: "1 !important",
-                        width: "34px !important",
-                        height: "34px !important",
-                        borderRadius: "50%",
-                        backgroundColor: "#f1f5f9",
-                        color: "#0f172a",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                        transition: "all 0.25s ease",
-                      }}
-                    >
-                      <KeyboardArrowRightIcon sx={{ fontSize: "19px" }} />
-                    </Box>
+                    {categoryName}
+                  </Typography>
+                  <Box className="arrow-btn-style">
+                    <KeyboardArrowRightIcon />
                   </Box>
                 </Box>
               );
